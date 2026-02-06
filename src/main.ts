@@ -1,18 +1,22 @@
 import * as PIXI from 'pixi.js';
+import { Player } from './Player';
 
 class NebulaRunner {
-  
-  private app: PIXI.Application;
-  
-  private starfield!: PIXI.TilingSprite;
-  
-  private player!: PIXI.Sprite;
 
+  private app: PIXI.Application;
+
+  private starfield!: PIXI.TilingSprite;
+
+  private player!: Player;
+
+  // Input Management
   private keys: Record<string, boolean> = {};
 
   // Bullet Management
   private bulletTexture!: PIXI.Texture;
+
   private bulletPool: PIXI.Sprite[] = [];
+
   private activeBullets: PIXI.Sprite[] = [];
 
   constructor() {
@@ -31,7 +35,10 @@ class NebulaRunner {
 
     this.createTextures();
     this.createBackground();
-    this.createPlayer();
+
+    this.player = new Player(this.app);
+    this.app.stage.addChild(this.player.view);
+
     this.setupInput();
 
     this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
@@ -63,21 +70,6 @@ class NebulaRunner {
     this.app.stage.addChild(this.starfield);
   }
 
-  private createPlayer() {
-    // Draw a sleek ship shape
-    const g = new PIXI.Graphics()
-      .poly([25, 0, -15, -15, -5, 0, -15, 15])
-      .fill(0x00FFFF)
-      .stroke({ width: 2, color: 0xFFFFFF });
-
-    const texture = this.app.renderer.generateTexture(g);
-    this.player = new PIXI.Sprite(texture);
-    this.player.anchor.set(0.5);
-    this.player.x = 100;
-    this.player.y = this.app.screen.height / 2;
-    this.app.stage.addChild(this.player);
-  }
-
   private setupInput() {
     window.addEventListener('keydown', (e) => {
       this.keys[e.code] = true;
@@ -97,8 +89,8 @@ class NebulaRunner {
       this.app.stage.addChild(bullet);
     }
 
-    bullet.x = this.player.x + 20;
-    bullet.y = this.player.y;
+    bullet.x = this.player.view.x + 20;
+    bullet.y = this.player.view.y;
     bullet.visible = true;
     this.activeBullets.push(bullet);
   }
@@ -107,17 +99,8 @@ class NebulaRunner {
     // Scroll Stars
     this.starfield.tilePosition.x -= 2 * delta;
 
-    // Player movement
-    const speed = 6 * delta;
-    if (this.keys['ArrowUp'] || this.keys['KeyW']) {
-      if (this.player.y - this.player.height / 2 >= 5) {
-        this.player.y -= speed;
-      }
-    } else if (this.keys['ArrowDown'] || this.keys['KeyS']) {
-      if (this.player.y + this.player.height / 2 <= this.app.screen.height - 5) {
-        this.player.y += speed;
-      }
-    }
+    // Update Player
+    this.player.update(delta, this.keys, this.app.screen.height);
 
     // Update Bullets
     for (let i = this.activeBullets.length - 1; i >= 0; i--) {
