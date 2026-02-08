@@ -3,35 +3,59 @@ import type { IContextItem } from "../core/meta/IContextItem";
 import type { SignalBus } from "../core/SignalBus";
 import type { EnemyPool } from "../pools/EnemyPool";
 import type { ProjectilePool } from "../pools/ProjectilePool";
+import type { BulletView } from "../views/BulletView";
+import type { EnemyView } from "../views/EnemyView";
+import type { PlayerView } from "../views/PlayerView";
 
+/**
+ * 
+ * Collision service, checks if the player is hit by an enemy or 
+ * if a bullet hits an enemy.
+ * 
+ */
 export class CollisionService implements IContextItem {
     private readonly COLLISION_DISTANCE: number = 25;
 
+    private readonly player: PlayerView;
     private readonly projectilePool: ProjectilePool;
     private readonly enemyPool: EnemyPool;
     private readonly signalBus: SignalBus;
 
     constructor(
+        player: PlayerView,
         projectilePool: ProjectilePool,
         enemyPool: EnemyPool,
         signalBus: SignalBus
     ) {
+        this.player = player;
         this.projectilePool = projectilePool;
         this.enemyPool = enemyPool;
         this.signalBus = signalBus;
     }
 
-    public update(delta: number): void {
+    public update(): void {
         const bullets = this.projectilePool.activeBullets;
         const enemies = this.enemyPool.activeEnemies;
+        this.checkBulletWithEnemyCollision(bullets, enemies);
+        this.checkBulletWithPlayerCollision(this.player, enemies);
 
+    }
+
+    /**
+     * 
+     * Checks if a bullet hits an enemy
+     * 
+     * @param bullets 
+     * @param enemies 
+     */
+    private checkBulletWithEnemyCollision(bullets: BulletView[], enemies: EnemyView[]): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
 
             for (let j = enemies.length - 1; j >= 0; j--) {
                 const enemy = enemies[j];
 
-                if (this.checkCollision(bullet.x, bullet.y, enemy.x,    enemy.y)) {
+                if (this.checkCollision(bullet.x, bullet.y, enemy.x, enemy.y)) {
                     this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
                         x: enemy.x,
                         y: enemy.y
@@ -42,6 +66,24 @@ export class CollisionService implements IContextItem {
 
                     break;
                 }
+            }
+        }
+    }
+
+    /**
+     * 
+     * Checks if the player is hit by an enemy
+     * 
+     * @param player 
+     * @param enemies 
+     */
+    checkBulletWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const enemy = enemies[i];
+            if (this.checkCollision(player.x, player.y, enemy.x, enemy.y)) {
+                this.enemyPool.recycle(enemy, i);
+                this.signalBus.dispatch(GameSignals.PLAYER_DIED, {});
+                break;
             }
         }
     }

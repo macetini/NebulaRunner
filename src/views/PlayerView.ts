@@ -6,7 +6,7 @@ export class PlayerView extends PIXI.Sprite {
     private readonly INIT_Y_POS: number = 100;
     private readonly BOUND_BUFFER: number = 5;
 
-    private readonly owner: PIXI.Application;
+    private readonly app: PIXI.Application;
 
     constructor(app: PIXI.Application) {
         const g = new PIXI.Graphics()
@@ -22,7 +22,11 @@ export class PlayerView extends PIXI.Sprite {
         this.x = this.INIT_Y_POS;
         this.y = app.screen.height * 0.5 - this.height * 0.5;
 
-        this.owner = app;
+        this.app = app;
+    }
+
+    public resetPosition(): void {
+        this.y = this.app.screen.height * 0.5 - this.height * 0.5;
     }
 
     public moveUp(delta: number): void {
@@ -32,7 +36,7 @@ export class PlayerView extends PIXI.Sprite {
     }
 
     public moveDown(delta: number): void {
-        if (this.y + this.height * 0.5 <= this.owner.screen.height - this.BOUND_BUFFER) {
+        if (this.y + this.height * 0.5 <= this.app.screen.height - this.BOUND_BUFFER) {
             this.y += this.getMoveStep(delta);
         }
     }

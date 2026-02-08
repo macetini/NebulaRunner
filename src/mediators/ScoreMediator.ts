@@ -19,6 +19,13 @@ export class ScoreMediator {
             .ENEMY_DIED, () => {
                 this.incrementScore();
             });
+
+        this.signalBus.addEventListener(GameSignals
+            .PLAYER_DIED, () => {
+                this.currentScore = 0;
+                this.view.updateScore(this.currentScore);
+            });
+
     }
 
     private incrementScore(): void {

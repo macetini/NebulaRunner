@@ -17,6 +17,9 @@ export class PlayerMediator implements IContextItem {
         this.keys = keys;
 
         this.signalBus = signalBus;
+        this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
+            this.view.resetPosition();
+        });
     }
 
     public update(delta: number): void {

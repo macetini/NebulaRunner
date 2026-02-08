@@ -14,6 +14,11 @@ import { CollisionService } from '../services/CollisionService';
 import { ScoreView } from '../views/ScoreView';
 import { ScoreMediator } from '../mediators/ScoreMediator';
 
+
+/**
+ * Game context, manages game state and bootstraps the whole system.
+ * 
+ */
 export class GameContext {
     private readonly app: PIXI.Application;
     private readonly keys: Record<string, boolean> = {};
@@ -28,6 +33,9 @@ export class GameContext {
         this.signalBus = new SignalBus();
     }
 
+    /**
+     * Initializes the game.
+     */
     public init(): void {
         this.setupInput();
 
@@ -57,7 +65,7 @@ export class GameContext {
         this.app.stage.addChild(scoreView);
 
         // Services
-        const collisionService = new CollisionService(projectPool, enemyPool, this.signalBus);
+        const collisionService = new CollisionService(playerView, projectPool, enemyPool, this.signalBus);
         this.items.push(collisionService);
 
         //Update Loop
@@ -71,7 +79,7 @@ export class GameContext {
         globalThis.addEventListener('keyup', (e) => this.keys[e.code] = false);
     }
 
-    public update(delta: number): void {
+    public update(delta: number = 0): void {
         for (const item of this.items) {
             item.update(delta);
         }

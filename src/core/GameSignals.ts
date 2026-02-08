@@ -1,4 +1,5 @@
 export const GameSignals = {
     PLAYER_FIRED: 'PLAYER_FIRED',
-    ENEMY_DIED: 'ENEMY_DIED'
+    ENEMY_DIED: 'ENEMY_DIED',
+    PLAYER_DIED: 'PLAYER_DIED'
 };
