@@ -2,6 +2,9 @@
 
 A responsive side-scrolling space shooter prototype built with **PixiJS v8** and **TypeScript**. Developed with a focus on clean code, modular architecture, and mobile-web performance optimization.
 
+<img width="796" height="597" alt="pixi" src="https://github.com/user-attachments/assets/a73849aa-c346-4aac-a71c-4b91eace22a8" />
+
+
 ## 🚀 Architectural Principles
 
 To ensure the codebase is scalable and maintainable for professional "Instant Games" environments (e.g., Softgames, Facebook Instant Games), I implemented the following patterns:
