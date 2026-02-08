@@ -61,7 +61,7 @@ export class GameContext {
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
-        const scoreMediator = new ScoreMediator(scoreView, this.signalBus);
+        new ScoreMediator(scoreView, this.signalBus);
         this.app.stage.addChild(scoreView);
 
         // Services
