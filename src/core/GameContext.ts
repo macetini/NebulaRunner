@@ -7,6 +7,8 @@ import { BackgroundView } from '../views/BackgroundView';
 import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { SignalBus } from './SignalBus';
+import { EnemyPool } from '../pools/EnemyPool';
+import { EnemyMediator } from '../mediators/EnemyMediator';
 
 export class GameContext {
     private readonly app: PIXI.Application;
@@ -26,7 +28,6 @@ export class GameContext {
 
     public init(): void {
         this.setupInput();
-
         this.projectPool = new ProjectilePool(this.app);
 
         const backgroundView = new BackgroundView(this.app);
@@ -36,8 +37,12 @@ export class GameContext {
 
         const playerView = new PlayerView(this.app);
         this.app.stage.addChild(playerView);
-        const playerMediator = new PlayerMediator(playerView,  this.signalBus, this.keys);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.keys);
         this.mediators.push(playerMediator);
+
+        const enemyPool = new EnemyPool(this.app);
+        const enemyMediator = new EnemyMediator(this.app, enemyPool);
+        this.mediators.push(enemyMediator);
 
         const projectileMediator = new ProjectileMediator(this.projectPool, this.signalBus, this.app.screen.width);
         this.mediators.push(projectileMediator);
@@ -51,7 +56,6 @@ export class GameContext {
         });
         globalThis.addEventListener('keyup', (e) => this.keys[e.code] = false);
     }
-
 
     public update(delta: number): void {
         for (const mediator of this.mediators) {

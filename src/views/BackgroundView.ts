@@ -7,7 +7,7 @@ export class BackgroundView extends PIXI.TilingSprite {
     constructor(app: PIXI.Application) {
         const g = new PIXI.Graphics();
         g.rect(0, 0, 256, 256).fill(0x000015);
-        // Draw 20 random stars
+
         for (let i = 0; i < 20; i++) {
             g.circle(Math.random() * 256, Math.random() * 256, Math.random() * 1.5).fill(0xFFFFFF);
         }

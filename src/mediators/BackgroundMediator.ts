@@ -1,5 +1,4 @@
 import type { BackgroundView } from "../views/BackgroundView";
-import type { PlayerView } from "../views/PlayerView";
 
 export class BackgroundMediator {
     private readonly view: BackgroundView;

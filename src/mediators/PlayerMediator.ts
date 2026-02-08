@@ -27,7 +27,6 @@ export class PlayerMediator {
         }
 
         if (this.keys['Space']) {
-
             this.signalBus.dispatch(GameSignals.PLAYER_FIRED, {
                 x: this.view.x,
                 y: this.view.y
