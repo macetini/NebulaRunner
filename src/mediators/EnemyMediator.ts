@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js';
 
 import type { EnemyPool } from "../pools/EnemyPool";
-import { EnemyType } from "../views/meta/EnemyType";
+import { EnemyType } from "../views/types/EnemyType";
+import type { IContextItem } from '../core/meta/IContextItem';
 
-export class EnemyMediator {
+export class EnemyMediator implements IContextItem {
     private readonly SPAWN_INTERVAL: number = 100;
 
     private readonly app: PIXI.Application;
@@ -33,7 +34,7 @@ export class EnemyMediator {
             if (enemy.x < -50) {
                 this.pool.recycle(enemy, i);
             } else {
-                enemy.update(delta);
+                enemy.updateMovement(delta);
             }
         }
     }

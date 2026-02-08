@@ -1,8 +1,9 @@
 import { GameSignals } from "../core/GameSignals";
+import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { PlayerView } from "../views/PlayerView";
 
-export class PlayerMediator {
+export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
     private readonly keys: Record<string, boolean>;
 

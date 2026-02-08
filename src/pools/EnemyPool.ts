@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { EnemyView } from '../views/EnemyView';
-import { EnemyType } from '../views/meta/EnemyType';
+import { EnemyType } from '../views/types/EnemyType';
 
 export class EnemyPool {
     public readonly activeEnemies: EnemyView[] = [];

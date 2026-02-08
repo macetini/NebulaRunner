@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { EnemyType } from './meta/EnemyType';
+import { EnemyType } from './types/EnemyType';
 
 export class EnemyView extends PIXI.Sprite {
     private static readonly TEXTURES: Map<EnemyType, PIXI.Texture> = new Map();
@@ -38,7 +38,7 @@ export class EnemyView extends PIXI.Sprite {
         EnemyView.TEXTURES.set(EnemyType.SINE, app.renderer.generateTexture(g));
     }
 
-    public update(delta: number): void {
+    public updateMovement(delta: number): void {
         const speedBoost: number = this.enemyType === EnemyType.DIAGONAL ? 1.5 : 1;
         this.x -= this.SPEED * delta * speedBoost;
 

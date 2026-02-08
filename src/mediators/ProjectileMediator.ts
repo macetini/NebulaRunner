@@ -1,9 +1,11 @@
 import { GameSignals } from "../core/GameSignals";
+import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { ProjectilePool } from "../pools/ProjectilePool";
 
-export class ProjectileMediator {
+export class ProjectileMediator implements IContextItem {
     private readonly SPEED: number = 12;
+
     private readonly pool: ProjectilePool;
     private readonly signalBus: SignalBus;
     private readonly screenWidth: number;
@@ -26,7 +28,7 @@ export class ProjectileMediator {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
             bullet.x += this.SPEED * delta;
-            if (bullet.x > this.screenWidth + 50) {
+            if (bullet.x > this.screenWidth + bullet.width) {
                 this.pool.recycle(bullet, i);
             }
         }

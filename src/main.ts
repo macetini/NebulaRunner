@@ -4,13 +4,9 @@ import { GameContext } from './core/GameContext';
 class NebulaRunner {
   private readonly app: PIXI.Application;
   private readonly context: GameContext;
-
-  private keys: Record<string, boolean> = {};
-
   constructor() {
     this.app = new PIXI.Application();
     this.context = new GameContext(this.app);
-
     this.init();
   }
 
