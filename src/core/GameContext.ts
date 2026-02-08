@@ -11,6 +11,8 @@ import { EnemyPool } from '../pools/EnemyPool';
 import { EnemyMediator } from '../mediators/EnemyMediator';
 import type { IContextItem } from './meta/IContextItem';
 import { CollisionService } from '../services/CollisionService';
+import { ScoreView } from '../views/ScoreView';
+import { ScoreMediator } from '../mediators/ScoreMediator';
 
 export class GameContext {
     private readonly app: PIXI.Application;
@@ -35,13 +37,13 @@ export class GameContext {
 
         // Mediators
         const backgroundView = new BackgroundView(this.app);
-        this.app.stage.addChild(backgroundView);
         const backgroundMediator = new BackgroundMediator(backgroundView);
+        this.app.stage.addChild(backgroundView);
         this.items.push(backgroundMediator);
 
         const playerView = new PlayerView(this.app);
-        this.app.stage.addChild(playerView);
         const playerMediator = new PlayerMediator(playerView, this.signalBus, this.keys);
+        this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
         const enemyMediator = new EnemyMediator(this.app, enemyPool);
@@ -49,6 +51,10 @@ export class GameContext {
 
         const projectileMediator = new ProjectileMediator(projectPool, this.signalBus, this.app.screen.width);
         this.items.push(projectileMediator);
+
+        const scoreView = new ScoreView();
+        const scoreMediator = new ScoreMediator(scoreView, this.signalBus);
+        this.app.stage.addChild(scoreView);
 
         // Services
         const collisionService = new CollisionService(projectPool, enemyPool, this.signalBus);

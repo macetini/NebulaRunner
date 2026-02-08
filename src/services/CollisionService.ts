@@ -31,7 +31,7 @@ export class CollisionService implements IContextItem {
             for (let j = enemies.length - 1; j >= 0; j--) {
                 const enemy = enemies[j];
 
-                if (this.checkCollision(bullet.x, bullet.y, enemy.x, enemy.y)) {
+                if (this.checkCollision(bullet.x, bullet.y, enemy.x,    enemy.y)) {
                     this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
                         x: enemy.x,
                         y: enemy.y
