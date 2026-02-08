@@ -1,6 +1,6 @@
 # NebulaRunner - PixiJS Technical Demo
 
-A high-performance, responsive side-scrolling space shooter built with **PixiJS v8** and **TypeScript**. Developed with a focus on clean code, modular architecture, and mobile-web performance optimization.
+A responsive side-scrolling space shooter prototype built with **PixiJS v8** and **TypeScript**. Developed with a focus on clean code, modular architecture, and mobile-web performance optimization.
 
 ## 🚀 Architectural Principles
 
