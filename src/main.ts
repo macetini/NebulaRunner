@@ -14,9 +14,8 @@ class NebulaRunner {
   private async init() {
     await this.app.init({
       background: '#000015',
-      width: 800,
-      height: 600,
-      resizeTo: window,
+      width: 450,
+      height: 800,
       antialias: true
     });
     document.body.appendChild(this.app.canvas);
