@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 
+import { BuffManager } from '../buffs/BuffManager';
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
 import { BuffMediator } from '../mediators/BuffMediator';
 import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
@@ -9,8 +10,8 @@ import { PlayerMediator } from '../mediators/PlayerMediator';
 import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
 import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
-import { EnemyPool } from '../pools/EnemyPool';
 import { BuffPool } from '../pools/BuffPool';
+import { EnemyPool } from '../pools/EnemyPool';
 import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
@@ -24,7 +25,6 @@ import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
-import { BuffManager } from '../buffs/BuffManager';
 
 
 /**

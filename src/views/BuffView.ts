@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 import type { BuffType } from '../buffs/BuffType';
+import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 
 export class BuffView extends PIXI.Sprite {
     public readonly type: BuffType;
