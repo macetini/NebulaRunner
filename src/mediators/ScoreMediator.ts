@@ -1,7 +1,7 @@
 import { GameSignals } from "../core/GameSignals";
 import type { SignalBus } from "../core/SignalBus";
 import type { SaveStorage } from '../persistence/SaveStorage';
-import type { ScoreView } from "../views/ScoreView";
+import type { ScoreView } from "../ui/ScoreView";
 
 export class ScoreMediator {
     private static readonly BEST_SCORE_KEY = 'nebula-runner:v1:best-score';

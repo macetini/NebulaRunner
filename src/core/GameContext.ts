@@ -16,10 +16,8 @@ import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
 import { BackgroundView } from '../views/BackgroundView';
-import { BuffStatusView } from '../views/BuffStatusView';
-import { GameStateView } from '../views/GameStateView';
 import { PlayerView } from '../views/PlayerView';
-import { ScoreView } from '../views/ScoreView';
+import { GameUi } from '../ui/GameUi';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
@@ -39,8 +37,7 @@ export class GameContext {
     private readonly signalBus: SignalBus;
     private readonly items: IContextItem[] = [];
     private state: GameState = 'ready';
-    private readonly stateView = new GameStateView();
-    private readonly buffStatusView = new BuffStatusView();
+    private readonly gameUi = new GameUi();
     private enemyPool!: EnemyPool;
     private projectilePool!: ProjectilePool;
     private particleMediator!: ParticleMediator;
@@ -92,13 +89,10 @@ export class GameContext {
         const particlePool = new ParticlePool(this.app, gameConfig);
         this.particleMediator = new ParticleMediator(particlePool, this.signalBus);
 
-        const scoreView = new ScoreView();
-        const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
+        const scoreMediator = new ScoreMediator(this.gameUi.score, this.signalBus, new LocalStorageSaveStorage());
         
-        this.app.stage.addChild(scoreView);
-        this.app.stage.addChild(this.buffStatusView);
-        this.stateView.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
-        this.app.stage.addChild(this.stateView);
+        this.gameUi.state.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
+        this.app.stage.addChild(this.gameUi);
 
         // Services
         const collisionService = new CollisionService(
@@ -113,13 +107,13 @@ export class GameContext {
 
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
             this.state = 'gameOver';
-            this.stateView.showGameOver(
+            this.gameUi.state.showGameOver(
                 this.app.screen.width,
                 this.app.screen.height,
                 scoreMediator.current,
                 scoreMediator.best,
             );
-            this.app.stage.addChild(this.stateView);
+            this.app.stage.addChild(this.gameUi);
         });
 
         //Update Loop
@@ -127,7 +121,7 @@ export class GameContext {
     }
 
     public update(delta: number = 0): void {
-        this.buffStatusView.update(
+        this.gameUi.updateBuffStatus(
             this.buffManager.rapidFireTimeRemaining,
             this.buffManager.rapidFireDuration,
         );
@@ -150,7 +144,7 @@ export class GameContext {
         this.enemyPool.clear();
         this.projectilePool.clear();
         this.state = 'playing';
-        this.stateView.hide();
+        this.gameUi.state.hide();
         this.signalBus.dispatch(GameSignals.RUN_RESTARTED);
     }
 }
