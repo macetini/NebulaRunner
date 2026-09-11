@@ -1,10 +1,10 @@
 import type { EnemyType } from './EnemyType';
 
-export type EnemyMovement = 'straight' | 'sine' | 'chase';
+export type EnemyMovementType = 'straight' | 'sine' | 'chase';
 
 export type EnemyProfile = {
     type: EnemyType;
-    movement: EnemyMovement;
+    movement: EnemyMovementType;
     color: number;
     speedMultiplier: number;
     health: number;

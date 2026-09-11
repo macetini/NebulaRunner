@@ -1,51 +1,38 @@
 import type { GameConfig } from '../core/GameConfig';
 import type { EnemyProfile } from '../views/types/EnemyProfile';
+import { EnemyMovementFactory } from './EnemyMovementFactory';
+import type { MovementPosition, MovementStrategy } from './MovementStrategy';
 
 export class EnemyMovement {
-    private profile: EnemyProfile;
-    private readonly config: GameConfig;
-    private time = 0;
-    private baseX = 0;
-
-    private positionX = 0;
-    private positionY = 0;
+    private readonly position: MovementPosition = { x: 0, y: 0 };
+    private readonly factory: EnemyMovementFactory;
+    private strategy: MovementStrategy;
 
     constructor(profile: EnemyProfile, config: GameConfig) {
-        this.profile = profile;
-        this.config = config;
+        this.factory = new EnemyMovementFactory(config);
+        this.strategy = this.factory.create(profile.movement, profile.speedMultiplier);
     }
 
     public get x(): number {
-        return this.positionX;
+        return this.position.x;
     }
 
     public get y(): number {
-        return this.positionY;
+        return this.position.y;
     }
 
     public setProfile(profile: EnemyProfile): void {
-        this.profile = profile;
-        this.time = 0;
+        this.strategy = this.factory.create(profile.movement, profile.speedMultiplier);
+        this.strategy.reset(this.position);
     }
 
     public resetPosition(x: number, y: number): void {
-        this.positionX = x;
-        this.positionY = y;
-        this.baseX = x;
-        this.time = 0;
+        this.position.x = x;
+        this.position.y = y;
+        this.strategy.reset(this.position);
     }
 
     public update(delta: number, targetX: number, speedMultiplier: number): void {
-        this.positionY += this.config.enemySpeed * delta * this.profile.speedMultiplier * speedMultiplier;
-
-        if (this.profile.movement === 'sine') {
-            this.time += this.config.enemySineOscillationSpeed * delta;
-            this.positionX = this.baseX + Math.sin(this.time) * this.config.enemySineOscillationAmplitude;
-        }
-        if (this.profile.movement === 'chase') {
-            const distance = targetX - this.positionX;
-            const chaseStep = this.config.enemyChaseSpeed * delta;
-            this.positionX += Math.sign(distance) * Math.min(Math.abs(distance), chaseStep);
-        }
+        this.strategy.update(this.position, delta, targetX, speedMultiplier);
     }
 }
