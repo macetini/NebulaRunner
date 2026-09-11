@@ -3,11 +3,13 @@ import * as PIXI from 'pixi.js';
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
 import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
 import { EnemyMediator } from '../mediators/EnemyMediator';
+import { ParticleMediator } from '../mediators/ParticleMediator';
 import { PlayerMediator } from '../mediators/PlayerMediator';
 import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
 import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import { EnemyPool } from '../pools/EnemyPool';
+import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
 import { BackgroundView } from '../views/BackgroundView';
@@ -36,6 +38,7 @@ export class GameContext {
     private readonly stateView = new GameStateView();
     private enemyPool!: EnemyPool;
     private projectilePool!: ProjectilePool;
+    private particleMediator!: ParticleMediator;
 
     constructor(
         app: PIXI.Application,
@@ -74,6 +77,10 @@ export class GameContext {
         const combatFeedbackMediator = new CombatFeedbackMediator(this.app.stage, this.signalBus);
         this.items.push(combatFeedbackMediator);
 
+        // Particle System
+        const particlePool = new ParticlePool(this.app, gameConfig);
+        this.particleMediator = new ParticleMediator(particlePool, this.signalBus);
+
         const scoreView = new ScoreView();
         const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
         
@@ -102,6 +109,7 @@ export class GameContext {
 
     public update(delta: number = 0): void {
         if (this.state !== 'playing') {
+            this.particleMediator.update(delta);
             if (this.input.consumeStartRequest()) {
                 this.startRun();
             }
@@ -111,6 +119,7 @@ export class GameContext {
         for (const item of this.items) {
             item.update(delta);
         }
+        this.particleMediator.update(delta);
     }
 
     private startRun(): void {

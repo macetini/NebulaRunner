@@ -52,6 +52,10 @@ export class EnemyView extends PIXI.Sprite {
         return this.profile.score;
     }
 
+    public get color(): number {
+        return this.profile.color;
+    }
+
     private updateGlow(color: number): void {
         this.filters = [GlowEffectFactory.createEnemy(color)];
     }

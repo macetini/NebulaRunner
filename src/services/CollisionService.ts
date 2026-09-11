@@ -64,6 +64,7 @@ export class CollisionService implements IContextItem {
                         y: enemy.y,
                         defeated: enemyDefeated,
                         score: enemy.score,
+                        color: enemy.color,
                     });
 
                     this.projectilePool.recycle(bullet, i);

@@ -14,6 +14,11 @@ export type GameConfig = {
     fireCooldown: number;
     collisionDistance: number;
     backgroundSpeed: number;
+    particleCountPerExplosion: number;
+    particleMinLifetime: number;
+    particleMaxLifetime: number;
+    particleMinSpeed: number;
+    particleMaxSpeed: number;
 };
 
 export const gameConfig: GameConfig = {
@@ -32,4 +37,9 @@ export const gameConfig: GameConfig = {
     fireCooldown: 10,
     collisionDistance: 25,
     backgroundSpeed: 3,
+    particleCountPerExplosion: 15,
+    particleMinLifetime: 15,
+    particleMaxLifetime: 35,
+    particleMinSpeed: 1.5,
+    particleMaxSpeed: 5,
 };
