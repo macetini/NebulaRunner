@@ -35,4 +35,11 @@ export class ProjectilePool {
         bullet.visible = false;
         this.activeBullets.splice(index, 1);
     }
+
+    public clear(): void {
+        for (const bullet of this.activeBullets) {
+            bullet.visible = false;
+        }
+        this.activeBullets.length = 0;
+    }
 }

@@ -54,6 +54,7 @@ To minimize "Time to Interactive" (TTI) and bundle size, all core assets are gen
     ```
 
 ## 🎮 Controls
+* **Space / Tap**: Start or restart a run
 * **A / Left Arrow**: Move Left
 * **D / Right Arrow**: Move Right
 * **Space**: Fire Projectiles

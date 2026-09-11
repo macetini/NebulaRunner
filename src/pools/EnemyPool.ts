@@ -36,4 +36,11 @@ export class EnemyPool {
         enemy.visible = false;
         this.activeEnemies.splice(index, 1);
     }
+
+    public clear(): void {
+        for (const enemy of this.activeEnemies) {
+            enemy.visible = false;
+        }
+        this.activeEnemies.length = 0;
+    }
 }

@@ -20,11 +20,10 @@ export class ScoreMediator {
                 this.incrementScore();
             });
 
-        this.signalBus.addEventListener(GameSignals
-            .PLAYER_DIED, () => {
+        this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
                 this.currentScore = 0;
                 this.view.updateScore(this.currentScore);
-            });
+        });
 
     }
 

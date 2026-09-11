@@ -15,6 +15,9 @@ import { ScoreView } from '../views/ScoreView';
 import { ScoreMediator } from '../mediators/ScoreMediator';
 import { InputController } from './InputController';
 import { gameConfig } from './GameConfig';
+import { GameSignals } from './GameSignals';
+import type { GameState } from './GameState';
+import { GameStateView } from '../views/GameStateView';
 
 
 /**
@@ -27,6 +30,10 @@ export class GameContext {
 
     private readonly signalBus: SignalBus;
     private readonly items: IContextItem[] = [];
+    private state: GameState = 'ready';
+    private readonly stateView = new GameStateView();
+    private enemyPool!: EnemyPool;
+    private projectilePool!: ProjectilePool;
 
     constructor(
         app: PIXI.Application,
@@ -42,8 +49,8 @@ export class GameContext {
         this.input = new InputController(this.app.canvas, this.app.screen.width);
 
         // Pools
-        const projectPool = new ProjectilePool(this.app);
-        const enemyPool = new EnemyPool(this.app, gameConfig);
+        this.projectilePool = new ProjectilePool(this.app);
+        this.enemyPool = new EnemyPool(this.app, gameConfig);
 
         // Mediators
         const backgroundView = new BackgroundView(this.app, gameConfig);
@@ -56,27 +63,49 @@ export class GameContext {
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
-        const enemyMediator = new EnemyMediator(this.app, enemyPool, gameConfig);
+        const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig);
         this.items.push(enemyMediator);
 
-        const projectileMediator = new ProjectileMediator(projectPool, this.signalBus, gameConfig);
+        const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
         new ScoreMediator(scoreView, this.signalBus);
         this.app.stage.addChild(scoreView);
+        this.stateView.showReady(this.app.screen.width, this.app.screen.height);
+        this.app.stage.addChild(this.stateView);
 
         // Services
-        const collisionService = new CollisionService(playerView, projectPool, enemyPool, this.signalBus, gameConfig);
+        const collisionService = new CollisionService(playerView, this.projectilePool, this.enemyPool, this.signalBus, gameConfig);
         this.items.push(collisionService);
+
+        this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
+            this.state = 'gameOver';
+            this.stateView.showGameOver(this.app.screen.width, this.app.screen.height);
+        });
 
         //Update Loop
         this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
     }
 
     public update(delta: number = 0): void {
+        if (this.state !== 'playing') {
+            if (this.input.consumeStartRequest()) {
+                this.startRun();
+            }
+            return;
+        }
+
         for (const item of this.items) {
             item.update(delta);
         }
+    }
+
+    private startRun(): void {
+        this.enemyPool.clear();
+        this.projectilePool.clear();
+        this.state = 'playing';
+        this.stateView.hide();
+        this.signalBus.dispatch(GameSignals.RUN_RESTARTED);
     }
 }

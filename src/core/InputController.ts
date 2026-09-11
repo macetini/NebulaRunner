@@ -16,6 +16,7 @@ export class InputController {
         touchX: 0,
     };
     private activePointerId: number | null = null;
+    private startRequested = false;
 
     constructor(canvas: HTMLCanvasElement, screenWidth: number) {
         this.canvas = canvas;
@@ -33,7 +34,17 @@ export class InputController {
         return this.state;
     }
 
+    public consumeStartRequest(): boolean {
+        const requested = this.startRequested;
+        this.startRequested = false;
+        return requested;
+    }
+
     private readonly handleKeyDown = (event: KeyboardEvent): void => {
+        if (event.repeat) {
+            return;
+        }
+
         if (event.code === 'ArrowLeft' || event.code === 'KeyA') {
             this.state.left = true;
         }
@@ -42,6 +53,7 @@ export class InputController {
         }
         if (event.code === 'Space') {
             this.state.fire = true;
+            this.startRequested = true;
         }
     };
 
@@ -63,6 +75,7 @@ export class InputController {
         }
 
         this.activePointerId = event.pointerId;
+        this.startRequested = true;
         this.state.touchActive = true;
         this.state.fire = true;
         this.state.touchX = this.getCanvasX(event.clientX);
