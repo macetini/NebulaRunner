@@ -20,6 +20,18 @@ export class BuffManager implements IContextItem {
             : this.config.fireCooldown;
     }
 
+    public get rapidFireActive(): boolean {
+        return this.rapidFireRemaining > 0;
+    }
+
+    public get rapidFireTimeRemaining(): number {
+        return this.rapidFireRemaining;
+    }
+
+    public get rapidFireDuration(): number {
+        return this.config.rapidFireDuration;
+    }
+
     public update(delta: number): void {
         this.rapidFireRemaining = Math.max(0, this.rapidFireRemaining - delta);
     }

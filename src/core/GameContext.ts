@@ -16,6 +16,7 @@ import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
 import { BackgroundView } from '../views/BackgroundView';
+import { BuffStatusView } from '../views/BuffStatusView';
 import { GameStateView } from '../views/GameStateView';
 import { PlayerView } from '../views/PlayerView';
 import { ScoreView } from '../views/ScoreView';
@@ -39,9 +40,11 @@ export class GameContext {
     private readonly items: IContextItem[] = [];
     private state: GameState = 'ready';
     private readonly stateView = new GameStateView();
+    private readonly buffStatusView = new BuffStatusView();
     private enemyPool!: EnemyPool;
     private projectilePool!: ProjectilePool;
     private particleMediator!: ParticleMediator;
+    private buffManager!: BuffManager;
 
     constructor(
         app: PIXI.Application,
@@ -60,7 +63,7 @@ export class GameContext {
         this.projectilePool = new ProjectilePool(this.app);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
         const buffPool = new BuffPool(this.app);
-        const buffManager = new BuffManager(gameConfig, this.signalBus);
+        this.buffManager = new BuffManager(gameConfig, this.signalBus);
 
         // Mediators
         const backgroundView = new BackgroundView(this.app, gameConfig);
@@ -69,14 +72,14 @@ export class GameContext {
         this.items.push(backgroundMediator);
 
         const playerView = new PlayerView(this.app, gameConfig);
-        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, buffManager);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, this.buffManager);
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
         const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig, playerView, this.signalBus);
         this.items.push(enemyMediator);
 
-        this.items.push(buffManager);
+        this.items.push(this.buffManager);
         this.items.push(new BuffMediator(buffPool, gameConfig, this.signalBus, this.app.screen.height));
 
         const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);
@@ -93,6 +96,7 @@ export class GameContext {
         const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
         
         this.app.stage.addChild(scoreView);
+        this.app.stage.addChild(this.buffStatusView);
         this.stateView.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
         this.app.stage.addChild(this.stateView);
 
@@ -123,6 +127,11 @@ export class GameContext {
     }
 
     public update(delta: number = 0): void {
+        this.buffStatusView.update(
+            this.buffManager.rapidFireTimeRemaining,
+            this.buffManager.rapidFireDuration,
+        );
+
         if (this.state !== 'playing') {
             this.particleMediator.update(delta);
             if (this.input.consumeStartRequest()) {
