@@ -53,6 +53,16 @@ To minimize "Time to Interactive" (TTI) and bundle size, all core assets are gen
     npm run build
     ```
 
+## Deploying to GitHub Pages
+
+Push to the `main` branch to build and deploy automatically through GitHub Actions. The first time, open the repository's **Settings > Pages** and set **Source** to **GitHub Actions**.
+
+The deployed game will be available at:
+
+```text
+https://macetini.github.io/NebulaRunner/
+```
+
 ## 🎮 Controls
 * **Space / Tap**: Start or restart a run
 * **A / Left Arrow**: Move Left
