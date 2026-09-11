@@ -1,10 +1,12 @@
 import * as PIXI from 'pixi.js';
 
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
+import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
 import { EnemyMediator } from '../mediators/EnemyMediator';
 import { PlayerMediator } from '../mediators/PlayerMediator';
 import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
+import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import { EnemyPool } from '../pools/EnemyPool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
@@ -14,12 +16,10 @@ import { PlayerView } from '../views/PlayerView';
 import { ScoreView } from '../views/ScoreView';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
-import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
-import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
 
 
 /**
