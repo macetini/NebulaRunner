@@ -72,6 +72,7 @@ export class GameContext {
 
         const scoreView = new ScoreView();
         const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
+        
         this.app.stage.addChild(scoreView);
         this.stateView.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
         this.app.stage.addChild(this.stateView);
