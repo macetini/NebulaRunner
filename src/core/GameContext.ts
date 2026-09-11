@@ -70,9 +70,9 @@ export class GameContext {
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
-        new ScoreMediator(scoreView, this.signalBus);
+        const scoreMediator = new ScoreMediator(scoreView, this.signalBus);
         this.app.stage.addChild(scoreView);
-        this.stateView.showReady(this.app.screen.width, this.app.screen.height);
+        this.stateView.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
         this.app.stage.addChild(this.stateView);
 
         // Services
@@ -81,7 +81,12 @@ export class GameContext {
 
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
             this.state = 'gameOver';
-            this.stateView.showGameOver(this.app.screen.width, this.app.screen.height);
+            this.stateView.showGameOver(
+                this.app.screen.width,
+                this.app.screen.height,
+                scoreMediator.current,
+                scoreMediator.best,
+            );
             this.app.stage.addChild(this.stateView);
         });
 
