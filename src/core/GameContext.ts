@@ -19,6 +19,7 @@ import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
+import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
 
 
 /**
@@ -69,6 +70,9 @@ export class GameContext {
 
         const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);
         this.items.push(projectileMediator);
+
+        const combatFeedbackMediator = new CombatFeedbackMediator(this.app.stage, this.signalBus);
+        this.items.push(combatFeedbackMediator);
 
         const scoreView = new ScoreView();
         const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
