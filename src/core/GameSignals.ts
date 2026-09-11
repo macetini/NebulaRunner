@@ -3,4 +3,5 @@ export const GameSignals = {
     ENEMY_DIED: 'ENEMY_DIED',
     PLAYER_DIED: 'PLAYER_DIED',
     RUN_RESTARTED: 'RUN_RESTARTED',
+    BUFF_COLLECTED: 'BUFF_COLLECTED',
 };

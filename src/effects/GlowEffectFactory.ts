@@ -28,6 +28,15 @@ export class GlowEffectFactory {
         });
     }
 
+    public static createBuff(): GlowFilter {
+        return this.create({
+            color: 0xFFEE00,
+            distance: 12,
+            outerStrength: 2,
+            innerStrength: 0.5,
+        });
+    }
+
     private static create(options: {
         color: number;
         distance: number;

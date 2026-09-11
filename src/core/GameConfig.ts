@@ -19,6 +19,10 @@ export type GameConfig = {
     particleMaxLifetime: number;
     particleMinSpeed: number;
     particleMaxSpeed: number;
+    buffDropChance: number;
+    buffFallSpeed: number;
+    rapidFireCooldown: number;
+    rapidFireDuration: number;
 };
 
 export const gameConfig: GameConfig = {
@@ -42,4 +46,8 @@ export const gameConfig: GameConfig = {
     particleMaxLifetime: 35,
     particleMinSpeed: 1.5,
     particleMaxSpeed: 5,
+    buffDropChance: 0.12,
+    buffFallSpeed: 2.5,
+    rapidFireCooldown: 4,
+    rapidFireDuration: 360,
 };

@@ -1,14 +1,14 @@
-import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
 import type { InputController } from '../core/InputController';
 import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { PlayerView } from "../views/PlayerView";
+import type { BuffManager } from '../buffs/BuffManager';
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
     private readonly input: InputController;
-    private readonly config: GameConfig;
+    private readonly buffs: BuffManager;
     private fireTimer: number = 0;
 
     private readonly signalBus: SignalBus;
@@ -16,11 +16,11 @@ export class PlayerMediator implements IContextItem {
         view: PlayerView,
         signalBus: SignalBus,
         input: InputController,
-        config: GameConfig,
+        buffs: BuffManager,
     ) {
         this.view = view;
         this.input = input;
-        this.config = config;
+        this.buffs = buffs;
 
         this.signalBus = signalBus;
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
@@ -56,7 +56,7 @@ export class PlayerMediator implements IContextItem {
                 y: this.view.y
             });
 
-            this.fireTimer = this.config.fireCooldown;
+            this.fireTimer = this.buffs.fireCooldown;
         }
     }
 }

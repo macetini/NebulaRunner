@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
+import { BuffMediator } from '../mediators/BuffMediator';
 import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
 import { EnemyMediator } from '../mediators/EnemyMediator';
 import { ParticleMediator } from '../mediators/ParticleMediator';
@@ -9,6 +10,7 @@ import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
 import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import { EnemyPool } from '../pools/EnemyPool';
+import { BuffPool } from '../pools/BuffPool';
 import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
 import { CollisionService } from '../services/CollisionService';
@@ -22,6 +24,7 @@ import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
+import { BuffManager } from '../buffs/BuffManager';
 
 
 /**
@@ -56,6 +59,8 @@ export class GameContext {
         // Pools
         this.projectilePool = new ProjectilePool(this.app);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
+        const buffPool = new BuffPool(this.app);
+        const buffManager = new BuffManager(gameConfig, this.signalBus);
 
         // Mediators
         const backgroundView = new BackgroundView(this.app, gameConfig);
@@ -64,12 +69,15 @@ export class GameContext {
         this.items.push(backgroundMediator);
 
         const playerView = new PlayerView(this.app, gameConfig);
-        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, gameConfig);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, buffManager);
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
         const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig, playerView, this.signalBus);
         this.items.push(enemyMediator);
+
+        this.items.push(buffManager);
+        this.items.push(new BuffMediator(buffPool, gameConfig, this.signalBus, this.app.screen.height));
 
         const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);
         this.items.push(projectileMediator);
@@ -89,7 +97,14 @@ export class GameContext {
         this.app.stage.addChild(this.stateView);
 
         // Services
-        const collisionService = new CollisionService(playerView, this.projectilePool, this.enemyPool, this.signalBus, gameConfig);
+        const collisionService = new CollisionService(
+            playerView,
+            this.projectilePool,
+            this.enemyPool,
+            this.signalBus,
+            gameConfig,
+            buffPool,
+        );
         this.items.push(collisionService);
 
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {

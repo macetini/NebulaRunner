@@ -7,6 +7,7 @@ import type { ProjectilePool } from "../pools/ProjectilePool";
 import type { BulletView } from "../views/BulletView";
 import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
+import type { BuffPool } from '../pools/BuffPool';
 
 /**
  * 
@@ -20,6 +21,7 @@ export class CollisionService implements IContextItem {
     private readonly enemyPool: EnemyPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
+    private readonly buffPool: BuffPool;
 
     constructor(
         player: PlayerView,
@@ -27,12 +29,14 @@ export class CollisionService implements IContextItem {
         enemyPool: EnemyPool,
         signalBus: SignalBus,
         config: GameConfig,
+        buffPool: BuffPool,
     ) {
         this.player = player;
         this.projectilePool = projectilePool;
         this.enemyPool = enemyPool;
         this.signalBus = signalBus;
         this.config = config;
+        this.buffPool = buffPool;
     }
 
     public update(): void {
@@ -40,7 +44,19 @@ export class CollisionService implements IContextItem {
         const enemies = this.enemyPool.activeEnemies;
         this.checkBulletWithEnemyCollision(bullets, enemies);
         this.checkBulletWithPlayerCollision(this.player, enemies);
+        this.checkPlayerWithBuffCollision();
 
+    }
+
+    private checkPlayerWithBuffCollision(): void {
+        const buffs = this.buffPool.activeBuffs;
+        for (let index = buffs.length - 1; index >= 0; index -= 1) {
+            const buff = buffs[index];
+            if (this.checkCollision(this.player.x, this.player.y, buff.x, buff.y)) {
+                this.buffPool.recycle(buff, index);
+                this.signalBus.dispatch(GameSignals.BUFF_COLLECTED, { type: buff.type });
+            }
+        }
     }
 
     /**
