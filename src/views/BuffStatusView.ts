@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 export class BuffStatusView extends PIXI.Container {
     private readonly panel: PIXI.Graphics;
     private readonly progress: PIXI.Graphics;
-    private readonly label: PIXI.Text;
+    private readonly titleLabel: PIXI.Text;
     private readonly timeLabel: PIXI.Text;
     private readonly panelWidth = 158;
     private readonly panelHeight = 42;
@@ -13,7 +13,7 @@ export class BuffStatusView extends PIXI.Container {
 
         this.panel = new PIXI.Graphics();
         this.progress = new PIXI.Graphics();
-        this.label = new PIXI.Text({
+        this.titleLabel = new PIXI.Text({
             text: 'RAPID FIRE',
             style: new PIXI.TextStyle({
                 fontFamily: 'Arial',
@@ -42,13 +42,13 @@ export class BuffStatusView extends PIXI.Container {
             alpha: 0.7,
             width: 1,
         });
-        this.label.x = 10;
-        this.label.y = 6;
+        this.titleLabel.x = 10;
+        this.titleLabel.y = 6;
         this.timeLabel.anchor.set(1, 0);
         this.timeLabel.x = this.panelWidth - 10;
         this.timeLabel.y = 6;
 
-        this.addChild(this.panel, this.progress, this.label, this.timeLabel);
+        this.addChild(this.panel, this.progress, this.titleLabel, this.timeLabel);
         this.x = 20;
         this.y = 92;
         this.visible = false;
