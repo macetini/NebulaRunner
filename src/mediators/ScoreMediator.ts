@@ -16,8 +16,11 @@ export class ScoreMediator {
         this.signalBus = signalBus;
 
         this.signalBus.addEventListener(GameSignals
-            .ENEMY_DIED, () => {
-                this.incrementScore();
+            .ENEMY_DIED, (event) => {
+                const score = (event as CustomEvent<{ defeated: boolean; score: number }>).detail;
+                if (score.defeated) {
+                    this.incrementScore(score.score);
+                }
             });
 
         this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
@@ -27,8 +30,8 @@ export class ScoreMediator {
 
     }
 
-    private incrementScore(): void {
-        this.currentScore += 1;
+    private incrementScore(points: number): void {
+        this.currentScore += points;
         this.view.updateScore(this.currentScore);
     }
 }

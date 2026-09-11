@@ -63,7 +63,7 @@ export class GameContext {
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
-        const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig);
+        const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig, playerView, this.signalBus);
         this.items.push(enemyMediator);
 
         const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);

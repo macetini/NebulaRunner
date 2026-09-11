@@ -58,13 +58,18 @@ export class CollisionService implements IContextItem {
                 const enemy = enemies[j];
 
                 if (this.checkCollision(bullet.x, bullet.y, enemy.x, enemy.y)) {
+                    const enemyDefeated = enemy.takeHit();
                     this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
                         x: enemy.x,
-                        y: enemy.y
+                        y: enemy.y,
+                        defeated: enemyDefeated,
+                        score: enemy.score,
                     });
 
                     this.projectilePool.recycle(bullet, i);
-                    this.enemyPool.recycle(enemy, j);
+                    if (enemyDefeated) {
+                        this.enemyPool.recycle(enemy, j);
+                    }
 
                     break;
                 }

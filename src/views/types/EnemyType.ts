@@ -1,6 +1,8 @@
 export const EnemyType = {
-    DIAGONAL: 'diagonal',
-    SINE: 'sine'
+    FAST_DIVER: 'fastDiver',
+    DRIFTER: 'drifter',
+    CHASER: 'chaser',
+    ARMORED: 'armored',
 } as const;
 
 export type EnemyType = (typeof EnemyType)[keyof typeof EnemyType];

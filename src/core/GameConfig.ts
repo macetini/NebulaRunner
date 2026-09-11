@@ -3,6 +3,8 @@ export type GameConfig = {
     enemySpeed: number;
     enemySineOscillationSpeed: number;
     enemySineOscillationAmplitude: number;
+    enemyChaseSpeed: number;
+    armoredEnemyHealth: number;
     enemySpawnInterval: number;
     projectileSpeed: number;
     fireCooldown: number;
@@ -15,6 +17,8 @@ export const gameConfig: GameConfig = {
     enemySpeed: 4,
     enemySineOscillationSpeed: 0.1,
     enemySineOscillationAmplitude: 10,
+    enemyChaseSpeed: 1.5,
+    armoredEnemyHealth: 3,
     enemySpawnInterval: 100,
     projectileSpeed: 12,
     fireCooldown: 10,

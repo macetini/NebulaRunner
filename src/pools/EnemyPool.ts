@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { EnemyView } from '../views/EnemyView';
-import { EnemyType } from '../views/types/EnemyType';
 import type { GameConfig } from '../core/GameConfig';
+import type { EnemyProfile } from '../views/types/EnemyProfile';
 
 export class EnemyPool {
     public readonly activeEnemies: EnemyView[] = [];
@@ -15,13 +15,13 @@ export class EnemyPool {
         this.config = config;
     }
 
-    public spawn(x: number, y: number, type: EnemyType): void {
+    public spawn(x: number, y: number, profile: EnemyProfile): void {
         let enemyView = this.pool.find(e => !e.visible);
 
         if (enemyView) {
-            enemyView.setType(type);
+            enemyView.setProfile(profile);
         } else {
-            enemyView = new EnemyView(this.app, type, this.config);
+            enemyView = new EnemyView(this.app, profile, this.config);
             this.pool.push(enemyView);
             this.app.stage.addChild(enemyView);
         }
