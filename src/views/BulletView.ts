@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+
 export class BulletView extends PIXI.Sprite {
     constructor(app: PIXI.Application) {
         

@@ -1,3 +1,4 @@
+import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
 import type { SignalBus } from "../core/SignalBus";
@@ -6,7 +7,6 @@ import type { ProjectilePool } from "../pools/ProjectilePool";
 import type { BulletView } from "../views/BulletView";
 import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
-import type { GameConfig } from '../core/GameConfig';
 
 /**
  * 

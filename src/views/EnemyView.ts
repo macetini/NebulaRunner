@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js';
-import type { EnemyType } from './types/EnemyType';
-import type { EnemyProfile } from './types/EnemyProfile';
+
 import type { GameConfig } from '../core/GameConfig';
 import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
 import { EnemyMovement } from '../movement/EnemyMovement';
+import type { EnemyProfile } from './types/EnemyProfile';
+import type { EnemyType } from './types/EnemyType';
 
 export class EnemyView extends PIXI.Sprite {
     private profile: EnemyProfile;

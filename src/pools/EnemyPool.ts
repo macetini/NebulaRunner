@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { EnemyView } from '../views/EnemyView';
 import type { GameConfig } from '../core/GameConfig';
+import { EnemyView } from '../views/EnemyView';
 import type { EnemyProfile } from '../views/types/EnemyProfile';
 
 export class EnemyPool {
