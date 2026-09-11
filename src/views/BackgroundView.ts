@@ -14,14 +14,10 @@ export class BackgroundView extends PIXI.Container {
 
         // Build layers from slow atmospheric detail to fast foreground stars.
         const nebulaTexture = this.generateNebulaTexture(app);
-        const nebulaView = new PIXI.Sprite(nebulaTexture);
-        nebulaView.width = app.screen.width;
-        nebulaView.height = app.screen.height;
-        this.addChild(nebulaView);
-
         const farStarsTexture = this.generateStarTexture(app, 30, 1.0, 0.45);
         const nearStarsTexture = this.generateStarTexture(app, 15, 2.0, 0.9);
 
+        this.addLayer(app, nebulaTexture, config.backgroundSpeed * 0.08);
         this.addLayer(app, farStarsTexture, config.backgroundSpeed * 0.45);
         this.addLayer(app, nearStarsTexture, config.backgroundSpeed * 1.0);
     }
@@ -52,7 +48,7 @@ export class BackgroundView extends PIXI.Container {
 
         g.rect(0, 0, width, height).fill(0x00000a);
 
-        this.drawNebulaCloud(g, width * 0.18, height * 0.16, cloudRadius, 0x16002A, 0.025, 0.16);
+        this.drawNebulaCloud(g, width * 0.22, height * 0.16, cloudRadius, 0x16002A, 0.025, 0.16);
         this.drawNebulaCloud(g, width * 0.82, height * 0.38, cloudRadius * 1.15, 0x00283A, 0.02, 0.13);
         this.drawNebulaCloud(g, width * 0.42, height * 0.7, cloudRadius * 0.75, 0x3A082E, 0.02, 0.1);
 
