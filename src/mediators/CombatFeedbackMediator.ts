@@ -8,6 +8,7 @@ type FeedbackEffect = {
     age: number;
     duration: number;
     growth: number;
+    rotationSpeed: number;
 };
 
 export class CombatFeedbackMediator implements IContextItem {
@@ -17,6 +18,7 @@ export class CombatFeedbackMediator implements IContextItem {
     constructor(stage: PIXI.Container, signalBus: SignalBus) {
         this.stage = stage;
         signalBus.addEventListener(GameSignals.ENEMY_DIED, this.handleEnemyHit);
+        signalBus.addEventListener(GameSignals.PLAYER_DIED, this.handlePlayerDeath);
     }
 
     public update(delta: number): void {
@@ -24,6 +26,7 @@ export class CombatFeedbackMediator implements IContextItem {
             const effect = this.effects[index];
             effect.age += delta;
             effect.view.scale.set(1 + effect.age * effect.growth);
+            effect.view.rotation += effect.rotationSpeed;
             effect.view.alpha = Math.max(0, 1 - effect.age / effect.duration);
 
             if (effect.age >= effect.duration) {
@@ -49,6 +52,27 @@ export class CombatFeedbackMediator implements IContextItem {
             age: 0,
             duration: defeated ? 18 : 10,
             growth: defeated ? 0.18 : 0.1,
+            rotationSpeed: defeated ? 0.08 : 0,
+        });
+    };
+
+    private readonly handlePlayerDeath = (event: Event): void => {
+        const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
+        const view = new PIXI.Graphics();
+        for (let index = 0; index < 8; index += 1) {
+            const angle = (Math.PI * 2 * index) / 8;
+            view.moveTo(Math.cos(angle) * 8, Math.sin(angle) * 8);
+            view.lineTo(Math.cos(angle) * 28, Math.sin(angle) * 28);
+        }
+        view.stroke({ width: 3, color: 0x00FFFF });
+        view.position.set(x, y);
+        this.stage.addChild(view);
+        this.effects.push({
+            view,
+            age: 0,
+            duration: 28,
+            growth: 0.1,
+            rotationSpeed: 0.12,
         });
     };
 }

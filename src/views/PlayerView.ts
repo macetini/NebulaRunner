@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../core/GameConfig';
+import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 
 export class PlayerView extends PIXI.Sprite {
     // Consts
@@ -18,6 +19,7 @@ export class PlayerView extends PIXI.Sprite {
         super(texture);
 
         this.anchor.set(0.5);
+        this.filters = [GlowEffectFactory.createPlayer()];
 
         this.x = app.screen.width * 0.5;
         this.y = app.screen.height - this.height * 2;

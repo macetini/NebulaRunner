@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import type { GameConfig } from '../core/GameConfig';
+import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
 import { EnemyMovement } from '../movement/EnemyMovement';
 import type { EnemyProfile } from './types/EnemyProfile';
@@ -23,6 +24,7 @@ export class EnemyView extends PIXI.Sprite {
         this.movement = new EnemyMovement(profile, config);
         this.visible = false;
         this.anchor.set(0.5);
+        this.updateGlow(profile.color);
     }
 
     public setProfile(profile: EnemyProfile): void {
@@ -31,6 +33,7 @@ export class EnemyView extends PIXI.Sprite {
         this.health = profile.health;
         this.movement.setProfile(profile);
         this.alpha = 1;
+        this.updateGlow(profile.color);
     }
 
     public resetPosition(x: number, y: number): void {
@@ -47,6 +50,10 @@ export class EnemyView extends PIXI.Sprite {
 
     public get score(): number {
         return this.profile.score;
+    }
+
+    private updateGlow(color: number): void {
+        this.filters = [GlowEffectFactory.createEnemy(color)];
     }
 
     public updateMovement(delta: number, targetX: number, speedMultiplier: number): void {

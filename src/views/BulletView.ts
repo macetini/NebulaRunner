@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 
 export class BulletView extends PIXI.Sprite {
     constructor(app: PIXI.Application) {
@@ -11,5 +12,6 @@ export class BulletView extends PIXI.Sprite {
         super(texture);
 
         this.anchor.set(0.5);
+        this.filters = [GlowEffectFactory.createProjectile()];
     }
 }
