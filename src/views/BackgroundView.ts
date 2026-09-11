@@ -17,16 +17,32 @@ export class BackgroundView extends PIXI.Container {
     ];
 
     private readonly layers: BackgroundLayer[] = [];
+    private readonly nebulaView: PIXI.Sprite;
+    private readonly nebulaSpeed: number;
+    private readonly nebulaBaseX: number;
+    private readonly nebulaBaseY: number;
+    private nebulaTime = 0;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         super();
+        this.mask = new PIXI.Graphics()
+            .rect(0, 0, app.screen.width, app.screen.height)
+            .fill(0xFFFFFF);
 
         // Build layers from slow atmospheric detail to fast foreground stars.
         const nebulaTexture = this.generateNebulaTexture(app);
         const farStarsTexture = this.generateStarTexture(app, 30, 1.0, 0.45);
         const nearStarsTexture = this.generateStarTexture(app, 15, 2.0, 0.9);
 
-        this.addLayer(app, nebulaTexture, config.backgroundSpeed * 0.08);
+        this.nebulaView = new PIXI.Sprite(nebulaTexture);
+        this.nebulaView.width = app.screen.width * 1.12;
+        this.nebulaView.height = app.screen.height * 1.12;
+        this.nebulaBaseX = (app.screen.width - this.nebulaView.width) * 0.5;
+        this.nebulaBaseY = (app.screen.height - this.nebulaView.height) * 0.5;
+        this.nebulaView.position.set(this.nebulaBaseX, this.nebulaBaseY);
+        this.addChild(this.nebulaView);
+        this.nebulaSpeed = config.backgroundSpeed * 0.08;
+
         this.addLayer(app, farStarsTexture, config.backgroundSpeed * 0.45);
         this.addLayer(app, nearStarsTexture, config.backgroundSpeed * 1.0);
     }
@@ -155,6 +171,10 @@ export class BackgroundView extends PIXI.Container {
      * Scrolls all active layers downwards at their respective parallax speeds.
      */
     public moveDown(delta: number): void {
+        this.nebulaTime += delta * this.nebulaSpeed * 0.01;
+        this.nebulaView.x = this.nebulaBaseX + Math.sin(this.nebulaTime) * 8;
+        this.nebulaView.y = this.nebulaBaseY + Math.cos(this.nebulaTime * 0.8) * 8;
+
         for (const layer of this.layers) {
             layer.view.tilePosition.y += layer.speed * delta;
         }
