@@ -7,6 +7,15 @@ type BackgroundLayer = {
 };
 
 export class BackgroundView extends PIXI.Container {
+    private static readonly NEBULA_COLORS = [
+        0x16002A,
+        0x00283A,
+        0x3A082E,
+        0x101F4A,
+        0x272044,
+        0x003A38,
+    ];
+
     private readonly layers: BackgroundLayer[] = [];
 
     constructor(app: PIXI.Application, config: GameConfig) {
@@ -48,9 +57,33 @@ export class BackgroundView extends PIXI.Container {
 
         g.rect(0, 0, width, height).fill(0x00000a);
 
-        this.drawNebulaCloud(g, width * 0.22, height * 0.16, cloudRadius, 0x16002A, 0.025, 0.16);
-        this.drawNebulaCloud(g, width * 0.82, height * 0.38, cloudRadius * 1.15, 0x00283A, 0.02, 0.13);
-        this.drawNebulaCloud(g, width * 0.42, height * 0.7, cloudRadius * 0.75, 0x3A082E, 0.02, 0.1);
+        this.drawNebulaCloud(
+            g,
+            this.getRandomRange(width * 0.15, width * 0.85),
+            this.getRandomRange(height * 0.1, height * 0.35),
+            this.getRandomRange(cloudRadius * 0.75, cloudRadius * 1.25),
+            this.getRandomNebulaColor(),
+            0.008,
+            0.07,
+        );
+        this.drawNebulaCloud(
+            g,
+            this.getRandomRange(width * 0.15, width * 0.85),
+            this.getRandomRange(height * 0.3, height * 0.65),
+            this.getRandomRange(cloudRadius * 0.85, cloudRadius * 1.35),
+            this.getRandomNebulaColor(),
+            0.006,
+            0.06,
+        );
+        this.drawNebulaCloud(
+            g,
+            this.getRandomRange(width * 0.15, width * 0.85),
+            this.getRandomRange(height * 0.6, height * 0.9),
+            this.getRandomRange(cloudRadius * 0.55, cloudRadius),
+            this.getRandomNebulaColor(),
+            0.006,
+            0.05,
+        );
 
         for (let index = 0; index < 26; index += 1) {
             const x = Math.random() * width;
@@ -62,6 +95,15 @@ export class BackgroundView extends PIXI.Container {
         return app.renderer.generateTexture(g);
     }
 
+    private getRandomNebulaColor(): number {
+        const colorIndex = Math.floor(Math.random() * BackgroundView.NEBULA_COLORS.length);
+        return BackgroundView.NEBULA_COLORS[colorIndex] ?? BackgroundView.NEBULA_COLORS[0];
+    }
+
+    private getRandomRange(minimum: number, maximum: number): number {
+        return minimum + Math.random() * (maximum - minimum);
+    }
+
     private drawNebulaCloud(
         graphics: PIXI.Graphics,
         centerX: number,
@@ -71,13 +113,15 @@ export class BackgroundView extends PIXI.Container {
         edgeAlpha: number,
         coreAlpha: number,
     ): void {
-        const ringCount = 8;
+        const ringCount = 20;
         for (let ring = ringCount; ring >= 1; ring -= 1) {
             const progress = ring / ringCount;
             const ringRadius = radius * progress;
-            const alpha = edgeAlpha + (coreAlpha - edgeAlpha) * (1 - progress);
+            const blend = 1 - progress;
+            const smoothBlend = blend * blend * (3 - 2 * blend);
+            const alpha = edgeAlpha + (coreAlpha - edgeAlpha) * smoothBlend;
             graphics.circle(centerX, centerY, ringRadius).fill({ color, alpha });
-            }
+        }
     }
 
     /**
