@@ -3,14 +3,13 @@ import type { EnemyType } from './types/EnemyType';
 import type { EnemyProfile } from './types/EnemyProfile';
 import type { GameConfig } from '../core/GameConfig';
 import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
+import { EnemyMovement } from '../movement/EnemyMovement';
 
 export class EnemyView extends PIXI.Sprite {
     private profile: EnemyProfile;
-    private time: number = 0;
-    private baseX: number = 0;
     private health: number;
-    private readonly config: GameConfig;
     private readonly textures: Map<EnemyType, PIXI.Texture>;
+    private readonly movement: EnemyMovement;
 
     constructor(app: PIXI.Application, profile: EnemyProfile, config: GameConfig) {
         const textures = EnemyTextureFactory.getTextures(app);
@@ -19,8 +18,8 @@ export class EnemyView extends PIXI.Sprite {
 
         this.profile = profile;
         this.health = profile.health;
-        this.config = config;
         this.textures = textures;
+        this.movement = new EnemyMovement(profile, config);
         this.visible = false;
         this.anchor.set(0.5);
     }
@@ -29,14 +28,14 @@ export class EnemyView extends PIXI.Sprite {
         this.texture = this.textures.get(profile.type)!;
         this.profile = profile;
         this.health = profile.health;
+        this.movement.setProfile(profile);
         this.alpha = 1;
     }
 
     public resetPosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
-        this.baseX = x;
-        this.time = 0;
+        this.movement.resetPosition(x, y);
     }
 
     public takeHit(): boolean {
@@ -50,16 +49,8 @@ export class EnemyView extends PIXI.Sprite {
     }
 
     public updateMovement(delta: number, targetX: number): void {
-        this.y += this.config.enemySpeed * delta * this.profile.speedMultiplier;
-
-        if (this.profile.movement === 'sine') {
-            this.time += this.config.enemySineOscillationSpeed * delta;
-            this.x = this.baseX + Math.sin(this.time) * this.config.enemySineOscillationAmplitude;
-        }
-        if (this.profile.movement === 'chase') {
-            const distance = targetX - this.x;
-            const chaseStep = this.config.enemyChaseSpeed * delta;
-            this.x += Math.sign(distance) * Math.min(Math.abs(distance), chaseStep);
-        }
+        this.movement.update(delta, targetX);
+        this.x = this.movement.x;
+        this.y = this.movement.y;
     }
 }
