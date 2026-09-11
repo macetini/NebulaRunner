@@ -82,6 +82,7 @@ export class GameContext {
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
             this.state = 'gameOver';
             this.stateView.showGameOver(this.app.screen.width, this.app.screen.height);
+            this.app.stage.addChild(this.stateView);
         });
 
         //Update Loop

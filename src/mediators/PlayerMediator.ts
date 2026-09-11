@@ -27,6 +27,7 @@ export class PlayerMediator implements IContextItem {
             this.view.visible = false;
         });
         this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
+            this.fireTimer = 0;
             this.view.resetPosition();
             this.view.visible = true;
         });
