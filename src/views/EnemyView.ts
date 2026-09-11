@@ -41,7 +41,7 @@ export class EnemyView extends PIXI.Sprite {
         g.clear().poly([15, 0, 0, 15, -15, 0, 0, -15]).fill(0xFF3333);
         EnemyView.TEXTURES.set(EnemyType.DIAGONAL, app.renderer.generateTexture(g));
         // Purple Triangle
-        g.clear().poly([15, 0, -15, -15, -15, 15]).fill(0xAA33FF);
+        g.clear().poly([0, 15, -15, -15, 15, -15]).fill(0xAA33FF);
         EnemyView.TEXTURES.set(EnemyType.SINE, app.renderer.generateTexture(g));
     }
 
