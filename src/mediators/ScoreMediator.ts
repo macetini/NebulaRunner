@@ -1,20 +1,25 @@
 import { GameSignals } from "../core/GameSignals";
 import type { SignalBus } from "../core/SignalBus";
 import type { ScoreView } from "../views/ScoreView";
+import type { SaveStorage } from '../persistence/SaveStorage';
 
 export class ScoreMediator {
+    private static readonly BEST_SCORE_KEY = 'nebula-runner:v1:best-score';
     private currentScore: number = 0;
     private bestScore: number;
 
     private readonly view: ScoreView;
     private readonly signalBus: SignalBus;
+    private readonly storage: SaveStorage;
 
     constructor(
         view: ScoreView,
-        signalBus: SignalBus
+        signalBus: SignalBus,
+        storage: SaveStorage,
     ) {
         this.view = view;
         this.signalBus = signalBus;
+        this.storage = storage;
         this.bestScore = this.loadBestScore();
         this.view.updateScore(this.currentScore, this.bestScore);
 
@@ -52,7 +57,7 @@ export class ScoreMediator {
 
     private loadBestScore(): number {
         try {
-            const storedScore = Number.parseInt(localStorage.getItem('nebula-runner-best-score') ?? '0', 10);
+            const storedScore = Number.parseInt(this.storage.get(ScoreMediator.BEST_SCORE_KEY) ?? '0', 10);
             return Number.isFinite(storedScore) && storedScore >= 0 ? storedScore : 0;
         } catch {
             return 0;
@@ -60,10 +65,6 @@ export class ScoreMediator {
     }
 
     private saveBestScore(score: number): void {
-        try {
-            localStorage.setItem('nebula-runner-best-score', score.toString());
-        } catch {
-            // Persistence is optional; the current run remains playable when storage is unavailable.
-        }
+        this.storage.set(ScoreMediator.BEST_SCORE_KEY, score.toString());
     }
 }

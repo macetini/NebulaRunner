@@ -14,6 +14,7 @@ import { PlayerView } from '../views/PlayerView';
 import { ScoreView } from '../views/ScoreView';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
+import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
@@ -70,7 +71,7 @@ export class GameContext {
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
-        const scoreMediator = new ScoreMediator(scoreView, this.signalBus);
+        const scoreMediator = new ScoreMediator(scoreView, this.signalBus, new LocalStorageSaveStorage());
         this.app.stage.addChild(scoreView);
         this.stateView.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
         this.app.stage.addChild(this.stateView);
