@@ -48,8 +48,8 @@ export class EnemyView extends PIXI.Sprite {
         return this.profile.score;
     }
 
-    public updateMovement(delta: number, targetX: number): void {
-        this.movement.update(delta, targetX);
+    public updateMovement(delta: number, targetX: number, speedMultiplier: number): void {
+        this.movement.update(delta, targetX, speedMultiplier);
         this.x = this.movement.x;
         this.y = this.movement.y;
     }

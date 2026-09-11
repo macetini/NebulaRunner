@@ -35,8 +35,8 @@ export class EnemyMovement {
         this.time = 0;
     }
 
-    public update(delta: number, targetX: number): void {
-        this.positionY += this.config.enemySpeed * delta * this.profile.speedMultiplier;
+    public update(delta: number, targetX: number, speedMultiplier: number): void {
+        this.positionY += this.config.enemySpeed * delta * this.profile.speedMultiplier * speedMultiplier;
 
         if (this.profile.movement === 'sine') {
             this.time += this.config.enemySineOscillationSpeed * delta;

@@ -33,7 +33,7 @@ export class EnemyMediator implements IContextItem {
     public update(delta: number): void {
         this.elapsedTime += delta / 60;
         this.spawnTimer += delta;
-        if (this.spawnTimer > this.config.enemySpawnInterval) {
+        if (this.spawnTimer > this.getSpawnInterval()) {
             const x = Math.random() * this.app.screen.width;
             const y = -50;
             this.pool.spawn(x, y, this.factory.createRandom(this.elapsedTime));
@@ -47,8 +47,22 @@ export class EnemyMediator implements IContextItem {
             if (enemy.y > this.app.screen.height + 50) {
                 this.pool.recycle(enemy, i);
             } else {
-                enemy.updateMovement(delta, this.player.x);
+                enemy.updateMovement(delta, this.player.x, this.getSpeedMultiplier());
             }
         }
+    }
+
+    private getSpawnInterval(): number {
+        return Math.max(
+            this.config.enemyMinimumSpawnInterval,
+            this.config.enemySpawnInterval - this.elapsedTime * this.config.enemySpawnIntervalDecreasePerSecond,
+        );
+    }
+
+    private getSpeedMultiplier(): number {
+        return 1 + Math.min(
+            this.config.enemyMaximumSpeedIncrease,
+            this.elapsedTime * this.config.enemySpeedIncreasePerSecond,
+        );
     }
 }

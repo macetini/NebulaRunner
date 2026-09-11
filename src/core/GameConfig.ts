@@ -6,6 +6,10 @@ export type GameConfig = {
     enemyChaseSpeed: number;
     armoredEnemyHealth: number;
     enemySpawnInterval: number;
+    enemyMinimumSpawnInterval: number;
+    enemySpawnIntervalDecreasePerSecond: number;
+    enemySpeedIncreasePerSecond: number;
+    enemyMaximumSpeedIncrease: number;
     projectileSpeed: number;
     fireCooldown: number;
     collisionDistance: number;
@@ -20,6 +24,10 @@ export const gameConfig: GameConfig = {
     enemyChaseSpeed: 1.5,
     armoredEnemyHealth: 3,
     enemySpawnInterval: 100,
+    enemyMinimumSpawnInterval: 35,
+    enemySpawnIntervalDecreasePerSecond: 1.5,
+    enemySpeedIncreasePerSecond: 0.02,
+    enemyMaximumSpeedIncrease: 0.75,
     projectileSpeed: 12,
     fireCooldown: 10,
     collisionDistance: 25,
