@@ -22,6 +22,11 @@ import { ScoreMediator } from '../mediators/ScoreMediator';
 export class GameContext {
     private readonly app: PIXI.Application;
     private readonly keys: Record<string, boolean> = {};
+    private readonly touch = {
+        active: false,
+        pointerId: null as number | null,
+        x: 0,
+    };
 
     private readonly signalBus: SignalBus;
     private readonly items: IContextItem[] = [];
@@ -50,14 +55,14 @@ export class GameContext {
         this.items.push(backgroundMediator);
 
         const playerView = new PlayerView(this.app);
-        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.keys);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.keys, this.touch);
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
         const enemyMediator = new EnemyMediator(this.app, enemyPool);
         this.items.push(enemyMediator);
 
-        const projectileMediator = new ProjectileMediator(projectPool, this.signalBus, this.app.screen.width);
+        const projectileMediator = new ProjectileMediator(projectPool, this.signalBus);
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
@@ -72,11 +77,43 @@ export class GameContext {
         this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
     }
 
-    private setupInput() {
+    private setupInput(): void {
         globalThis.addEventListener('keydown', (e) => {
             this.keys[e.code] = true;
         });
         globalThis.addEventListener('keyup', (e) => this.keys[e.code] = false);
+
+        this.app.canvas.addEventListener('pointerdown', (event) => {
+            if (this.touch.active) {
+                return;
+            }
+
+            this.touch.active = true;
+            this.touch.pointerId = event.pointerId;
+            this.touch.x = this.getCanvasX(event.clientX);
+        });
+        this.app.canvas.addEventListener('pointermove', (event) => {
+            if (this.touch.active && this.touch.pointerId === event.pointerId) {
+                this.touch.x = this.getCanvasX(event.clientX);
+            }
+        });
+        globalThis.addEventListener('pointerup', (event) => {
+            if (this.touch.pointerId === event.pointerId) {
+                this.touch.active = false;
+                this.touch.pointerId = null;
+            }
+        });
+        globalThis.addEventListener('pointercancel', (event) => {
+            if (this.touch.pointerId === event.pointerId) {
+                this.touch.active = false;
+                this.touch.pointerId = null;
+            }
+        });
+    }
+
+    private getCanvasX(clientX: number): number {
+        const bounds = this.app.canvas.getBoundingClientRect();
+        return ((clientX - bounds.left) / bounds.width) * this.app.screen.width;
     }
 
     public update(delta: number = 0): void {

@@ -23,8 +23,7 @@ export class EnemyPool {
             this.app.stage.addChild(enemyView);
         }
 
-        enemyView.x = x;
-        enemyView.y = y;
+        enemyView.resetPosition(x, y);
         enemyView.visible = true;
 
         this.activeEnemies.push(enemyView);

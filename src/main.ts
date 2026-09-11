@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GameContext } from './core/GameContext';
+import './style.css';
 
 class NebulaRunner {
   private readonly app: PIXI.Application;
@@ -15,6 +16,7 @@ class NebulaRunner {
       background: '#000015',
       width: 800,
       height: 600,
+      resizeTo: window,
       antialias: true
     });
     document.body.appendChild(this.app.canvas);

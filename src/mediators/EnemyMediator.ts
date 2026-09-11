@@ -20,8 +20,8 @@ export class EnemyMediator implements IContextItem {
     public update(delta: number): void {
         this.spawnTimer += delta;
         if (this.spawnTimer > this.SPAWN_INTERVAL) {
-            const x = this.app.screen.width;
-            const y = Math.random() * this.app.screen.height;
+            const x = Math.random() * this.app.screen.width;
+            const y = -50;
             const type = Math.random() > 0.5 ? EnemyType.DIAGONAL : EnemyType.SINE;
             this.pool.spawn(x, y, type);
 
@@ -31,7 +31,7 @@ export class EnemyMediator implements IContextItem {
         const enemies = this.pool.activeEnemies;
         for (let i = enemies.length - 1; i >= 0; i--) {
             const enemy = enemies[i];
-            if (enemy.x < -50) {
+            if (enemy.y > this.app.screen.height + 50) {
                 this.pool.recycle(enemy, i);
             } else {
                 enemy.updateMovement(delta);

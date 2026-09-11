@@ -10,6 +10,6 @@ export class BackgroundMediator implements IContextItem {
     }
 
     public update(delta: number): void {
-        this.view.moveLeft(delta);
+        this.view.moveDown(delta);
     }
 }

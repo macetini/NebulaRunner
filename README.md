@@ -54,6 +54,7 @@ To minimize "Time to Interactive" (TTI) and bundle size, all core assets are gen
     ```
 
 ## 🎮 Controls
-* **W / Up Arrow**: Move Up
-* **S / Down Arrow**: Move Down
-* **Space**: Fire Projectiles (Auto-fire supported)
+* **A / Left Arrow**: Move Left
+* **D / Right Arrow**: Move Right
+* **Space**: Fire Projectiles
+* **Touch / Pointer**: Drag horizontally to move and hold to fire

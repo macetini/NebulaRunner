@@ -9,6 +9,7 @@ export class EnemyView extends PIXI.Sprite {
 
     private enemyType: EnemyType;
     private time: number = 0;
+    private baseX: number = 0;
 
     constructor(app: PIXI.Application, type: EnemyType) {
         EnemyView.initStaticTextures(app);
@@ -26,6 +27,13 @@ export class EnemyView extends PIXI.Sprite {
         this.enemyType = type;
     }
 
+    public resetPosition(x: number, y: number): void {
+        this.x = x;
+        this.y = y;
+        this.baseX = x;
+        this.time = 0;
+    }
+
     private static initStaticTextures(app: PIXI.Application): void {
         if (EnemyView.TEXTURES.size > 0) return; // Already initialized
 
@@ -40,11 +48,11 @@ export class EnemyView extends PIXI.Sprite {
 
     public updateMovement(delta: number): void {
         const speedBoost: number = this.enemyType === EnemyType.DIAGONAL ? 1.5 : 1;
-        this.x -= this.SPEED * delta * speedBoost;
+        this.y += this.SPEED * delta * speedBoost;
 
         if (this.enemyType === EnemyType.SINE) {
             this.time += this.OSCILLATION_SPEED * delta;
-            this.y = this.y + Math.sin(this.time) * this.OSCILLATION_AMPLITUDE;
+            this.x = this.baseX + Math.sin(this.time) * this.OSCILLATION_AMPLITUDE;
         }
     }
 }

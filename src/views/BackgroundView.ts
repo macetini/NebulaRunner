@@ -20,7 +20,7 @@ export class BackgroundView extends PIXI.TilingSprite {
         this.anchor.set(0);
     }
 
-    public moveLeft(delta: number): void {
-        this.tilePosition.x -= this.SPEED * delta;
+    public moveDown(delta: number): void {
+        this.tilePosition.y += this.SPEED * delta;
     }
 }
