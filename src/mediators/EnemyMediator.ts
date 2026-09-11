@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
 
-import type { EnemyPool } from "../pools/EnemyPool";
-import type { IContextItem } from '../core/meta/IContextItem';
-import type { GameConfig } from '../core/GameConfig';
 import { EnemyFactory } from '../core/EnemyFactory';
-import type { PlayerView } from '../views/PlayerView';
+import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from '../core/GameSignals';
+import type { IContextItem } from '../core/meta/IContextItem';
 import type { SignalBus } from '../core/SignalBus';
+import type { EnemyPool } from "../pools/EnemyPool";
+import type { PlayerView } from '../views/PlayerView';
 
 export class EnemyMediator implements IContextItem {
     private readonly app: PIXI.Application;

@@ -1,8 +1,8 @@
+import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { ProjectilePool } from "../pools/ProjectilePool";
-import type { GameConfig } from '../core/GameConfig';
 
 export class ProjectileMediator implements IContextItem {
     private readonly pool: ProjectilePool;

@@ -1,23 +1,23 @@
 import * as PIXI from 'pixi.js';
 
-import { PlayerView } from '../views/PlayerView';
-import { PlayerMediator } from '../mediators/PlayerMediator';
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
-import { BackgroundView } from '../views/BackgroundView';
-import { ProjectileMediator } from '../mediators/ProjectileMediator';
-import { ProjectilePool } from '../pools/ProjectilePool';
-import { SignalBus } from './SignalBus';
-import { EnemyPool } from '../pools/EnemyPool';
 import { EnemyMediator } from '../mediators/EnemyMediator';
-import type { IContextItem } from './meta/IContextItem';
-import { CollisionService } from '../services/CollisionService';
-import { ScoreView } from '../views/ScoreView';
+import { PlayerMediator } from '../mediators/PlayerMediator';
+import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
-import { InputController } from './InputController';
+import { EnemyPool } from '../pools/EnemyPool';
+import { ProjectilePool } from '../pools/ProjectilePool';
+import { CollisionService } from '../services/CollisionService';
+import { BackgroundView } from '../views/BackgroundView';
+import { GameStateView } from '../views/GameStateView';
+import { PlayerView } from '../views/PlayerView';
+import { ScoreView } from '../views/ScoreView';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
-import { GameStateView } from '../views/GameStateView';
+import { InputController } from './InputController';
+import type { IContextItem } from './meta/IContextItem';
+import { SignalBus } from './SignalBus';
 
 
 /**

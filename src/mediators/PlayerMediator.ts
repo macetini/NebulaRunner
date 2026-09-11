@@ -1,9 +1,9 @@
+import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
+import type { InputController } from '../core/InputController';
 import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { PlayerView } from "../views/PlayerView";
-import type { InputController } from '../core/InputController';
-import type { GameConfig } from '../core/GameConfig';
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
