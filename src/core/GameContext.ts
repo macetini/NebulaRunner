@@ -13,6 +13,8 @@ import type { IContextItem } from './meta/IContextItem';
 import { CollisionService } from '../services/CollisionService';
 import { ScoreView } from '../views/ScoreView';
 import { ScoreMediator } from '../mediators/ScoreMediator';
+import { InputController } from './InputController';
+import { gameConfig } from './GameConfig';
 
 
 /**
@@ -21,12 +23,7 @@ import { ScoreMediator } from '../mediators/ScoreMediator';
  */
 export class GameContext {
     private readonly app: PIXI.Application;
-    private readonly keys: Record<string, boolean> = {};
-    private readonly touch = {
-        active: false,
-        pointerId: null as number | null,
-        x: 0,
-    };
+    private input!: InputController;
 
     private readonly signalBus: SignalBus;
     private readonly items: IContextItem[] = [];
@@ -42,27 +39,27 @@ export class GameContext {
      * Initializes the game.
      */
     public init(): void {
-        this.setupInput();
+        this.input = new InputController(this.app.canvas, this.app.screen.width);
 
         // Pools
         const projectPool = new ProjectilePool(this.app);
-        const enemyPool = new EnemyPool(this.app);
+        const enemyPool = new EnemyPool(this.app, gameConfig);
 
         // Mediators
-        const backgroundView = new BackgroundView(this.app);
+        const backgroundView = new BackgroundView(this.app, gameConfig);
         const backgroundMediator = new BackgroundMediator(backgroundView);
         this.app.stage.addChild(backgroundView);
         this.items.push(backgroundMediator);
 
-        const playerView = new PlayerView(this.app);
-        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.keys, this.touch);
+        const playerView = new PlayerView(this.app, gameConfig);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, gameConfig);
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 
-        const enemyMediator = new EnemyMediator(this.app, enemyPool);
+        const enemyMediator = new EnemyMediator(this.app, enemyPool, gameConfig);
         this.items.push(enemyMediator);
 
-        const projectileMediator = new ProjectileMediator(projectPool, this.signalBus);
+        const projectileMediator = new ProjectileMediator(projectPool, this.signalBus, gameConfig);
         this.items.push(projectileMediator);
 
         const scoreView = new ScoreView();
@@ -70,50 +67,11 @@ export class GameContext {
         this.app.stage.addChild(scoreView);
 
         // Services
-        const collisionService = new CollisionService(playerView, projectPool, enemyPool, this.signalBus);
+        const collisionService = new CollisionService(playerView, projectPool, enemyPool, this.signalBus, gameConfig);
         this.items.push(collisionService);
 
         //Update Loop
         this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
-    }
-
-    private setupInput(): void {
-        globalThis.addEventListener('keydown', (e) => {
-            this.keys[e.code] = true;
-        });
-        globalThis.addEventListener('keyup', (e) => this.keys[e.code] = false);
-
-        this.app.canvas.addEventListener('pointerdown', (event) => {
-            if (this.touch.active) {
-                return;
-            }
-
-            this.touch.active = true;
-            this.touch.pointerId = event.pointerId;
-            this.touch.x = this.getCanvasX(event.clientX);
-        });
-        this.app.canvas.addEventListener('pointermove', (event) => {
-            if (this.touch.active && this.touch.pointerId === event.pointerId) {
-                this.touch.x = this.getCanvasX(event.clientX);
-            }
-        });
-        globalThis.addEventListener('pointerup', (event) => {
-            if (this.touch.pointerId === event.pointerId) {
-                this.touch.active = false;
-                this.touch.pointerId = null;
-            }
-        });
-        globalThis.addEventListener('pointercancel', (event) => {
-            if (this.touch.pointerId === event.pointerId) {
-                this.touch.active = false;
-                this.touch.pointerId = null;
-            }
-        });
-    }
-
-    private getCanvasX(clientX: number): number {
-        const bounds = this.app.canvas.getBoundingClientRect();
-        return ((clientX - bounds.left) / bounds.width) * this.app.screen.width;
     }
 
     public update(delta: number = 0): void {

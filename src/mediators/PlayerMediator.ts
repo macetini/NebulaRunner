@@ -2,23 +2,25 @@ import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { PlayerView } from "../views/PlayerView";
+import type { InputController } from '../core/InputController';
+import type { GameConfig } from '../core/GameConfig';
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
-    private readonly keys: Record<string, boolean>;
-    private readonly touch: { active: boolean; x: number };
+    private readonly input: InputController;
+    private readonly config: GameConfig;
     private fireTimer: number = 0;
 
     private readonly signalBus: SignalBus;
     constructor(
         view: PlayerView,
         signalBus: SignalBus,
-        keys: Record<string, boolean>,
-        touch: { active: boolean; x: number },
+        input: InputController,
+        config: GameConfig,
     ) {
         this.view = view;
-        this.keys = keys;
-        this.touch = touch;
+        this.input = input;
+        this.config = config;
 
         this.signalBus = signalBus;
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
@@ -27,19 +29,20 @@ export class PlayerMediator implements IContextItem {
     }
 
     public update(delta: number): void {
-        if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
+        const input = this.input.current;
+        if (input.left) {
             this.view.moveLeft(delta);
         }
-        if (this.keys['ArrowRight'] || this.keys['KeyD']) {
+        if (input.right) {
             this.view.moveRight(delta);
         }
 
-        if (this.touch.active) {
-            this.view.moveToward(this.touch.x, delta);
+        if (input.touchActive) {
+            this.view.moveToward(input.touchX, delta);
         }
 
         this.fireTimer -= delta;
-        if (this.keys['Space'] || this.touch.active) {
+        if (input.fire) {
             if (this.fireTimer > 0) {
                 return;
             }
@@ -48,8 +51,7 @@ export class PlayerMediator implements IContextItem {
                 y: this.view.y
             });
 
-            this.keys['Space'] = false;
-            this.fireTimer = 10;
+            this.fireTimer = this.config.fireCooldown;
         }
     }
 }

@@ -6,6 +6,7 @@ import type { ProjectilePool } from "../pools/ProjectilePool";
 import type { BulletView } from "../views/BulletView";
 import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
+import type { GameConfig } from '../core/GameConfig';
 
 /**
  * 
@@ -14,23 +15,24 @@ import type { PlayerView } from "../views/PlayerView";
  * 
  */
 export class CollisionService implements IContextItem {
-    private readonly COLLISION_DISTANCE: number = 25;
-
     private readonly player: PlayerView;
     private readonly projectilePool: ProjectilePool;
     private readonly enemyPool: EnemyPool;
     private readonly signalBus: SignalBus;
+    private readonly config: GameConfig;
 
     constructor(
         player: PlayerView,
         projectilePool: ProjectilePool,
         enemyPool: EnemyPool,
-        signalBus: SignalBus
+        signalBus: SignalBus,
+        config: GameConfig,
     ) {
         this.player = player;
         this.projectilePool = projectilePool;
         this.enemyPool = enemyPool;
         this.signalBus = signalBus;
+        this.config = config;
     }
 
     public update(): void {
@@ -95,6 +97,6 @@ export class CollisionService implements IContextItem {
         const dx = x1 - x2;
         const dy = y1 - y2;
         // Optimization: Compare squared distance to avoid Math.sqrt()
-        return (dx * dx + dy * dy) < (this.COLLISION_DISTANCE * this.COLLISION_DISTANCE);
+        return (dx * dx + dy * dy) < (this.config.collisionDistance * this.config.collisionDistance);
     }
 }

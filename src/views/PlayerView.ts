@@ -1,13 +1,14 @@
 import * as PIXI from 'pixi.js';
+import type { GameConfig } from '../core/GameConfig';
 
 export class PlayerView extends PIXI.Sprite {
     // Consts
-    private readonly SPEED: number = 6;
     private readonly BOUND_BUFFER: number = 5;
 
     private readonly app: PIXI.Application;
+    private readonly config: GameConfig;
 
-    constructor(app: PIXI.Application) {
+    constructor(app: PIXI.Application, config: GameConfig) {
         const g = new PIXI.Graphics()
             .poly([0, -25, 15, 15, 0, 5, -15, 15])
             .fill(0x00FFFF)
@@ -22,6 +23,7 @@ export class PlayerView extends PIXI.Sprite {
         this.y = app.screen.height - this.height * 2;
 
         this.app = app;
+        this.config = config;
     }
 
     public resetPosition(): void {
@@ -57,6 +59,6 @@ export class PlayerView extends PIXI.Sprite {
     }
 
     private getMoveStep(delta: number): number {
-        return this.SPEED * delta;
+        return this.config.playerSpeed * delta;
     }
 }

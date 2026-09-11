@@ -1,23 +1,22 @@
 import * as PIXI from 'pixi.js';
 import { EnemyType } from './types/EnemyType';
+import type { GameConfig } from '../core/GameConfig';
 
 export class EnemyView extends PIXI.Sprite {
     private static readonly TEXTURES: Map<EnemyType, PIXI.Texture> = new Map();
-    private readonly SPEED: number = 4;
-    private readonly OSCILLATION_SPEED: number = 0.1;
-    private readonly OSCILLATION_AMPLITUDE: number = 10;
-
     private enemyType: EnemyType;
     private time: number = 0;
     private baseX: number = 0;
+    private readonly config: GameConfig;
 
-    constructor(app: PIXI.Application, type: EnemyType) {
+    constructor(app: PIXI.Application, type: EnemyType, config: GameConfig) {
         EnemyView.initStaticTextures(app);
 
         const texture = EnemyView.TEXTURES.get(type)!;
         super(texture);
 
         this.enemyType = type;
+        this.config = config;
         this.visible = false;
         this.anchor.set(0.5);
     }
@@ -48,11 +47,11 @@ export class EnemyView extends PIXI.Sprite {
 
     public updateMovement(delta: number): void {
         const speedBoost: number = this.enemyType === EnemyType.DIAGONAL ? 1.5 : 1;
-        this.y += this.SPEED * delta * speedBoost;
+        this.y += this.config.enemySpeed * delta * speedBoost;
 
         if (this.enemyType === EnemyType.SINE) {
-            this.time += this.OSCILLATION_SPEED * delta;
-            this.x = this.baseX + Math.sin(this.time) * this.OSCILLATION_AMPLITUDE;
+            this.time += this.config.enemySineOscillationSpeed * delta;
+            this.x = this.baseX + Math.sin(this.time) * this.config.enemySineOscillationAmplitude;
         }
     }
 }

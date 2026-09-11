@@ -1,10 +1,13 @@
 import * as PIXI from 'pixi.js';
+import type { GameConfig } from '../core/GameConfig';
 
 export class BackgroundView extends PIXI.TilingSprite {
     // Consts
-    private readonly SPEED: number = 3;
+    private readonly config: GameConfig;
 
-    constructor(app: PIXI.Application) {
+    constructor(app: PIXI.Application, config: GameConfig) {
+        super(PIXI.Texture.EMPTY);
+        this.config = config;
         const g = new PIXI.Graphics();
         g.rect(0, 0, 256, 256).fill(0x000015);
 
@@ -13,7 +16,7 @@ export class BackgroundView extends PIXI.TilingSprite {
         }
         const texture = app.renderer.generateTexture(g);
 
-        super(texture);
+        this.texture = texture;
 
         this.width = app.screen.width;
         this.height = app.screen.height;
@@ -21,6 +24,6 @@ export class BackgroundView extends PIXI.TilingSprite {
     }
 
     public moveDown(delta: number): void {
-        this.tilePosition.y += this.SPEED * delta;
+        this.tilePosition.y += this.config.backgroundSpeed * delta;
     }
 }
