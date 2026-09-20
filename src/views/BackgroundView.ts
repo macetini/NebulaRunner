@@ -72,11 +72,11 @@ void main() {
     vec3 spaceDark = vec3(0.02, 0.01, 0.05);
 
     // 3 Layers of depth-parallax stars
-    vec3 stars = renderStarLayer(uv, uOffset * 0.35, 33.0, 0.93, 24.0); // Far, dense
-    stars +=     renderStarLayer(uv, uOffset * 0.65, 20.0, 0.95, 18.0); // Mid-ground
-    stars +=     renderStarLayer(uv, uOffset,        16.0, 0.97, 12.0); // Foreground, large
+    vec3 stars =    renderStarLayer(uv, uOffset * 0.35, 33.0, 0.93, 24.0); // Far, dense
+    //stars +=      renderStarLayer(uv, uOffset * 0.65, 20.0, 0.95, 18.0); // Mid-ground
+    //stars +=      renderStarLayer(uv, uOffset,        16.0, 0.97, 12.0); // Foreground, Large
 
-    finalColor = vec4(1.0); // vec4(spaceDark + stars, 1.0);
+    finalColor = vec4(spaceDark + stars, 1.0);
 }
 `;
 
