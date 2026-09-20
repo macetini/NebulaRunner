@@ -45,9 +45,9 @@ vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float
     vec2 tileIndex = floor(st);
     vec2 tilePos = fract(st) - 0.5;
     float n = random(tileIndex);
-    vec3 color = vec3(0.0);
+    vec3 color = vec3(1.0);
 
-    if (n > threshold) {
+    /*if (n > threshold) {
         float distSq = dot(tilePos, tilePos);
         float twinkle = sin(uTime * 3.5 + n * 62.8318) * 0.5 + 0.5;
 
@@ -61,7 +61,7 @@ vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float
         float edgeMask = smoothstep(0.5, 0.1, max(abs(tilePos.x), abs(tilePos.y)));
 
         color = vec3(starIntensity * edgeMask);
-    }
+    }*/
 
     return color;
 }
