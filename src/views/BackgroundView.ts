@@ -27,7 +27,7 @@ void main() {
 `;
 
 const FILTER_FRAGMENT = `
-precision mediump float;
+precision highp float;
 
 in vec2 vTextureCoord;
 out vec4 finalColor;
