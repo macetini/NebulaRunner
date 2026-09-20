@@ -32,8 +32,8 @@ export class ScoreMediator {
             });
 
         this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
-                this.currentScore = 0;
-                this.view.updateScore(this.currentScore, this.bestScore);
+            this.currentScore = 0;
+            this.view.updateScore(this.currentScore, this.bestScore);
         });
 
     }
