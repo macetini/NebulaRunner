@@ -41,6 +41,7 @@ float random(vec2 st) {
 }
 
 vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float glowSharpness) {
+/*
     vec2 st = uv * scale + movement;
     vec2 tileIndex = floor(st);
     vec2 tilePos = fract(st) - 0.5;
@@ -62,7 +63,9 @@ vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float
 
         color = vec3(starIntensity * edgeMask);
     }
+        */
 
+    vec3 color = vec3(1.0);
     return color;
 }
 
