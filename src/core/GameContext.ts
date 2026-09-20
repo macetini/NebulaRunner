@@ -28,7 +28,7 @@ import { SignalBus } from './SignalBus';
 
 /**
  * Game context, manages game state and bootstraps the whole system.
- * 
+ *
  */
 export class GameContext {
     private readonly app: PIXI.Application;
@@ -66,6 +66,7 @@ export class GameContext {
         const backgroundView = new BackgroundView(this.app, gameConfig);
         const backgroundMediator = new BackgroundMediator(backgroundView);
         this.app.stage.addChild(backgroundView);
+        this.app.renderer.on('resize', (width, height) => backgroundView.resize(width, height));
         this.items.push(backgroundMediator);
 
         const playerView = new PlayerView(this.app, gameConfig);
@@ -90,7 +91,7 @@ export class GameContext {
         this.particleMediator = new ParticleMediator(particlePool, this.signalBus);
 
         const scoreMediator = new ScoreMediator(this.gameUi.score, this.signalBus, new LocalStorageSaveStorage());
-        
+
         this.gameUi.state.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
         this.app.stage.addChild(this.gameUi);
 

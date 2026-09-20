@@ -33,7 +33,7 @@ in vec2 vTextureCoord;
 out vec4 finalColor;
 
 uniform float uTime;
-uniform vec2 uOffset;            // Pre-calculated movement (Mouse X, Vertical Speed)
+uniform vec2 uOffset;            // Pre-calculated vertical movement
 uniform vec2 uResolutionAspect;  // Pre-calculated (width/height, 1.0)
 
 float random(vec2 st) {
@@ -86,12 +86,10 @@ export class BackgroundView extends PIXI.Container {
     private readonly backgroundSpeed: number;
 
     private nebulaTime = 0;
-    private pointerX = 0;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         super();
         this.backgroundSpeed = config.backgroundSpeed;
-        this.pointerX = app.screen.width * 0.5;
 
         this.shaderFilter = new PIXI.Filter({
             glProgram: new PIXI.GlProgram({
@@ -128,10 +126,6 @@ export class BackgroundView extends PIXI.Container {
         uniforms.uResolutionAspect = [safeWidth / safeHeight, 1.0];
     }
 
-    public updateMousePosition(x: number, _y: number): void {
-        this.pointerX = x;
-    }
-
     public moveDown(delta: number): void {
         // Wrap nebulaTime at 1000 to maintain mediump float precision over long play sessions
         this.nebulaTime = (this.nebulaTime + (delta / 60) * (this.backgroundSpeed / 3)) % 1000;
@@ -142,11 +136,10 @@ export class BackgroundView extends PIXI.Container {
         const aspectRatio = height / width;
         const portraitSpeedMultiplier = Math.max(1.0, Math.min(aspectRatio * 1.8, 3.0));
 
-        const mouseXOffset = (this.pointerX / width - 0.5) * 0.6;
         const baseVerticalSpeed = this.nebulaTime * 0.45 * portraitSpeedMultiplier;
 
         const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
         uniforms.uTime = this.nebulaTime;
-        uniforms.uOffset = [mouseXOffset, baseVerticalSpeed];
+        uniforms.uOffset = [0, baseVerticalSpeed];
     }
 }
