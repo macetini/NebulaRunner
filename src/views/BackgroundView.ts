@@ -12,7 +12,7 @@ uniform vec4 uOutputTexture;
 vec4 filterVertexPosition() {
     vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
     position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;
-    position.y = position.y * (2.0 * uOutputTexture.z / uOutputTexture.y) - uOutputTexture.z;
+    position.y = position.y * (2.0 / uOutputTexture.y) - 1.0;
     return vec4(position, 0.0, 1.0);
 }
 
@@ -27,7 +27,7 @@ void main() {
 `;
 
 const FILTER_FRAGMENT = `
-precision highp float;
+precision mediump float;
 
 in vec2 vTextureCoord;
 out vec4 finalColor;
@@ -41,7 +41,6 @@ float random(vec2 st) {
 }
 
 vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float glowSharpness) {
-/*
     vec2 st = uv * scale + movement;
     vec2 tileIndex = floor(st);
     vec2 tilePos = fract(st) - 0.5;
@@ -63,9 +62,7 @@ vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float
 
         color = vec3(starIntensity * edgeMask);
     }
-        */
 
-    vec3 color = vec3(1.0);
     return color;
 }
 
@@ -79,7 +76,7 @@ void main() {
     stars +=     renderStarLayer(uv, uOffset * 0.65, 20.0, 0.95, 18.0); // Mid-ground
     stars +=     renderStarLayer(uv, uOffset,        16.0, 0.97, 12.0); // Foreground, large
 
-    finalColor = vec4(spaceDark + stars, 1.0);
+    finalColor = vec4(1.0); // vec4(spaceDark + stars, 1.0);
 }
 `;
 
