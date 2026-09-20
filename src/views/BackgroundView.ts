@@ -1,90 +1,152 @@
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../core/GameConfig';
 
-type BackgroundLayer = {
-    view: PIXI.TilingSprite;
-    speed: number;
-};
+const FILTER_VERTEX = `
+in vec2 aPosition;
+out vec2 vTextureCoord;
+
+uniform vec4 uInputSize;
+uniform vec4 uOutputFrame;
+uniform vec4 uOutputTexture;
+
+vec4 filterVertexPosition() {
+    vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
+    position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;
+    position.y = position.y * (2.0 / uOutputTexture.y) - 1.0;
+    return vec4(position, 0.0, 1.0);
+}
+
+vec2 filterTextureCoord() {
+    return aPosition * (uOutputFrame.zw * uInputSize.zw);
+}
+
+void main() {
+    gl_Position = filterVertexPosition();
+    vTextureCoord = filterTextureCoord();
+}
+`;
+
+const FILTER_FRAGMENT = `
+precision mediump float;
+
+in vec2 vTextureCoord;
+out vec4 finalColor;
+
+uniform float uTime;
+uniform vec2 uOffset;            // Pre-calculated movement (Mouse X, Vertical Speed)
+uniform vec2 uResolutionAspect;  // Pre-calculated (width/height, 1.0)
+
+float random(vec2 st) {
+    return fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453123);
+}
+
+vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float glowSharpness) {
+    vec2 st = uv * scale + movement;
+    vec2 tileIndex = floor(st);
+    vec2 tilePos = fract(st) - 0.5;
+    float n = random(tileIndex);
+    vec3 color = vec3(0.0);
+
+    if (n > threshold) {
+        float distSq = dot(tilePos, tilePos);
+        float twinkle = sin(uTime * 3.5 + n * 62.8318) * 0.5 + 0.5;
+
+        // Core star point (using squared distance for performance)
+        float core = smoothstep(0.0036, 0.0, distSq);
+
+        // Exponential glow falloff
+        float glow = exp(-sqrt(distSq) * glowSharpness) * (0.3 + twinkle * 0.7);
+
+        float starIntensity = core * 2.0 + glow * 0.7;
+        float edgeMask = smoothstep(0.5, 0.1, max(abs(tilePos.x), abs(tilePos.y)));
+
+        color = vec3(starIntensity * edgeMask);
+    }
+
+    return color;
+}
+
+void main() {
+    vec2 uv = vTextureCoord * uResolutionAspect;
+
+    vec3 spaceDark = vec3(0.02, 0.01, 0.05);
+
+    // 3 Layers of depth-parallax stars
+    vec3 stars = renderStarLayer(uv, uOffset * 0.35, 33.0, 0.93, 24.0); // Far, dense
+    stars +=     renderStarLayer(uv, uOffset * 0.65, 20.0, 0.95, 18.0); // Mid-ground
+    stars +=     renderStarLayer(uv, uOffset,        16.0, 0.97, 12.0); // Foreground, large
+
+    finalColor = vec4(spaceDark + stars, 1.0);
+}
+`;
 
 export class BackgroundView extends PIXI.Container {
-    private static readonly NEBULA_COLORS = [
-        0x16002A,
-        0x00283A,
-        0x3A082E,
-        0x101F4A,
-        0x272044,
-        0x003A38,
-    ];
+    private readonly shaderFilter: PIXI.Filter;
+    private readonly shaderSprite: PIXI.Sprite;
+    private readonly backgroundSpeed: number;
 
-    private readonly layers: BackgroundLayer[] = [];
-    private readonly nebulaSpeed: number;
     private nebulaTime = 0;
+    private pointerX = 0;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         super();
-        this.mask = new PIXI.Graphics()
-            .rect(0, 0, app.screen.width, app.screen.height)
-            .fill(0xFFFFFF);
+        this.backgroundSpeed = config.backgroundSpeed;
+        this.pointerX = app.screen.width * 0.5;
 
-        // Build layers from slow atmospheric detail to fast foreground stars.
-        const farStarsTexture = this.generateStarTexture(app, 30, 1.0, 0.45);
-        const nearStarsTexture = this.generateStarTexture(app, 15, 2.0, 0.9);
+        this.shaderFilter = new PIXI.Filter({
+            glProgram: new PIXI.GlProgram({
+                vertex: FILTER_VERTEX,
+                fragment: FILTER_FRAGMENT,
+            }),
+            resources: {
+                shaderUniforms: {
+                    uTime: { value: 0, type: 'f32' },
+                    uOffset: { value: [0, 0], type: 'vec2<f32>' },
+                    uResolutionAspect: { value: [app.screen.width / app.screen.height, 1.0], type: 'vec2<f32>' },
+                },
+            },
+        });
 
-        this.nebulaSpeed = config.backgroundSpeed * 0.08;
-
-        this.addLayer(app, farStarsTexture, config.backgroundSpeed * 0.45);
-        this.addLayer(app, nearStarsTexture, config.backgroundSpeed * 1.0);
-    }
-
-    /**
-     * Helper to create and stack a TilingSprite layer.
-     */
-    private addLayer(app: PIXI.Application, texture: PIXI.Texture, speed: number): void {
-        const tilingSprite = new PIXI.TilingSprite({
-            texture,
+        this.shaderSprite = new PIXI.Sprite({
+            texture: PIXI.Texture.WHITE,
             width: app.screen.width,
             height: app.screen.height,
         });
-        tilingSprite.anchor.set(0);
-        this.addChild(tilingSprite);
-        this.layers.push({ view: tilingSprite, speed });
+
+        this.shaderSprite.filters = [this.shaderFilter];
+        this.addChild(this.shaderSprite);
     }
 
-    /**
-     * Generates a transparent texture scattered with procedural dots (stars).
-     */
-    private generateStarTexture(app: PIXI.Application, count: number, size: number, maxAlpha: number): PIXI.Texture {
-        const g = new PIXI.Graphics();
+    public resize(width: number, height: number): void {
+        this.shaderSprite.width = width;
+        this.shaderSprite.height = height;
 
-        // Background remains transparent
-        for (let i = 0; i < count; i++) {
-            const x = Math.random() * 256;
-            const y = Math.random() * 256;
-            const alpha = 0.2 + Math.random() * (maxAlpha - 0.2);
+        const safeWidth = width || 1;
+        const safeHeight = height || 1;
 
-            // Give stars a slight variance in color (white, pale yellow, pale blue)
-            const colorRoll = Math.random();
-            let color = 0xFFFFFF; // default white
-            if (colorRoll > 0.85) {
-                color = 0xAAEEFF; // hot blue star
-            } else if (colorRoll > 0.7) {
-                color = 0xFFFEE0; // yellow star
-            }
-
-            g.circle(x, y, size * 0.5).fill({ color, alpha });
-        }
-
-        return app.renderer.generateTexture(g);
+        const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
+        uniforms.uResolutionAspect = [safeWidth / safeHeight, 1.0];
     }
 
-    /**
-     * Scrolls all active layers downwards at their respective parallax speeds.
-     */
+    public updateMousePosition(x: number, _y: number): void {
+        this.pointerX = x;
+    }
+
     public moveDown(delta: number): void {
-        this.nebulaTime += delta * this.nebulaSpeed * 0.01;
+        // Wrap nebulaTime at 1000 to maintain mediump float precision over long play sessions
+        this.nebulaTime = (this.nebulaTime + (delta / 60) * (this.backgroundSpeed / 3)) % 1000;
 
-        for (const layer of this.layers) {
-            layer.view.tilePosition.y += layer.speed * delta;
-        }
+        const width = this.shaderSprite.width || 1;
+        const height = this.shaderSprite.height || 1;
+
+        const aspectRatio = height / width;
+        const portraitSpeedMultiplier = Math.max(1.0, Math.min(aspectRatio * 1.8, 3.0));
+
+        const mouseXOffset = (this.pointerX / width - 0.5) * 0.6;
+        const baseVerticalSpeed = this.nebulaTime * 0.45 * portraitSpeedMultiplier;
+
+        const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
+        uniforms.uTime = this.nebulaTime;
+        uniforms.uOffset = [mouseXOffset, baseVerticalSpeed];
     }
 }
