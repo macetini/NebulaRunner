@@ -7,6 +7,15 @@ import type { IContextItem } from '../core/meta/IContextItem';
 import type { SignalBus } from '../core/SignalBus';
 import type { EnemyPool } from "../pools/EnemyPool";
 import type { PlayerView } from '../views/PlayerView';
+import type { EnemyProfile } from '../views/types/EnemyProfile';
+import { EnemyType } from '../views/types/EnemyType';
+
+interface QueuedEnemy {
+    x: number;
+    y: number;
+    profile: EnemyProfile;
+    delay: number;
+}
 
 export class EnemyMediator implements IContextItem {
     private readonly app: PIXI.Application;
@@ -17,6 +26,7 @@ export class EnemyMediator implements IContextItem {
 
     private spawnTimer: number = 0;
     private elapsedTime: number = 0;
+    private readonly spawnQueue: QueuedEnemy[] = [];
 
     constructor(app: PIXI.Application, pool: EnemyPool, config: GameConfig, player: PlayerView, signalBus: SignalBus) {
         this.app = app;
@@ -27,16 +37,55 @@ export class EnemyMediator implements IContextItem {
         signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
             this.spawnTimer = 0;
             this.elapsedTime = 0;
+            this.spawnQueue.length = 0;
         });
     }
 
     public update(delta: number): void {
         this.elapsedTime += delta / 60;
+
+        // Process any queued chain segment spawns
+        for (let i = this.spawnQueue.length - 1; i >= 0; i--) {
+            const queued = this.spawnQueue[i];
+            queued.delay -= delta;
+            if (queued.delay <= 0) {
+                this.pool.spawn(queued.x, queued.y, queued.profile);
+                this.spawnQueue.splice(i, 1);
+            }
+        }
+
         this.spawnTimer += delta;
         if (this.spawnTimer > this.getSpawnInterval()) {
-            const x = Math.random() * this.app.screen.width;
+            const profile = this.factory.createRandom(this.elapsedTime);
+
+            // Constrain spawn position so wide sine oscillations don't clip off-screen
+            let x = Math.random() * this.app.screen.width;
+            if (profile.type === EnemyType.SINE_CHAIN) {
+                const chainAmplitude = this.config.enemySineOscillationAmplitude * 4.5;
+                const chainMargin = Math.min(chainAmplitude + 15, this.app.screen.width * 0.5);
+                const usableWidth = Math.max(0, this.app.screen.width - chainMargin * 2);
+                x = chainMargin + Math.random() * usableWidth;
+            }
             const y = -50;
-            this.pool.spawn(x, y, this.factory.createRandom(this.elapsedTime));
+
+            if (profile.type === EnemyType.SINE_CHAIN) {
+                // Spawn the head immediately
+                this.pool.spawn(x, y, profile);
+
+                // Queue the remaining segments to follow behind sequentially
+                const chainLength = 6;
+                const segmentDelay = 12; // frames between segment spawns
+                for (let i = 1; i < chainLength; i++) {
+                    this.spawnQueue.push({
+                        x,
+                        y,
+                        profile: { ...profile },
+                        delay: i * segmentDelay,
+                    });
+                }
+            } else {
+                this.pool.spawn(x, y, profile);
+            }
 
             this.spawnTimer = 0;
         }

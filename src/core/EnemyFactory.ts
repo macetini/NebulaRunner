@@ -15,10 +15,13 @@ export class EnemyFactory {
             this.createProfile(EnemyType.FAST_DIVER),
         ];
 
-        if (elapsedTime >= 15) {
+        if (elapsedTime >= 10) {
+            availableProfiles.push(this.createProfile(EnemyType.SINE_CHAIN));
+        }
+        if (elapsedTime >= 20) {
             availableProfiles.push(this.createProfile(EnemyType.CHASER));
         }
-        if (elapsedTime >= 30) {
+        if (elapsedTime >= 35) {
             availableProfiles.push(this.createProfile(EnemyType.ARMORED));
         }
 
@@ -28,6 +31,15 @@ export class EnemyFactory {
 
     private createProfile(type: EnemyType): EnemyProfile {
         switch (type) {
+            case EnemyType.SINE_CHAIN:
+                return {
+                    type,
+                    movement: 'sineChain',
+                    color: 0x33FF99,
+                    speedMultiplier: 1.1,
+                    health: 1,
+                    score: 3,
+                };
             case EnemyType.FAST_DIVER:
                 return {
                     type,

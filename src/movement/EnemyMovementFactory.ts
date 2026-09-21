@@ -4,6 +4,7 @@ import { ChaseMovement } from './ChaseMovement';
 import type { MovementStrategy } from './MovementStrategy';
 import { SineMovement } from './SineMovement';
 import { StraightMovement } from './StraightMovement';
+import { SineChainMovement } from './SineChainMovement';
 
 type MovementCreator = (config: GameConfig, profileSpeedMultiplier: number) => MovementStrategy;
 
@@ -12,6 +13,7 @@ export class EnemyMovementFactory {
         straight: (config, profileSpeedMultiplier) => new StraightMovement(config, profileSpeedMultiplier),
         sine: (config, profileSpeedMultiplier) => new SineMovement(config, profileSpeedMultiplier),
         chase: (config, profileSpeedMultiplier) => new ChaseMovement(config, profileSpeedMultiplier),
+        sineChain: (config, profileSpeedMultiplier) => new SineChainMovement(config, profileSpeedMultiplier),
     };
 
     private readonly config: GameConfig;

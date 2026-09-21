@@ -36,6 +36,18 @@ export class EnemyTextureFactory {
             app.renderer.generateTexture(graphics),
         );
 
+        graphics.clear()
+            .moveTo(0, -15)
+            .lineTo(12, 10)
+            .lineTo(0, 3)
+            .lineTo(-12, 10)
+            .closePath()
+            .fill(0x33FF99);
+        this.textures.set(
+            EnemyType.SINE_CHAIN,
+            app.renderer.generateTexture(graphics),
+        );
+
         return this.textures;
     }
 }
