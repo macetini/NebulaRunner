@@ -10,10 +10,10 @@ import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
 
 /**
- * 
- * Collision service, checks if the player is hit by an enemy or 
+ *
+ * Collision service, checks if the player is hit by an enemy or
  * if a bullet hits an enemy.
- * 
+ *
  */
 export class CollisionService implements IContextItem {
     private readonly player: PlayerView;
@@ -60,11 +60,11 @@ export class CollisionService implements IContextItem {
     }
 
     /**
-     * 
+     *
      * Checks if a bullet hits an enemy
-     * 
-     * @param bullets 
-     * @param enemies 
+     *
+     * @param bullets
+     * @param enemies
      */
     private checkBulletWithEnemyCollision(bullets: BulletView[], enemies: EnemyView[]): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
@@ -95,11 +95,11 @@ export class CollisionService implements IContextItem {
     }
 
     /**
-     * 
+     *
      * Checks if the player is hit by an enemy
-     * 
-     * @param player 
-     * @param enemies 
+     *
+     * @param player
+     * @param enemies
      */
     checkBulletWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
         for (let i = enemies.length - 1; i >= 0; i--) {
