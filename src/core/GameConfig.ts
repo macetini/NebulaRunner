@@ -1,5 +1,6 @@
 export type GameConfig = {
     godMode: boolean;
+    playerInitialY: number;
     playerSpeed: number;
     enemySpeed: number;
     enemySineOscillationSpeed: number;
@@ -34,6 +35,7 @@ export type GameConfig = {
 
 export const gameConfig: GameConfig = {
     godMode: true,
+    playerInitialY: 610,
     playerSpeed: 6,
     enemySpeed: 4,
     enemySineOscillationSpeed: 0.1,
