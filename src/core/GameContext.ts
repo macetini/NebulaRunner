@@ -62,15 +62,16 @@ export class GameContext {
         const buffPool = new BuffPool(this.app);
         this.buffManager = new BuffManager(gameConfig, this.signalBus);
 
+        const playerView = new PlayerView(this.app, gameConfig);
+        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, this.buffManager);
+
         // Mediators
         const backgroundView = new BackgroundView(this.app, gameConfig);
-        const backgroundMediator = new BackgroundMediator(backgroundView);
+        const backgroundMediator = new BackgroundMediator(backgroundView, () => playerView.movementSpeedMultiplierValue);
         this.app.stage.addChild(backgroundView);
         this.app.renderer.on('resize', (width, height) => backgroundView.resize(width, height));
         this.items.push(backgroundMediator);
 
-        const playerView = new PlayerView(this.app, gameConfig);
-        const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, this.buffManager);
         this.app.stage.addChild(playerView);
         this.items.push(playerMediator);
 

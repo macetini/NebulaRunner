@@ -8,6 +8,7 @@ uniform float uTime;
 uniform vec2 uOffset;            // Pre-calculated vertical movement
 uniform vec2 uResolutionAspect;  // Pre-calculated (width/height, 1.0)
 uniform vec2 uResolution;         // Render target size in pixels
+uniform float uMovementSpeed;     // Player movement speed multiplier
 uniform float uTransformProgress; // 0.0 = First star, 0.5 = Morphing, 1.0+ = Second star scrolling away
 
 // Palette: Deep Space Dark, Electric Cyan, Hot Pink, Pure Glowing White, Gold/Violet
@@ -105,9 +106,11 @@ void main() {
     centerUV.x *= uResolutionAspect.x;
 
     // 2. Parallax background starfield layers
-    vec3 stars =    renderStarLayer(uv, uOffset * 0.35f,    33.0f,  0.93f,  24.0f); // Far, dense
-    stars +=        renderStarLayer(uv, uOffset * 0.65f,    20.0f,  0.95f,  18.0f); // Mid-ground
-    stars +=        renderStarLayer(uv, uOffset,            16.0f,  0.97f,  12.0f); // Foreground, Large
+    vec2 starUV = vec2(uv.x * uResolutionAspect.x, uv.y);
+    vec2 speedOffset = uOffset;
+    vec3 stars =    renderStarLayer(starUV, speedOffset * 0.35f, 33.0f, 0.93f, 24.0f); // Far, dense
+    stars +=        renderStarLayer(starUV, speedOffset * 0.65f, 20.0f, 0.95f, 18.0f); // Mid-ground
+    stars +=        renderStarLayer(starUV, speedOffset,          16.0f, 0.97f, 12.0f); // Foreground, Large
 
     // 3. Transformation & scroll-away logic
     float time = uTime * 2.0f;
@@ -125,6 +128,8 @@ void main() {
 
     vec3 star2 = renderSecondCenterStar(star2UV, time) * star2Weight;
 
+    vec3 fullStars = star1 + star2;
+
     // 4. Final blending
-    finalColor = vec4(spaceDark + stars + star1 + star2, 1.0f);
+    finalColor = vec4(spaceDark + stars + fullStars, 1.0f);
 }

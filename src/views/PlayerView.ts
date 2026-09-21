@@ -12,6 +12,7 @@ export class PlayerView extends PIXI.Sprite {
     private readonly app: PIXI.Application;
     private readonly config: GameConfig;
     private readonly shield: PlayerShieldView;
+    private movementSpeedMultiplier = 1;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         const texture = PlayerTextureFactory.createPlayerTexture(app);
@@ -32,6 +33,10 @@ export class PlayerView extends PIXI.Sprite {
     public resetPosition(): void {
         this.x = this.app.screen.width * 0.5;
         this.y = this.config.playerInitialY;
+    }
+
+    public get movementSpeedMultiplierValue(): number {
+        return this.movementSpeedMultiplier;
     }
 
     public setShieldActive(active: boolean): void {
@@ -78,6 +83,6 @@ export class PlayerView extends PIXI.Sprite {
     }
 
     private getMoveStep(delta: number): number {
-        return this.config.playerSpeed * delta;
+        return this.config.playerSpeed * this.movementSpeedMultiplier * delta;
     }
 }

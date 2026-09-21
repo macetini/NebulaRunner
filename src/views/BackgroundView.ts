@@ -7,6 +7,7 @@ export class BackgroundView extends PIXI.Container {
     private readonly shaderFilter: PIXI.Filter;
     private readonly shaderSprite: PIXI.Sprite;
     private readonly backgroundSpeed: number;
+    private movementSpeed = 1;
 
     private nebulaTime = 0;
 
@@ -25,6 +26,7 @@ export class BackgroundView extends PIXI.Container {
                     uOffset: { value: [0, 0], type: 'vec2<f32>' },
                     uResolutionAspect: { value: [app.screen.width / app.screen.height, 1.0], type: 'vec2<f32>' },
                     uResolution: { value: [app.screen.width, app.screen.height], type: 'vec2<f32>' },
+                    uMovementSpeed: { value: 1, type: 'f32' },
                     uTransformProgress: { value: 0, type: 'f32' },
                 },
             },
@@ -67,5 +69,10 @@ export class BackgroundView extends PIXI.Container {
         const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
         uniforms.uTime = this.nebulaTime;
         uniforms.uOffset = [0, baseVerticalSpeed];
+        uniforms.uMovementSpeed = this.movementSpeed;
+    }
+
+    public setMovementSpeed(speed: number): void {
+        this.movementSpeed = Math.max(0, speed);
     }
 }
