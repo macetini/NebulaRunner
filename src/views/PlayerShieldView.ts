@@ -19,7 +19,7 @@ export class PlayerShieldView extends PIXI.Container {
             .circle(0, 0, 30)
             .fill({ color: 0x00B0FF, alpha: 0.15 });
 
-        let radius = 36;
+        let radius = 40;
 
         this.outerWave = new PIXI.Graphics()
             .circle(0, 0, radius + 4)
