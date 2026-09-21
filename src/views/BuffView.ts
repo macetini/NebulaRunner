@@ -4,6 +4,7 @@ import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 
 export class BuffView extends PIXI.Sprite {
     public readonly type: BuffType;
+    public velocityX = 0;
     public velocityY = 0;
 
     constructor(texture: PIXI.Texture, type: BuffType) {
@@ -16,11 +17,13 @@ export class BuffView extends PIXI.Sprite {
 
     public resetPosition(x: number, y: number, velocityY: number): void {
         this.position.set(x, y);
+        this.velocityX = 0;
         this.velocityY = velocityY;
         this.visible = true;
     }
 
     public update(delta: number): void {
+        this.x += this.velocityX * delta;
         this.y += this.velocityY * delta;
     }
 }
