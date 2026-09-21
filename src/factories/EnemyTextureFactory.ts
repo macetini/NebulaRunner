@@ -60,6 +60,20 @@ export class EnemyTextureFactory {
             app.renderer.generateTexture(graphics),
         );
 
+        graphics.clear()
+            .moveTo(0, 15)
+            .lineTo(15, -12)
+            .lineTo(5, -6)
+            .lineTo(0, -15)
+            .lineTo(-5, -6)
+            .lineTo(-15, -12)
+            .closePath()
+            .fill(0xFF3333);
+        this.textures.set(
+            EnemyType.STRIKER,
+            app.renderer.generateTexture(graphics),
+        );
+
         return this.textures;
     }
 }

@@ -23,6 +23,9 @@ export type GameConfig = {
     buffFallSpeed: number;
     buffMagnetRadius: number;
     buffMagnetSpeed: number;
+    enemyProjectileSpeed: number;
+    enemyShootingRange: number;
+    enemyFireCooldown: number;
     rapidFireCooldown: number;
     rapidFireDuration: number;
 };
@@ -50,8 +53,11 @@ export const gameConfig: GameConfig = {
     particleMaxSpeed: 5,
     buffDropChance: 0.12,
     buffFallSpeed: 2.5,
-    buffMagnetRadius: 350,
+    buffMagnetRadius: 250,
     buffMagnetSpeed: 10,
+    enemyProjectileSpeed: 8,
+    enemyShootingRange: 350,
+    enemyFireCooldown: 120,
     rapidFireCooldown: 4,
     rapidFireDuration: 360,
 };

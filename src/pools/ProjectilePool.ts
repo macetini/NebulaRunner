@@ -11,7 +11,7 @@ export class ProjectilePool {
         this.app = app;
     }
 
-    public spawn(x: number, y: number): void {
+    public spawn(x: number, y: number, isEnemy: boolean = false): void {
         let bulletView = this.pool.find(pooledBullet => !pooledBullet.visible);
 
         if (!bulletView) {
@@ -20,6 +20,7 @@ export class ProjectilePool {
             this.app.stage.addChild(bulletView);
         }
 
+        bulletView.setType(isEnemy);
         bulletView.x = x;
         bulletView.y = y;
         bulletView.visible = true;

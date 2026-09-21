@@ -5,7 +5,7 @@ import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
 import { EnemyMovement } from '../movement/EnemyMovement';
 import type { EnemyProfile } from './types/EnemyProfile';
-import type { EnemyType } from './types/EnemyType';
+import { EnemyType } from './types/EnemyType';
 
 export class EnemyView extends PIXI.Sprite {
     private profile: EnemyProfile;
@@ -56,6 +56,10 @@ export class EnemyView extends PIXI.Sprite {
         return this.profile.color;
     }
 
+    public get type(): EnemyType {
+        return this.profile.type;
+    }
+
     private updateGlow(color: number): void {
         this.filters = [GlowEffectFactory.createEnemy(color)];
     }
@@ -65,4 +69,5 @@ export class EnemyView extends PIXI.Sprite {
         this.x = this.movement.x;
         this.y = this.movement.y;
     }
+
 }

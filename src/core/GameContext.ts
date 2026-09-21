@@ -80,7 +80,7 @@ export class GameContext {
         this.items.push(this.buffManager);
         this.items.push(new BuffMediator(buffPool, gameConfig, this.signalBus, this.app.screen.height, playerView));
 
-        const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig);
+        const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height);
         this.items.push(projectileMediator);
 
         const combatFeedbackMediator = new CombatFeedbackMediator(this.app.stage, this.signalBus);

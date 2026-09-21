@@ -16,6 +16,7 @@ export class SpawnPatternFactory {
             [EnemyType.DRIFTER]: this.defaultPattern,
             [EnemyType.CHASER]: this.defaultPattern,
             [EnemyType.ARMORED]: this.defaultPattern,
+            [EnemyType.STRIKER]: this.defaultPattern,
             [EnemyType.SINE_CHAIN]: new SineChainSpawnPattern(),
             [EnemyType.SWARMER]: new SwarmerSpawnPattern(),
         };

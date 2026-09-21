@@ -10,9 +10,9 @@ export class GlowEffectFactory {
         });
     }
 
-    public static createProjectile(): GlowFilter {
+    public static createProjectile(color: number = 0xFFEE00): GlowFilter {
         return this.create({
-            color: 0xFFEE00,
+            color,
             distance: 8,
             outerStrength: 2,
             innerStrength: 0.5,

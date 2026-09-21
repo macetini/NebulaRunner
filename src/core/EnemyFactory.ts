@@ -24,6 +24,9 @@ export class EnemyFactory {
         if (elapsedTime >= 28) {
             availableProfiles.push(this.createProfile(EnemyType.CHASER));
         }
+        if (elapsedTime >= 34) {
+            availableProfiles.push(this.createProfile(EnemyType.STRIKER));
+        }
         if (elapsedTime >= 40) {
             availableProfiles.push(this.createProfile(EnemyType.ARMORED));
         }
@@ -69,6 +72,15 @@ export class EnemyFactory {
                     speedMultiplier: 0.8,
                     health: 1,
                     score: 3,
+                };
+            case EnemyType.STRIKER:
+                return {
+                    type,
+                    movement: 'chase',
+                    color: 0xFF3333,
+                    speedMultiplier: 0.75,
+                    health: 2,
+                    score: 6,
                 };
             case EnemyType.ARMORED:
                 return {

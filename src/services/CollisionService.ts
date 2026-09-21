@@ -44,8 +44,24 @@ export class CollisionService implements IContextItem {
         const enemies = this.enemyPool.activeEnemies;
         this.checkBulletWithEnemyCollision(bullets, enemies);
         this.checkBulletWithPlayerCollision(this.player, enemies);
+        this.checkEnemyBulletWithPlayerCollision(bullets, this.player);
         this.checkPlayerWithBuffCollision();
+    }
 
+    private checkEnemyBulletWithPlayerCollision(bullets: BulletView[], player: PlayerView): void {
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const bullet = bullets[i];
+            if (bullet.isEnemy) {
+                if (this.checkCollision(bullet.x, bullet.y, player.x, player.y)) {
+                    this.projectilePool.recycle(bullet, i);
+                    this.signalBus.dispatch(GameSignals.PLAYER_DIED, {
+                        x: player.x,
+                        y: player.y,
+                    });
+                    break;
+                }
+            }
+        }
     }
 
     private checkPlayerWithBuffCollision(): void {
@@ -69,6 +85,9 @@ export class CollisionService implements IContextItem {
     private checkBulletWithEnemyCollision(bullets: BulletView[], enemies: EnemyView[]): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
+            if (bullet.isEnemy) {
+                continue; // Enemy bullets do not damage other enemies
+            }
 
             for (let j = enemies.length - 1; j >= 0; j--) {
                 const enemy = enemies[j];
