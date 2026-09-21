@@ -29,7 +29,9 @@ export class BuffView extends PIXI.Container {
     public setType(texture: PIXI.Texture, type: BuffTypeValue): void {
         this.sprite.texture = texture;
         this.type = type;
-        const color = type === BuffType.SHIELD ? 0x55CCFF : 0xFFEE00;
+        const color = type === BuffType.SHIELD
+            ? 0x55CCFF
+            : type === BuffType.EXPLOSION ? 0xFF6633 : 0xFFEE00;
         this.filters = [GlowEffectFactory.createBuff(color)];
         this.aura.tint = color;
     }

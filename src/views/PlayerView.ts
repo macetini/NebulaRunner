@@ -26,7 +26,7 @@ export class PlayerView extends PIXI.Sprite {
         this.addChild(this.shield);
 
         this.x = app.screen.width * 0.5;
-        this.y = app.screen.height - this.height * 2;
+        this.y = app.screen.height - this.height * 4;
 
         this.app = app;
         this.config = config;
@@ -34,7 +34,7 @@ export class PlayerView extends PIXI.Sprite {
 
     public resetPosition(): void {
         this.x = this.app.screen.width * 0.5;
-        this.y = this.app.screen.height - this.height * 2;
+        this.y = this.app.screen.height - this.height * 4;
     }
 
     public setShieldActive(active: boolean): void {

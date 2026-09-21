@@ -1,4 +1,5 @@
 import type { BuffManager } from '../buffs/BuffManager';
+import { BuffType } from '../buffs/BuffType';
 import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
@@ -82,8 +83,28 @@ export class CollisionService implements IContextItem {
             if (this.checkCollision(this.player.x, this.player.y, buff.x, buff.y)) {
                 this.buffPool.recycle(buff, index);
                 this.signalBus.dispatch(GameSignals.BUFF_COLLECTED, { type: buff.type });
+                if (buff.type === BuffType.EXPLOSION) {
+                    this.triggerExplosion(buff.x, buff.y);
+                }
             }
         }
+    }
+
+    private triggerExplosion(x: number, y: number): void {
+        const enemies = this.enemyPool.activeEnemies;
+        for (let index = enemies.length - 1; index >= 0; index -= 1) {
+            const enemy = enemies[index];
+            this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
+                x: enemy.x,
+                y: enemy.y,
+                defeated: true,
+                score: enemy.score,
+                color: enemy.color,
+            });
+            this.enemyPool.recycle(enemy, index);
+        }
+
+        this.signalBus.dispatch(GameSignals.EXPLOSION_TRIGGERED, { x, y });
     }
 
     /**

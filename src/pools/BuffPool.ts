@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { generateShieldTexture } from '../factories/BuffTextureFactory';
 import { BuffType } from '../buffs/BuffType';
+import { generateExplosionTexture, generateRapidFireTexture, generateShieldTexture } from '../factories/BuffTextureFactory';
 import { BuffView } from '../views/BuffView';
 
 export class BuffPool {
@@ -11,13 +11,10 @@ export class BuffPool {
 
     constructor(app: PIXI.Application) {
         this.app = app;
-        const rapidFireGraphics = new PIXI.Graphics()
-            .circle(0, 0, 12)
-            .fill(0xFFEE00)
-            .stroke({ width: 2, color: 0xFFFFFF });
         this.textures = new Map([
-            [BuffType.RAPID_FIRE, app.renderer.generateTexture(rapidFireGraphics)],
+            [BuffType.RAPID_FIRE, generateRapidFireTexture(app)],
             [BuffType.SHIELD, generateShieldTexture(app)],
+            [BuffType.EXPLOSION, generateExplosionTexture(app)],
         ]);
     }
 

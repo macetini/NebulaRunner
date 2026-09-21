@@ -66,7 +66,10 @@ export class BuffMediator implements IContextItem {
             defeated: boolean;
         }>).detail;
         if (defeated && Math.random() < this.config.buffDropChance) {
-            const type = Math.random() < 0.5 ? BuffType.RAPID_FIRE : BuffType.SHIELD;
+            const dropRoll = Math.random();
+            const type = dropRoll < 0.34
+                ? BuffType.RAPID_FIRE
+                : dropRoll < 0.67 ? BuffType.SHIELD : BuffType.EXPLOSION;
             this.pool.spawn(x, y, this.config.buffFallSpeed, type);
         }
     };

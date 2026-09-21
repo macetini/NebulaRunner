@@ -33,7 +33,7 @@ export type GameConfig = {
 };
 
 export const gameConfig: GameConfig = {
-    godMode: false,
+    godMode: true,
     playerSpeed: 6,
     enemySpeed: 4,
     enemySineOscillationSpeed: 0.1,
