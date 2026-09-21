@@ -15,6 +15,8 @@ uniform float uTransformProgress; // 0.0 = First star, 0.5 = Morphing, 1.0+ = Se
 const vec3 spaceDark = vec3(0.02f, 0.01f, 0.05f);
 const vec3 hotPink = vec3(0.95f, 0.00f, 0.55f);
 const vec3 neonCyan = vec3(0.00f, 0.70f, 0.85f);
+const float fullStarRevealOffset = 0.8f;
+const float fullStarArrivalDistance = 0.9f;
 
 float random(vec2 st) {
     return fract(sin(dot(st, vec2(12.9898f, 78.233f))) * 43758.5453123f);
@@ -115,9 +117,16 @@ void main() {
     // 3. Transformation & scroll-away logic
     float time = uTime * 2.0f;
 
-    // First star fades out (0.0 to 0.5 progress)
-    float star1Weight = 1.0f - smoothstep(0.0f, 0.5f, uTransformProgress);
-    vec3 star1 = renderFirstCenterStar(centerUV, time) * star1Weight;
+    // Full star appears after background travel, then enters from above into center.
+    float starArrival = smoothstep(
+        fullStarRevealOffset,
+        fullStarRevealOffset + fullStarArrivalDistance,
+        uOffset.y
+    );
+    vec2 star1UV = centerUV;
+    star1UV.y -= (1.0f - starArrival) * fullStarArrivalDistance;
+    float star1Weight = starArrival * (1.0f - smoothstep(0.0f, 0.5f, uTransformProgress));
+    vec3 star1 = renderFirstCenterStar(star1UV, time) * star1Weight;
 
     // Second star fades in (0.2 to 0.7 progress) and slides downward
     float star2Weight = smoothstep(0.2f, 0.7f, uTransformProgress);
@@ -128,8 +137,8 @@ void main() {
 
     vec3 star2 = renderSecondCenterStar(star2UV, time) * star2Weight;
 
-    vec3 fullStars = star1 + star2;
+    vec3 fullStar = star1 + star2;
 
     // 4. Final blending
-    finalColor = vec4(spaceDark + stars + fullStars, 1.0f);
+    finalColor = vec4(spaceDark + stars + fullStar, 1.0f);
 }
