@@ -24,6 +24,8 @@ export class BackgroundView extends PIXI.Container {
                     uTime: { value: 0, type: 'f32' },
                     uOffset: { value: [0, 0], type: 'vec2<f32>' },
                     uResolutionAspect: { value: [app.screen.width / app.screen.height, 1.0], type: 'vec2<f32>' },
+                    uResolution: { value: [app.screen.width, app.screen.height], type: 'vec2<f32>' },
+                    uTransformProgress: { value: 0, type: 'f32' },
                 },
             },
         });
@@ -47,6 +49,7 @@ export class BackgroundView extends PIXI.Container {
 
         const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
         uniforms.uResolutionAspect = [safeWidth / safeHeight, 1.0];
+        uniforms.uResolution = [safeWidth, safeHeight];
     }
 
     public moveDown(delta: number): void {
