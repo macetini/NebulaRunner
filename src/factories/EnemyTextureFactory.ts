@@ -48,6 +48,18 @@ export class EnemyTextureFactory {
             app.renderer.generateTexture(graphics),
         );
 
+        graphics.clear()
+            .moveTo(0, -15)
+            .lineTo(10, 12)
+            .lineTo(0, 7)
+            .lineTo(-10, 12)
+            .closePath()
+            .fill(0xFF3399);
+        this.textures.set(
+            EnemyType.SWARMER,
+            app.renderer.generateTexture(graphics),
+        );
+
         return this.textures;
     }
 }

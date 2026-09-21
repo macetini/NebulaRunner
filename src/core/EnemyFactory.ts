@@ -18,10 +18,13 @@ export class EnemyFactory {
         if (elapsedTime >= 10) {
             availableProfiles.push(this.createProfile(EnemyType.SINE_CHAIN));
         }
-        if (elapsedTime >= 20) {
+        if (elapsedTime >= 18) {
+            availableProfiles.push(this.createProfile(EnemyType.SWARMER));
+        }
+        if (elapsedTime >= 28) {
             availableProfiles.push(this.createProfile(EnemyType.CHASER));
         }
-        if (elapsedTime >= 35) {
+        if (elapsedTime >= 40) {
             availableProfiles.push(this.createProfile(EnemyType.ARMORED));
         }
 
@@ -31,6 +34,15 @@ export class EnemyFactory {
 
     private createProfile(type: EnemyType): EnemyProfile {
         switch (type) {
+            case EnemyType.SWARMER:
+                return {
+                    type,
+                    movement: 'looping',
+                    color: 0xFF3399,
+                    speedMultiplier: 1.25,
+                    health: 1,
+                    score: 4,
+                };
             case EnemyType.SINE_CHAIN:
                 return {
                     type,

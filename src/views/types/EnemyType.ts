@@ -4,6 +4,7 @@ export const EnemyType = {
     CHASER: 'chaser',
     ARMORED: 'armored',
     SINE_CHAIN: 'sineChain',
+    SWARMER: 'swarmer',
 } as const;
 
 export type EnemyType = (typeof EnemyType)[keyof typeof EnemyType];

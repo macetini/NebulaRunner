@@ -58,13 +58,17 @@ export class EnemyMediator implements IContextItem {
         if (this.spawnTimer > this.getSpawnInterval()) {
             const profile = this.factory.createRandom(this.elapsedTime);
 
-            // Constrain spawn position so wide sine oscillations don't clip off-screen
+            // Constrain spawn position so wide sine oscillations or loops don't clip off-screen
             let x = Math.random() * this.app.screen.width;
             if (profile.type === EnemyType.SINE_CHAIN) {
                 const chainAmplitude = this.config.enemySineOscillationAmplitude * 4.5;
                 const chainMargin = Math.min(chainAmplitude + 15, this.app.screen.width * 0.5);
                 const usableWidth = Math.max(0, this.app.screen.width - chainMargin * 2);
                 x = chainMargin + Math.random() * usableWidth;
+            } else if (profile.type === EnemyType.SWARMER) {
+                const swarmMargin = Math.min(50, this.app.screen.width * 0.5);
+                const usableWidth = Math.max(0, this.app.screen.width - swarmMargin * 2);
+                x = swarmMargin + Math.random() * usableWidth;
             }
             const y = -50;
 
@@ -75,6 +79,21 @@ export class EnemyMediator implements IContextItem {
                 // Queue the remaining segments to follow behind sequentially
                 const chainLength = 6;
                 const segmentDelay = 12; // frames between segment spawns
+                for (let i = 1; i < chainLength; i++) {
+                    this.spawnQueue.push({
+                        x,
+                        y,
+                        profile: { ...profile },
+                        delay: i * segmentDelay,
+                    });
+                }
+            } else if (profile.type === EnemyType.SWARMER) {
+                // Spawn the head immediately
+                this.pool.spawn(x, y, profile);
+
+                // Queue up a dense swarm of 8 looping swarmers!
+                const chainLength = 8;
+                const segmentDelay = 10; // slightly denser delay to keep the swarm close-knit
                 for (let i = 1; i < chainLength; i++) {
                     this.spawnQueue.push({
                         x,
