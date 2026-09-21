@@ -43,9 +43,12 @@ export class CollisionService implements IContextItem {
         const bullets = this.projectilePool.activeBullets;
         const enemies = this.enemyPool.activeEnemies;
         this.checkBulletWithEnemyCollision(bullets, enemies);
-        this.checkBulletWithPlayerCollision(this.player, enemies);
-        this.checkEnemyBulletWithPlayerCollision(bullets, this.player);
         this.checkPlayerWithBuffCollision();
+
+        if (this.config.godMode === false) {
+            this.checkEnemyWithPlayerCollision(this.player, enemies);
+            this.checkEnemyBulletWithPlayerCollision(bullets, this.player);
+        }
     }
 
     private checkEnemyBulletWithPlayerCollision(bullets: BulletView[], player: PlayerView): void {
@@ -120,7 +123,7 @@ export class CollisionService implements IContextItem {
      * @param player
      * @param enemies
      */
-    checkBulletWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
+    checkEnemyWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
         for (let i = enemies.length - 1; i >= 0; i--) {
             const enemy = enemies[i];
             if (this.checkCollision(player.x, player.y, enemy.x, enemy.y)) {

@@ -1,4 +1,5 @@
 export type GameConfig = {
+    godMode: boolean;
     playerSpeed: number;
     enemySpeed: number;
     enemySineOscillationSpeed: number;
@@ -31,6 +32,7 @@ export type GameConfig = {
 };
 
 export const gameConfig: GameConfig = {
+    godMode: true,
     playerSpeed: 6,
     enemySpeed: 4,
     enemySineOscillationSpeed: 0.1,
@@ -53,11 +55,11 @@ export const gameConfig: GameConfig = {
     particleMaxSpeed: 5,
     buffDropChance: 0.12,
     buffFallSpeed: 2.5,
-    buffMagnetRadius: 250,
+    buffMagnetRadius: 400,
     buffMagnetSpeed: 10,
     enemyProjectileSpeed: 8,
-    enemyShootingRange: 350,
-    enemyFireCooldown: 120,
+    enemyShootingRange: 620,
+    enemyFireCooldown: 80,
     rapidFireCooldown: 4,
     rapidFireDuration: 360,
 };
