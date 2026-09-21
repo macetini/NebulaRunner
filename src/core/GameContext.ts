@@ -103,6 +103,7 @@ export class GameContext {
             this.signalBus,
             gameConfig,
             buffPool,
+            this.buffManager,
         );
         this.items.push(collisionService);
 
@@ -125,6 +126,8 @@ export class GameContext {
         this.gameUi.updateBuffStatus(
             this.buffManager.rapidFireTimeRemaining,
             this.buffManager.rapidFireDuration,
+            this.buffManager.shieldTimeRemaining,
+            this.buffManager.shieldDuration,
         );
 
         if (this.state !== 'playing') {

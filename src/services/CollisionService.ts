@@ -1,3 +1,4 @@
+import type { BuffManager } from '../buffs/BuffManager';
 import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
@@ -22,6 +23,7 @@ export class CollisionService implements IContextItem {
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
     private readonly buffPool: BuffPool;
+    private readonly buffManager: BuffManager;
 
     constructor(
         player: PlayerView,
@@ -30,6 +32,7 @@ export class CollisionService implements IContextItem {
         signalBus: SignalBus,
         config: GameConfig,
         buffPool: BuffPool,
+        buffManager: BuffManager,
     ) {
         this.player = player;
         this.projectilePool = projectilePool;
@@ -37,6 +40,7 @@ export class CollisionService implements IContextItem {
         this.signalBus = signalBus;
         this.config = config;
         this.buffPool = buffPool;
+        this.buffManager = buffManager;
     }
 
     public update(): void {
@@ -57,6 +61,10 @@ export class CollisionService implements IContextItem {
             if (bullet.isEnemy) {
                 if (this.checkCollision(bullet.x, bullet.y, player.x, player.y)) {
                     this.projectilePool.recycle(bullet, i);
+                    if (this.buffManager.consumeShield()) {
+                        this.player.triggerShieldHit();
+                        return;
+                    }
                     this.signalBus.dispatch(GameSignals.PLAYER_DIED, {
                         x: player.x,
                         y: player.y,
@@ -128,6 +136,10 @@ export class CollisionService implements IContextItem {
             const enemy = enemies[i];
             if (this.checkCollision(player.x, player.y, enemy.x, enemy.y)) {
                 this.enemyPool.recycle(enemy, i);
+                if (this.buffManager.consumeShield()) {
+                    this.player.triggerShieldHit();
+                    return;
+                }
                 this.signalBus.dispatch(GameSignals.PLAYER_DIED, {
                     x: player.x,
                     y: player.y,

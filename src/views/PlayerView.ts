@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../core/GameConfig';
 import { GlowEffectFactory } from '../effects/GlowEffectFactory';
+import { PlayerShieldView } from './PlayerShieldView';
 
 export class PlayerView extends PIXI.Sprite {
     // Consts
@@ -8,6 +9,7 @@ export class PlayerView extends PIXI.Sprite {
 
     private readonly app: PIXI.Application;
     private readonly config: GameConfig;
+    private readonly shield: PlayerShieldView;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         const g = new PIXI.Graphics()
@@ -20,6 +22,8 @@ export class PlayerView extends PIXI.Sprite {
 
         this.anchor.set(0.5);
         this.filters = [GlowEffectFactory.createPlayer()];
+        this.shield = new PlayerShieldView();
+        this.addChild(this.shield);
 
         this.x = app.screen.width * 0.5;
         this.y = app.screen.height - this.height * 2;
@@ -31,6 +35,22 @@ export class PlayerView extends PIXI.Sprite {
     public resetPosition(): void {
         this.x = this.app.screen.width * 0.5;
         this.y = this.app.screen.height - this.height * 2;
+    }
+
+    public setShieldActive(active: boolean): void {
+        this.shield.setActive(active);
+    }
+
+    public triggerShieldHit(): void {
+        this.shield.triggerHitResponse();
+    }
+
+    public updateShield(delta: number): void {
+        this.shield.update(delta);
+    }
+
+    public resetShield(): void {
+        this.shield.reset();
     }
 
     public moveLeft(delta: number): void {

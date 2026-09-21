@@ -5,20 +5,22 @@ export class BuffStatusView extends PIXI.Container {
     private readonly progress: PIXI.Graphics;
     private readonly titleLabel: PIXI.Text;
     private readonly timeLabel: PIXI.Text;
+    private readonly accentColor: number;
     private readonly panelWidth = 158;
     private readonly panelHeight = 42;
 
-    constructor() {
+    constructor(title: string, accentColor: number, y: number) {
         super();
+        this.accentColor = accentColor;
 
         this.panel = new PIXI.Graphics();
         this.progress = new PIXI.Graphics();
         this.titleLabel = new PIXI.Text({
-            text: 'RAPID FIRE',
+            text: title,
             style: new PIXI.TextStyle({
                 fontFamily: 'Arial',
                 fontSize: 14,
-                fill: 0xFFF2A6,
+                fill: accentColor,
                 fontWeight: 'bold',
             }),
         });
@@ -38,7 +40,7 @@ export class BuffStatusView extends PIXI.Container {
             alpha: 0.88,
         });
         this.panel.roundRect(1, 1, this.panelWidth - 2, this.panelHeight - 2, 7).stroke({
-            color: 0xFFE066,
+            color: accentColor,
             alpha: 0.7,
             width: 1,
         });
@@ -50,7 +52,7 @@ export class BuffStatusView extends PIXI.Container {
 
         this.addChild(this.panel, this.progress, this.titleLabel, this.timeLabel);
         this.x = 20;
-        this.y = 92;
+        this.y = y;
         this.visible = false;
     }
 
@@ -63,6 +65,6 @@ export class BuffStatusView extends PIXI.Container {
 
         this.timeLabel.text = `${(remaining / 60).toFixed(1)}s`;
         this.progress.clear();
-        this.progress.roundRect(10, 29, (this.panelWidth - 20) * progress, 5, 2).fill(0xFFE066);
+        this.progress.roundRect(10, 29, (this.panelWidth - 20) * progress, 5, 2).fill(this.accentColor);
     }
 }

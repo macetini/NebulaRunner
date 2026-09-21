@@ -7,6 +7,7 @@ import { BuffType } from './BuffType';
 export class BuffManager implements IContextItem {
     private readonly config: GameConfig;
     private rapidFireRemaining = 0;
+    private shieldRemaining = 0;
 
     constructor(config: GameConfig, signalBus: SignalBus) {
         this.config = config;
@@ -32,8 +33,30 @@ export class BuffManager implements IContextItem {
         return this.config.rapidFireDuration;
     }
 
+    public get shieldActive(): boolean {
+        return this.shieldRemaining > 0;
+    }
+
+    public get shieldTimeRemaining(): number {
+        return this.shieldRemaining;
+    }
+
+    public get shieldDuration(): number {
+        return this.config.shieldDuration;
+    }
+
     public update(delta: number): void {
         this.rapidFireRemaining = Math.max(0, this.rapidFireRemaining - delta);
+        this.shieldRemaining = Math.max(0, this.shieldRemaining - delta);
+    }
+
+    public consumeShield(): boolean {
+        if (!this.shieldActive) {
+            return false;
+        }
+
+        this.shieldRemaining = 0;
+        return true;
     }
 
     private readonly handleBuffCollected = (event: Event): void => {
@@ -41,9 +64,13 @@ export class BuffManager implements IContextItem {
         if (type === BuffType.RAPID_FIRE) {
             this.rapidFireRemaining = this.config.rapidFireDuration;
         }
+        if (type === BuffType.SHIELD) {
+            this.shieldRemaining = this.config.shieldDuration;
+        }
     };
 
     private readonly reset = (): void => {
         this.rapidFireRemaining = 0;
+        this.shieldRemaining = 0;
     };
 }

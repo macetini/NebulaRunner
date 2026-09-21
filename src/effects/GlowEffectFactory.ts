@@ -28,9 +28,9 @@ export class GlowEffectFactory {
         });
     }
 
-    public static createBuff(): GlowFilter {
+    public static createBuff(color: number = 0xFFEE00): GlowFilter {
         return this.create({
-            color: 0xFFEE00,
+            color,
             distance: 12,
             outerStrength: 2,
             innerStrength: 0.5,

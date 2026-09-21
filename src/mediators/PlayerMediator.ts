@@ -29,11 +29,14 @@ export class PlayerMediator implements IContextItem {
         this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
             this.fireTimer = 0;
             this.view.resetPosition();
+            this.view.resetShield();
             this.view.visible = true;
         });
     }
 
     public update(delta: number): void {
+        this.view.setShieldActive(this.buffs.shieldActive);
+        this.view.updateShield(delta);
         const input = this.input.current;
         if (input.left) {
             this.view.moveLeft(delta);

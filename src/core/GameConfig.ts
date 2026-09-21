@@ -29,10 +29,11 @@ export type GameConfig = {
     enemyFireCooldown: number;
     rapidFireCooldown: number;
     rapidFireDuration: number;
+    shieldDuration: number;
 };
 
 export const gameConfig: GameConfig = {
-    godMode: true,
+    godMode: false,
     playerSpeed: 6,
     enemySpeed: 4,
     enemySineOscillationSpeed: 0.1,
@@ -62,4 +63,5 @@ export const gameConfig: GameConfig = {
     enemyFireCooldown: 80,
     rapidFireCooldown: 4,
     rapidFireDuration: 360,
+    shieldDuration: 600,
 };

@@ -4,6 +4,7 @@ import type { IContextItem } from '../core/meta/IContextItem';
 import type { SignalBus } from '../core/SignalBus';
 import type { BuffPool } from '../pools/BuffPool';
 import type { PlayerView } from '../views/PlayerView';
+import { BuffType } from '../buffs/BuffType';
 
 export class BuffMediator implements IContextItem {
     private readonly pool: BuffPool;
@@ -65,7 +66,8 @@ export class BuffMediator implements IContextItem {
             defeated: boolean;
         }>).detail;
         if (defeated && Math.random() < this.config.buffDropChance) {
-            this.pool.spawn(x, y, this.config.buffFallSpeed);
+            const type = Math.random() < 0.5 ? BuffType.RAPID_FIRE : BuffType.SHIELD;
+            this.pool.spawn(x, y, this.config.buffFallSpeed, type);
         }
     };
 
