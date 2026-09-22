@@ -50,8 +50,10 @@ export class CollisionService implements IContextItem {
         this.checkBulletWithEnemyCollision(bullets, enemies);
         this.checkPlayerWithBuffCollision();
 
-        if (this.config.godMode === false) {
+        if (this.config.godMode === false || this.player.boostActive) {
             this.checkEnemyWithPlayerCollision(this.player, enemies);
+        }
+        if (this.config.godMode === false) {
             this.checkEnemyBulletWithPlayerCollision(bullets, this.player);
         }
     }
@@ -62,6 +64,9 @@ export class CollisionService implements IContextItem {
             if (bullet.isEnemy) {
                 if (this.checkCollision(bullet.x, bullet.y, player.x, player.y)) {
                     this.projectilePool.recycle(bullet, i);
+                    if (player.boostActive) {
+                        continue;
+                    }
                     if (this.buffManager.consumeShield()) {
                         this.player.triggerShieldHit();
                         return;
@@ -156,6 +161,17 @@ export class CollisionService implements IContextItem {
         for (let i = enemies.length - 1; i >= 0; i--) {
             const enemy = enemies[i];
             if (this.checkCollision(player.x, player.y, enemy.x, enemy.y)) {
+                if (player.boostActive) {
+                    this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
+                        x: enemy.x,
+                        y: enemy.y,
+                        defeated: true,
+                        score: enemy.score,
+                        color: enemy.color,
+                    });
+                    this.enemyPool.recycle(enemy, i);
+                    continue;
+                }
                 this.enemyPool.recycle(enemy, i);
                 if (this.buffManager.consumeShield()) {
                     this.player.triggerShieldHit();

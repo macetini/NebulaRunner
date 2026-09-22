@@ -3,6 +3,10 @@ export type GameConfig = {
     showPerformanceStats: boolean;
     playerInitialY: number;
     playerSpeed: number;
+    boostDuration: number;
+    boostCooldown: number;
+    boostDistance: number;
+    boostSpeedMultiplier: number;
     enemySpeed: number;
     enemySineOscillationSpeed: number;
     enemySineOscillationAmplitude: number;
@@ -50,6 +54,10 @@ export const gameConfig: GameConfig = {
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
+    boostDuration: 36,
+    boostCooldown: 240,
+    boostDistance: 140,
+    boostSpeedMultiplier: 2.5,
 
     // Enemy Settings
     enemySpeed: 4,

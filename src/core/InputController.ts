@@ -16,7 +16,9 @@ export class InputController {
         touchX: 0,
     };
     private activePointerId: number | null = null;
+    private pointerStartY = 0;
     private startRequested = false;
+    private boostRequested = false;
 
     constructor(canvas: HTMLCanvasElement, screenWidth: number) {
         this.canvas = canvas;
@@ -40,6 +42,12 @@ export class InputController {
         return requested;
     }
 
+    public consumeBoostRequest(): boolean {
+        const requested = this.boostRequested;
+        this.boostRequested = false;
+        return requested;
+    }
+
     private readonly handleKeyDown = (event: KeyboardEvent): void => {
         if (event.repeat) {
             return;
@@ -54,6 +62,9 @@ export class InputController {
         if (event.code === 'Space') {
             this.state.fire = true;
             this.startRequested = true;
+        }
+        if (event.code === 'ArrowUp' || event.code === 'KeyW') {
+            this.boostRequested = true;
         }
     };
 
@@ -75,6 +86,7 @@ export class InputController {
         }
 
         this.activePointerId = event.pointerId;
+        this.pointerStartY = event.clientY;
         this.startRequested = true;
         this.state.touchActive = true;
         this.state.fire = true;
@@ -84,6 +96,9 @@ export class InputController {
     private readonly handlePointerMove = (event: PointerEvent): void => {
         if (this.activePointerId === event.pointerId) {
             this.state.touchX = this.getCanvasX(event.clientX);
+            if (this.pointerStartY - event.clientY >= 48) {
+                this.boostRequested = true;
+            }
         }
     };
 
@@ -93,6 +108,7 @@ export class InputController {
         }
 
         this.activePointerId = null;
+        this.pointerStartY = 0;
         this.state.touchActive = false;
         this.state.fire = false;
     };

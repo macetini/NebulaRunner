@@ -37,6 +37,10 @@ export class PlayerMediator implements IContextItem {
     public update(delta: number): void {
         this.view.setShieldActive(this.buffs.shieldActive);
         this.view.updateShield(delta);
+        this.view.updateBoost(delta);
+        if (this.input.consumeBoostRequest()) {
+            this.view.tryBoost();
+        }
         const input = this.input.current;
         if (input.left) {
             this.view.moveLeft(delta);
