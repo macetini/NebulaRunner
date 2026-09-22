@@ -1,10 +1,10 @@
+import { BuffType } from '../buffs/BuffType';
 import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from '../core/GameSignals';
 import type { IContextItem } from '../core/meta/IContextItem';
 import type { SignalBus } from '../core/SignalBus';
 import type { BuffPool } from '../pools/BuffPool';
 import type { PlayerView } from '../views/PlayerView';
-import { BuffType } from '../buffs/BuffType';
 
 export class BuffMediator implements IContextItem {
     private readonly pool: BuffPool;

@@ -20,10 +20,10 @@ export class SineChainMovement implements MovementStrategy {
     public update(position: MovementPosition, delta: number, _targetX: number, speedMultiplier: number): void {
         // Move down with speed
         position.y += this.config.enemySpeed * delta * this.profileSpeedMultiplier * speedMultiplier;
-        
+
         // Slightly faster oscillation than standard sine to make the wave nice and curly
         this.time += this.config.enemySineOscillationSpeed * delta * 1.5;
-        
+
         // Wider amplitude so that the chain snaking looks distinct and dramatic
         position.x = this.baseX + Math.sin(this.time) * (this.config.enemySineOscillationAmplitude * 4.5);
     }
