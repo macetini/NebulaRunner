@@ -1,5 +1,6 @@
 export type GameConfig = {
     godMode: boolean;
+    showPerformanceStats: boolean;
     playerInitialY: number;
     playerSpeed: number;
     enemySpeed: number;
@@ -44,6 +45,7 @@ export type GameConfig = {
 export const gameConfig: GameConfig = {
     // Dev
     godMode: true,
+    showPerformanceStats: true,
 
     // Player Settings
     playerInitialY: 610,

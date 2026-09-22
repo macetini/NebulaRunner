@@ -37,7 +37,7 @@ export class GameContext {
     private readonly signalBus: SignalBus;
     private readonly items: IContextItem[] = [];
     private state: GameState = 'ready';
-    private readonly gameUi = new GameUi();
+    private readonly gameUi = new GameUi(gameConfig.showPerformanceStats);
     private enemyPool!: EnemyPool;
     private projectilePool!: ProjectilePool;
     private particleMediator!: ParticleMediator;
@@ -125,6 +125,7 @@ export class GameContext {
     }
 
     public update(delta: number = 0): void {
+        this.gameUi.updatePerformanceStats(this.app.ticker.FPS, delta, this.app.screen.width);
         this.gameUi.updateBuffStatus(
             this.buffManager.rapidFireTimeRemaining,
             this.buffManager.rapidFireDuration,
