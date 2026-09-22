@@ -7,17 +7,17 @@ out vec4 finalColor;
 uniform float uTime;
 uniform vec2 uOffset;            // Pre-calculated vertical movement
 uniform vec2 uResolutionAspect;  // Pre-calculated (width/height, 1.0)
-uniform vec2 uResolution;         // Render target size in pixels
+uniform vec2 uResolution;        // Render target size in pixels
 uniform float uMovementSpeed;     // Player movement speed multiplier
-uniform float uTransformProgress; // 0.0 = First star, 0.5 = Morphing, 1.0+ = Second star scrolling away
+uniform float uStarAppearDistance;
+uniform float uStarLeaveDistance;
+uniform float uStarTravelDistance;
+uniform float uStarTransformDistance;
 
 // Palette: Deep Space Dark, Electric Cyan, Hot Pink, Pure Glowing White, Gold/Violet
 const vec3 spaceDark = vec3(0.02f, 0.01f, 0.05f);
-const vec3 hotPink = vec3(0.95f, 0.00f, 0.55f);
-const vec3 neonCyan = vec3(0.00f, 0.70f, 0.85f);
-const float fullStarRevealOffset = 0.8f;
-const float fullStarArrivalDistance = 0.9f;
-
+const vec3 hotPink   = vec3(0.95f, 0.00f, 0.55f);
+const vec3 neonCyan  = vec3(0.00f, 0.70f, 0.85f);
 float random(vec2 st) {
     return fract(sin(dot(st, vec2(12.9898f, 78.233f))) * 43758.5453123f);
 }
@@ -46,6 +46,51 @@ vec3 renderStarLayer(vec2 uv, vec2 movement, float scale, float threshold, float
     }
 
     return color;
+}
+
+// Soft, distinct background energy sparks (previews the main star without looking like interactive pickups)
+vec3 renderPulsarPreviews(vec2 starUV, vec2 vScroll, float distanceTraveled) {
+    // Lower threshold so they show up earlier during testing
+    float distanceThreshold = 2.0f;
+    if (distanceTraveled < distanceThreshold) {
+        return vec3(0.0f);
+    }
+
+    // Grid scale for distribution
+    vec2 st = starUV * 2.0f + vScroll * 0.35f;
+    vec2 tileIndex = floor(st);
+    vec2 tilePos   = fract(st) - 0.5f;
+
+    float n = random(tileIndex + 42.17f);
+    vec3 result = vec3(0.0f);
+
+    // Spawn chance (25% of grid cells)
+    if (n > 0.75f) {
+        vec2 starOffset = vec2(random(tileIndex + 3.1f) - 0.5f, random(tileIndex + 4.2f) - 0.5f) * 0.4f;
+        vec2 localUV = tilePos - starOffset;
+
+        float distSq = dot(localUV, localUV);
+        float dist = sqrt(distSq);
+        float localTime = uTime * 2.5f + n * 31.4f;
+
+        // Small, crisp core point (so it reads as a star, not a blob)
+        float core = smoothstep(0.001f, 0.0f, distSq);
+
+        // Soft aura glow surrounding the star
+        float pulse = 0.5f + 0.5f * sin(localTime * 3.0f);
+        float softGlow = exp(-dist * 22.0f) * (0.4f + pulse * 0.3f);
+
+        vec3 colCore = vec3(1.0f, 1.0f, 1.0f);
+        vec3 colGlow = mix(neonCyan, hotPink, pulse);
+
+        // Blended background energy
+        vec3 miniStarCol = colCore * core * 1.5f + colGlow * softGlow * 0.7f;
+
+        float fadeIn = smoothstep(distanceThreshold, distanceThreshold + 5.0f, distanceTraveled);
+        result = miniStarCol * fadeIn;
+    }
+
+    return result;
 }
 
 // 1. Initial central circular pulsating star with rays and rings
@@ -110,35 +155,44 @@ void main() {
     // 2. Parallax background starfield layers
     vec2 starUV = vec2(uv.x * uResolutionAspect.x, uv.y);
     vec2 speedOffset = uOffset;
+
     vec3 stars =    renderStarLayer(starUV, speedOffset * 0.35f, 33.0f, 0.93f, 24.0f); // Far, dense
     stars +=        renderStarLayer(starUV, speedOffset * 0.65f, 20.0f, 0.95f, 18.0f); // Mid-ground
-    stars +=        renderStarLayer(starUV, speedOffset,          16.0f, 0.97f, 12.0f); // Foreground, Large
+    stars +=        renderStarLayer(starUV, speedOffset,         16.0f, 0.97f, 12.0f); // Foreground, Large
 
-    // 3. Transformation & scroll-away logic
+    // Crisp proto-star previews scattered in the background before full arrival
+    vec3 miniPulsars = renderPulsarPreviews(starUV, speedOffset, uOffset.y);
+
+    // 3. Star enters from above, transforms at center, then exits downward.
     float time = uTime * 2.0f;
-
-    // Full star appears after background travel, then enters from above into center.
+    float starTransformEnd = uStarLeaveDistance + uStarTransformDistance;
     float starArrival = smoothstep(
-        fullStarRevealOffset,
-        fullStarRevealOffset + fullStarArrivalDistance,
+        uStarAppearDistance,
+        uStarAppearDistance + uStarTravelDistance,
         uOffset.y
     );
+    float starTransform = smoothstep(
+        uStarLeaveDistance,
+        starTransformEnd,
+        uOffset.y
+    );
+    float starDeparture = smoothstep(
+        starTransformEnd,
+        starTransformEnd + uStarTravelDistance,
+        uOffset.y
+    );
+    float starVisible = step(uStarAppearDistance, uOffset.y)
+        * (1.0f - step(starTransformEnd + uStarTravelDistance, uOffset.y));
+
     vec2 star1UV = centerUV;
-    star1UV.y -= (1.0f - starArrival) * fullStarArrivalDistance;
-    float star1Weight = starArrival * (1.0f - smoothstep(0.0f, 0.5f, uTransformProgress));
-    vec3 star1 = renderFirstCenterStar(star1UV, time) * star1Weight;
-
-    // Second star fades in (0.2 to 0.7 progress) and slides downward
-    float star2Weight = smoothstep(0.2f, 0.7f, uTransformProgress);
-
+    star1UV.y -= (1.0f - starArrival);
     vec2 star2UV = centerUV;
-    float scrollAwayOffset = max(0.0f, uTransformProgress - 0.3f) * 1.2f;
-    star2UV.y += scrollAwayOffset; // Offsets position downward as progress increases
+    star2UV.y += starDeparture * 1.2f;
 
-    vec3 star2 = renderSecondCenterStar(star2UV, time) * star2Weight;
-
-    vec3 fullStar = star1 + star2;
+    vec3 star1 = renderFirstCenterStar(star1UV, time) * (1.0f - starTransform);
+    vec3 star2 = renderSecondCenterStar(star2UV, time) * starTransform;
+    vec3 fullStar = (star1 + star2) * starVisible;
 
     // 4. Final blending
-    finalColor = vec4(spaceDark + stars + fullStar, 1.0f);
+    finalColor = vec4(spaceDark + stars + miniPulsars + fullStar, 1.0f);
 }

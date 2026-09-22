@@ -42,6 +42,7 @@ export class GameContext {
     private projectilePool!: ProjectilePool;
     private particleMediator!: ParticleMediator;
     private buffManager!: BuffManager;
+    private backgroundView!: BackgroundView;
 
     constructor(
         app: PIXI.Application,
@@ -66,10 +67,10 @@ export class GameContext {
         const playerMediator = new PlayerMediator(playerView, this.signalBus, this.input, this.buffManager);
 
         // Mediators
-        const backgroundView = new BackgroundView(this.app, gameConfig);
-        const backgroundMediator = new BackgroundMediator(backgroundView, () => playerView.movementSpeedMultiplierValue);
-        this.app.stage.addChild(backgroundView);
-        this.app.renderer.on('resize', (width, height) => backgroundView.resize(width, height));
+        this.backgroundView = new BackgroundView(this.app, gameConfig);
+        const backgroundMediator = new BackgroundMediator(this.backgroundView, () => playerView.movementSpeedMultiplierValue);
+        this.app.stage.addChild(this.backgroundView);
+        this.app.renderer.on('resize', (width, height) => this.backgroundView.resize(width, height));
         this.items.push(backgroundMediator);
 
         this.app.stage.addChild(playerView);
@@ -143,11 +144,14 @@ export class GameContext {
             item.update(delta);
         }
         this.particleMediator.update(delta);
+        this.gameUi.score.updateDistance(this.backgroundView.distanceTraveled);
     }
 
     private startRun(): void {
         this.enemyPool.clear();
         this.projectilePool.clear();
+        this.backgroundView.resetDistance();
+        this.gameUi.score.updateDistance(0);
         this.state = 'playing';
         this.gameUi.state.hide();
         this.signalBus.dispatch(GameSignals.RUN_RESTARTED);

@@ -5,21 +5,25 @@ import { GlowEffectFactory } from '../effects/GlowEffectFactory';
 import { PlayerShieldView } from './PlayerShieldView';
 import { PlayerTextureFactory } from '../factories/PlayerTextureFactory';
 
-export class PlayerView extends PIXI.Sprite {
+export class PlayerView extends PIXI.Container {
     // Consts
     private readonly BOUND_BUFFER: number = 5;
 
     private readonly app: PIXI.Application;
     private readonly config: GameConfig;
+    private readonly playerSprite: PIXI.Sprite;
     private readonly shield: PlayerShieldView;
     private movementSpeedMultiplier = 1;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         const texture = PlayerTextureFactory.createPlayerTexture(app);
-        super(texture);
+        super();
 
-        this.anchor.set(0.5);
-        this.filters = [GlowEffectFactory.createPlayer()];
+        this.playerSprite = new PIXI.Sprite(texture);
+        this.playerSprite.anchor.set(0.5);
+        this.playerSprite.filters = [GlowEffectFactory.createPlayer()];
+        this.addChild(this.playerSprite);
+
         this.shield = new PlayerShieldView();
         this.addChild(this.shield);
 
@@ -28,6 +32,14 @@ export class PlayerView extends PIXI.Sprite {
 
         this.app = app;
         this.config = config;
+    }
+
+    public override get width(): number {
+        return this.playerSprite.width;
+    }
+
+    public override set width(value: number) {
+        this.playerSprite.width = value;
     }
 
     public resetPosition(): void {

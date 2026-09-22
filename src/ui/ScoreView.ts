@@ -4,9 +4,11 @@ export class ScoreView extends PIXI.Container {
     private readonly POSITION: number = 20;
     private readonly SCORE_TEXT_TEMPLATE: string = 'SCORE: $';
     private readonly BEST_TEXT_TEMPLATE: string = 'BEST: $';
+    private readonly DISTANCE_TEXT_TEMPLATE: string = 'DISTANCE: $';
 
     private readonly scoreLabel: PIXI.Text;
     private readonly bestLabel: PIXI.Text;
+    private readonly distanceLabel: PIXI.Text;
 
     constructor() {
         super();
@@ -28,17 +30,24 @@ export class ScoreView extends PIXI.Container {
         const scoreText = this.SCORE_TEXT_TEMPLATE.replace('$', '0');
         this.scoreLabel = new PIXI.Text({ text: scoreText, style });
         this.bestLabel = new PIXI.Text({ text: this.BEST_TEXT_TEMPLATE.replace('$', '0'), style });
+        this.distanceLabel = new PIXI.Text({ text: this.DISTANCE_TEXT_TEMPLATE.replace('$', '0'), style });
         this.bestLabel.y = 30;
-        this.addChild(this.scoreLabel, this.bestLabel);
+        this.distanceLabel.y = 30;//60;
+        this.addChild(this.scoreLabel,/*this.bestLabel,*/ this.distanceLabel);
 
         // Position it slightly padded from the top-left
         this.x = this.y = this.POSITION;
 
         this.updateScore(0, 0);
+        this.updateDistance(0);
     }
 
     public updateScore(value: number, bestScore: number): void {
         this.scoreLabel.text = this.SCORE_TEXT_TEMPLATE.replace('$', value.toString());
         this.bestLabel.text = this.BEST_TEXT_TEMPLATE.replace('$', bestScore.toString());
+    }
+
+    public updateDistance(value: number): void {
+        this.distanceLabel.text = this.DISTANCE_TEXT_TEMPLATE.replace('$', Math.floor(value).toString());
     }
 }

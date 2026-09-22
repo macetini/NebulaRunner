@@ -10,10 +10,14 @@ export class BackgroundView extends PIXI.Container {
     private movementSpeed = 1;
 
     private nebulaTime = 0;
+    private distance = 0;
+
+    private readonly levelDistanceInterval: number;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         super();
         this.backgroundSpeed = config.backgroundSpeed;
+        this.levelDistanceInterval = config.levelDistanceInterval;
 
         this.shaderFilter = new PIXI.Filter({
             glProgram: new PIXI.GlProgram({
@@ -27,7 +31,10 @@ export class BackgroundView extends PIXI.Container {
                     uResolutionAspect: { value: [app.screen.width / app.screen.height, 1.0], type: 'vec2<f32>' },
                     uResolution: { value: [app.screen.width, app.screen.height], type: 'vec2<f32>' },
                     uMovementSpeed: { value: 1, type: 'f32' },
-                    uTransformProgress: { value: 0, type: 'f32' },
+                    uStarAppearDistance: { value: config.starAppearDistance, type: 'f32' },
+                    uStarLeaveDistance: { value: config.starLeaveDistance, type: 'f32' },
+                    uStarTravelDistance: { value: config.starTravelDistance, type: 'f32' },
+                    uStarTransformDistance: { value: config.starTransformDistance, type: 'f32' },
                 },
             },
         });
@@ -55,21 +62,25 @@ export class BackgroundView extends PIXI.Container {
     }
 
     public moveDown(delta: number): void {
-        // Wrap nebulaTime at 1000 to maintain mediump float precision over long play sessions
-        this.nebulaTime = (this.nebulaTime + (delta / 60) * (this.backgroundSpeed / 3)) % 1000;
+        const deltaSeconds = delta / 60;
+        this.distance += deltaSeconds * this.backgroundSpeed * this.movementSpeed;
+        this.nebulaTime += deltaSeconds * (this.backgroundSpeed / 3);
 
-        const width = this.shaderSprite.width || 1;
-        const height = this.shaderSprite.height || 1;
-
-        const aspectRatio = height / width;
-        const portraitSpeedMultiplier = Math.max(1.0, Math.min(aspectRatio * 1.8, 3.0));
-
-        const baseVerticalSpeed = this.nebulaTime * 0.45 * portraitSpeedMultiplier;
+        const cycleDistance = this.distance % this.levelDistanceInterval;
 
         const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
         uniforms.uTime = this.nebulaTime;
-        uniforms.uOffset = [0, baseVerticalSpeed];
+        uniforms.uOffset = [0, cycleDistance];
         uniforms.uMovementSpeed = this.movementSpeed;
+    }
+
+    public get distanceTraveled(): number {
+        return this.distance;
+    }
+
+    public resetDistance(): void {
+        this.distance = 0;
+        this.nebulaTime = 0;
     }
 
     public setMovementSpeed(speed: number): void {
