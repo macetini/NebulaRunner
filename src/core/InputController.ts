@@ -98,6 +98,7 @@ export class InputController {
             this.state.touchX = this.getCanvasX(event.clientX);
             if (this.pointerStartY - event.clientY >= 48) {
                 this.boostRequested = true;
+                this.pointerStartY = event.clientY;
             }
         }
     };
