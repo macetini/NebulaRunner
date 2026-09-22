@@ -81,6 +81,10 @@ export class BackgroundView extends PIXI.Container {
     public resetDistance(): void {
         this.distance = 0;
         this.nebulaTime = 0;
+
+        const uniforms = this.shaderFilter.resources.shaderUniforms.uniforms;
+        uniforms.uTime = 0;
+        uniforms.uOffset = [0, 0];
     }
 
     public setMovementSpeed(speed: number): void {

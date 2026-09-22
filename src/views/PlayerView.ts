@@ -21,7 +21,7 @@ export class PlayerView extends PIXI.Container {
 
         this.playerSprite = new PIXI.Sprite(texture);
         this.playerSprite.anchor.set(0.5);
-        this.playerSprite.filters = [GlowEffectFactory.createPlayer()];
+        this.filters = [GlowEffectFactory.createPlayer()];
         this.addChild(this.playerSprite);
 
         this.shield = new PlayerShieldView();

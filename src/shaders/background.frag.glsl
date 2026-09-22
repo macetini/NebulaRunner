@@ -161,7 +161,7 @@ void main() {
     stars +=        renderStarLayer(starUV, speedOffset,         16.0f, 0.97f, 12.0f); // Foreground, Large
 
     // Crisp proto-star previews scattered in the background before full arrival
-    vec3 miniPulsars = renderPulsarPreviews(starUV, speedOffset, uOffset.y);
+    //vec3 miniPulsars = renderPulsarPreviews(starUV, speedOffset, uOffset.y);
 
     // 3. Star enters from above, transforms at center, then exits downward.
     float time = uTime * 2.0f;
@@ -194,5 +194,5 @@ void main() {
     vec3 fullStar = (star1 + star2) * starVisible;
 
     // 4. Final blending
-    finalColor = vec4(spaceDark + stars + miniPulsars + fullStar, 1.0f);
+    finalColor = vec4(spaceDark + stars/* + miniPulsars*/ + fullStar, 1.0f);
 }
