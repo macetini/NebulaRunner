@@ -15,7 +15,7 @@ export class PlayerView extends PIXI.Container {
     private readonly shield: PlayerShieldView;
     private movementSpeedMultiplier = 1;
     private boostRemaining = 0;
-    private boostCooldownRemaining = 0;
+    private boostCharge: number;
 
     constructor(app: PIXI.Application, config: GameConfig) {
         const texture = PlayerTextureFactory.createPlayerTexture(app);
@@ -34,6 +34,7 @@ export class PlayerView extends PIXI.Container {
 
         this.app = app;
         this.config = config;
+        this.boostCharge = config.boostMaximumCharge;
     }
 
     public override get width(): number {
@@ -48,7 +49,7 @@ export class PlayerView extends PIXI.Container {
         this.x = this.app.screen.width * 0.5;
         this.y = this.config.playerInitialY;
         this.boostRemaining = 0;
-        this.boostCooldownRemaining = 0;
+        this.boostCharge = this.config.boostMaximumCharge;
         this.movementSpeedMultiplier = 1;
         this.playerSprite.scale.set(1);
     }
@@ -61,19 +62,33 @@ export class PlayerView extends PIXI.Container {
         return this.boostRemaining > 0;
     }
 
+    public get boostChargeValue(): number {
+        return this.boostCharge;
+    }
+
+    public get boostMaximumCharge(): number {
+        return this.config.boostMaximumCharge;
+    }
+
     public tryBoost(): boolean {
-        if (this.boostActive || this.boostCooldownRemaining > 0) {
+        if (this.boostActive || this.boostCharge < this.config.boostMaximumCharge) {
             return false;
         }
 
         this.boostRemaining = this.config.boostDuration;
-        this.boostCooldownRemaining = this.config.boostCooldown;
+        this.boostCharge = 0;
         this.movementSpeedMultiplier = this.config.boostSpeedMultiplier;
         return true;
     }
 
+    public rechargeBoost(): void {
+        this.boostCharge = Math.min(
+            this.config.boostMaximumCharge,
+            this.boostCharge + this.config.boostChargePerEnemy,
+        );
+    }
+
     public updateBoost(delta: number): void {
-        this.boostCooldownRemaining = Math.max(0, this.boostCooldownRemaining - delta);
         if (!this.boostActive) {
             return;
         }

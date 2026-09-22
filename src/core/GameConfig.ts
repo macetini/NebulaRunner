@@ -4,7 +4,8 @@ export type GameConfig = {
     playerInitialY: number;
     playerSpeed: number;
     boostDuration: number;
-    boostCooldown: number;
+    boostMaximumCharge: number;
+    boostChargePerEnemy: number;
     boostDistance: number;
     boostSpeedMultiplier: number;
     enemySpeed: number;
@@ -55,7 +56,8 @@ export const gameConfig: GameConfig = {
     playerInitialY: 610,
     playerSpeed: 6,
     boostDuration: 36,
-    boostCooldown: 240,
+    boostMaximumCharge: 100,
+    boostChargePerEnemy: 20,
     boostDistance: 140,
     boostSpeedMultiplier: 2.5,
 

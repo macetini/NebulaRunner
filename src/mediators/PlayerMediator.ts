@@ -32,6 +32,9 @@ export class PlayerMediator implements IContextItem {
             this.view.resetShield();
             this.view.visible = true;
         });
+        this.signalBus.addEventListener(GameSignals.ENEMY_DIED, () => {
+            this.view.rechargeBoost();
+        });
     }
 
     public update(delta: number): void {
