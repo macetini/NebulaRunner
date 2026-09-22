@@ -18,6 +18,11 @@ export type GameConfig = {
     enemySpawnIntervalDecreasePerSecond: number;
     enemySpeedIncreasePerSecond: number;
     enemyMaximumSpeedIncrease: number;
+    staticBoxSpawnInterval: number;
+    staticBoxMaximumOnScreen: number;
+    staticBoxSmallScore: number;
+    staticBoxMediumScore: number;
+    staticBoxLargeScore: number;
     projectileSpeed: number;
     fireCooldown: number;
     collisionDistance: number;
@@ -72,6 +77,11 @@ export const gameConfig: GameConfig = {
     enemySpawnIntervalDecreasePerSecond: 1.5,
     enemySpeedIncreasePerSecond: 0.02,
     enemyMaximumSpeedIncrease: 0.75,
+    staticBoxSpawnInterval: 180,
+    staticBoxMaximumOnScreen: 3,
+    staticBoxSmallScore: 1,
+    staticBoxMediumScore: 3,
+    staticBoxLargeScore: 6,
 
     // Projectile Settings
     projectileSpeed: 12,

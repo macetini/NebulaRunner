@@ -30,6 +30,7 @@ export class EnemyMediator implements IContextItem {
     private readonly attacks = new Map<EnemyView, EnemyAttackBinding>();
 
     private spawnTimer: number = 0;
+    private staticBoxSpawnTimer: number = 0;
     private elapsedTime: number = 0;
     private readonly spawnQueue: QueuedEnemy[] = [];
 
@@ -45,6 +46,7 @@ export class EnemyMediator implements IContextItem {
 
         signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
             this.spawnTimer = 0;
+            this.staticBoxSpawnTimer = 0;
             this.elapsedTime = 0;
             this.spawnQueue.length = 0;
             this.attacks.clear();
@@ -56,6 +58,7 @@ export class EnemyMediator implements IContextItem {
 
         this.processSpawnQueue(delta);
         this.checkAndSpawnEnemy(delta);
+        this.checkAndSpawnStaticBox(delta);
         this.updateEnemies(delta);
     }
 
@@ -84,6 +87,21 @@ export class EnemyMediator implements IContextItem {
         pattern.spawn(x, y, profile, this.pool, this.spawnQueue);
 
         this.spawnTimer = 0;
+    }
+
+    private checkAndSpawnStaticBox(delta: number): void {
+        this.staticBoxSpawnTimer += delta;
+        if (this.staticBoxSpawnTimer < this.config.staticBoxSpawnInterval
+            || this.pool.activeEnemies.filter((enemy) => enemy.type === 'staticBox').length
+            >= this.config.staticBoxMaximumOnScreen) {
+            return;
+        }
+
+        const padding = 50;
+        const x = padding + Math.random() * (this.app.screen.width - padding * 2);
+        const y = -50;
+        this.pool.spawn(x, y, this.factory.createStaticBox());
+        this.staticBoxSpawnTimer = 0;
     }
 
     private updateEnemies(delta: number): void {

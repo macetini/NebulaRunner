@@ -19,6 +19,7 @@ export class SpawnPatternFactory {
             [EnemyType.STRIKER]: this.defaultPattern,
             [EnemyType.SINE_CHAIN]: new SineChainSpawnPattern(),
             [EnemyType.SWARMER]: new SwarmerSpawnPattern(),
+            [EnemyType.STATIC_BOX]: this.defaultPattern,
         };
     }
 

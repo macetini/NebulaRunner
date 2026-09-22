@@ -24,6 +24,7 @@ export class EnemyView extends PIXI.Sprite {
         this.movement = new EnemyMovement(profile, config);
         this.visible = false;
         this.anchor.set(0.5);
+        this.scale.set(profile.scale ?? 1);
         this.updateGlow(profile.color);
     }
 
@@ -32,6 +33,7 @@ export class EnemyView extends PIXI.Sprite {
         this.profile = profile;
         this.health = profile.health;
         this.movement.setProfile(profile);
+        this.scale.set(profile.scale ?? 1);
         this.alpha = 1;
         this.updateGlow(profile.color);
     }

@@ -16,6 +16,7 @@ export class EnemyTextureFactory {
         this.textures.set(EnemyType.SINE_CHAIN, this.createSineChain(app));
         this.textures.set(EnemyType.SWARMER, this.createSwarmer(app));
         this.textures.set(EnemyType.STRIKER, this.createStriker(app));
+        this.textures.set(EnemyType.STATIC_BOX, this.createStaticBox(app));
 
         return this.textures;
     }
@@ -156,6 +157,18 @@ export class EnemyTextureFactory {
 
         // Cockpit window
         g.poly([0, 6, 3, -1, -3, -1]).fill(0xFFFF00);
+
+        return app.renderer.generateTexture(g);
+    }
+
+    private static createStaticBox(app: PIXI.Application): PIXI.Texture {
+        const g = new PIXI.Graphics();
+
+        g.roundRect(-18, -18, 36, 36, 4)
+            .fill(0x352400)
+            .stroke({ width: 2, color: 0xFFCC33 });
+        g.rect(-10, -10, 20, 20).stroke({ width: 1, color: 0xFFF0A0 });
+        g.circle(0, 0, 3).fill(0xFFFFFF);
 
         return app.renderer.generateTexture(g);
     }

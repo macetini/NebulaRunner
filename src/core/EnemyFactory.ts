@@ -35,6 +35,40 @@ export class EnemyFactory {
         return availableProfiles[profileIndex] ?? this.createProfile(EnemyType.DRIFTER);
     }
 
+    public createStaticBox(): EnemyProfile {
+        const boxProfiles: EnemyProfile[] = [
+            {
+                type: EnemyType.STATIC_BOX,
+                movement: 'static',
+                color: 0x88DDFF,
+                speedMultiplier: 1,
+                health: 1,
+                score: this.config.staticBoxSmallScore,
+                scale: 0.7,
+            },
+            {
+                type: EnemyType.STATIC_BOX,
+                movement: 'static',
+                color: 0xFFCC33,
+                speedMultiplier: 1,
+                health: 1,
+                score: this.config.staticBoxMediumScore,
+                scale: 1,
+            },
+            {
+                type: EnemyType.STATIC_BOX,
+                movement: 'static',
+                color: 0xFF7755,
+                speedMultiplier: 1,
+                health: 1,
+                score: this.config.staticBoxLargeScore,
+                scale: 1.45,
+            },
+        ];
+        const profileIndex = Math.floor(Math.random() * boxProfiles.length);
+        return boxProfiles[profileIndex] ?? boxProfiles[0];
+    }
+
     private createProfile(type: EnemyType): EnemyProfile {
         switch (type) {
             case EnemyType.SWARMER:
@@ -99,6 +133,15 @@ export class EnemyFactory {
                     speedMultiplier: 1,
                     health: 1,
                     score: 1,
+                };
+            case EnemyType.STATIC_BOX:
+                return {
+                    type,
+                    movement: 'static',
+                    color: 0xFFCC33,
+                    speedMultiplier: 1,
+                    health: 1,
+                    score: this.config.staticBoxMediumScore,
                 };
         }
     }

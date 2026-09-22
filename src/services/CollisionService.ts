@@ -10,6 +10,7 @@ import type { ProjectilePool } from "../pools/ProjectilePool";
 import type { BulletView } from "../views/BulletView";
 import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
+import { EnemyType } from '../views/types/EnemyType';
 
 /**
  *
@@ -160,6 +161,9 @@ export class CollisionService implements IContextItem {
     checkEnemyWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
         for (let i = enemies.length - 1; i >= 0; i--) {
             const enemy = enemies[i];
+            if (enemy.type === EnemyType.STATIC_BOX) {
+                continue;
+            }
             if (this.checkCollision(player.x, player.y, enemy.x, enemy.y)) {
                 if (player.boostActive) {
                     this.signalBus.dispatch(GameSignals.ENEMY_DIED, {

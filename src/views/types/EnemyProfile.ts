@@ -1,6 +1,6 @@
 import type { EnemyType } from './EnemyType';
 
-export type EnemyMovementType = 'straight' | 'sine' | 'chase' | 'sineChain' | 'looping';
+export type EnemyMovementType = 'straight' | 'sine' | 'chase' | 'sineChain' | 'looping' | 'static';
 
 export type EnemyProfile = {
     type: EnemyType;
@@ -9,4 +9,5 @@ export type EnemyProfile = {
     speedMultiplier: number;
     health: number;
     score: number;
+    scale?: number;
 };
