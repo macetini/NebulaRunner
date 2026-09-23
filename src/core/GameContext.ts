@@ -122,7 +122,7 @@ export class GameContext {
         // Weapon Mediators
         this.updatables.push(
             new WeaponSystemMediator(this.weaponSystem, this.signalBus),
-            new PlasmaBeamWeaponMediator(this.plasmaBeamView, this.signalBus),
+            new PlasmaBeamWeaponMediator(this.plasmaBeamView, this.signalBus, this.playerView, this.weaponSystem),
             new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
         );
 

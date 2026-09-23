@@ -1,6 +1,6 @@
 import type { BuffSystem } from "../buffs/BuffSystem";
 import { GameSignals } from "../core/GameSignals";
-import type { InputController } from '../core/InputController';
+import type { InputController } from "../core/InputController";
 import type { IContextItem } from "../core/meta/IContextItem";
 import { SignalBus } from "../core/SignalBus";
 import type { PlayerView } from "../views/PlayerView";
@@ -8,42 +8,56 @@ import type { WeaponSystem } from "../weapons/WeaponSystem";
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
+    private readonly signalBus: SignalBus;
     private readonly input: InputController;
     private readonly buffs: BuffSystem;
     private readonly weapons: WeaponSystem;
     private fireTimer: number = 0;
 
-    private readonly signalBus: SignalBus;
     constructor(
         view: PlayerView,
         signalBus: SignalBus,
         input: InputController,
         buffs: BuffSystem,
-        weapons: WeaponSystem,
+        weapons: WeaponSystem
     ) {
         this.view = view;
+        this.signalBus = signalBus;
         this.input = input;
         this.buffs = buffs;
         this.weapons = weapons;
 
-        this.signalBus = signalBus;
-        this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
-            this.view.visible = false;
-        });
-
-        this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, () => {
-            this.fireTimer = 0;
-            this.view.resetPosition();
-            this.view.resetShield();
-            this.view.visible = true;
-        });
-
-        this.signalBus.addEventListener(GameSignals.ENEMY_DIED, () => {
-            this.view.rechargeBoost();
-        });
+        this.setupSignalListeners();
     }
 
+    private setupSignalListeners(): void {
+        this.signalBus.addEventListener(GameSignals.PLAYER_DIED, this.onPlayerDied);
+        this.signalBus.addEventListener(GameSignals.RUN_RESTARTED, this.onRunRestarted);
+        this.signalBus.addEventListener(GameSignals.ENEMY_DIED, this.onEnemyDied);
+    }
+
+    private onPlayerDied = (): void => {
+        this.view.visible = false;
+    };
+
+    private onRunRestarted = (): void => {
+        this.fireTimer = 0;
+        this.view.resetPosition();
+        this.view.resetShield();
+        this.view.visible = true;
+    };
+
+    private onEnemyDied = (): void => {
+        this.view.rechargeBoost();
+    };
+
     public update(delta: number): void {
+        this.updateShieldAndBoost(delta);
+        this.handleMovementInput(delta);
+        this.handleWeaponFiring(delta);
+    }
+
+    private updateShieldAndBoost(delta: number): void {
         this.view.setShieldActive(this.buffs.shieldActive);
         this.view.updateShield(delta);
         this.view.updateBoost(delta);
@@ -51,8 +65,11 @@ export class PlayerMediator implements IContextItem {
         if (this.input.consumeBoostRequest()) {
             this.view.tryBoost();
         }
+    }
 
+    private handleMovementInput(delta: number): void {
         const input = this.input.current;
+
         if (input.left) {
             this.view.moveLeft(delta);
         }
@@ -64,15 +81,19 @@ export class PlayerMediator implements IContextItem {
         if (input.touchActive) {
             this.view.moveToward(input.touchX, delta);
         }
+    }
 
+    private handleWeaponFiring(delta: number): void {
         this.fireTimer -= delta;
-        if (input.fire) {
-            if (this.fireTimer > 0) {
-                return;
-            }
+        if (this.fireTimer <= 0) {
             this.weapons.fire(this.view.x, this.view.y);
-
             this.fireTimer = this.buffs.fireCooldown;
         }
+    }
+
+    public destroy(): void {
+        this.signalBus.removeEventListener(GameSignals.PLAYER_DIED, this.onPlayerDied);
+        this.signalBus.removeEventListener(GameSignals.RUN_RESTARTED, this.onRunRestarted);
+        this.signalBus.removeEventListener(GameSignals.ENEMY_DIED, this.onEnemyDied);
     }
 }

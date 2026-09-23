@@ -13,7 +13,6 @@ export class PlasmaCannonWeapon implements IPlayerWeapon {
         });
 
         // Spawn beam hitboxes in the projectile pool
-
         context.projectiles.spawnBeamSegment(context.x, context.y, {
             width: 24,
             damage: 0.5,

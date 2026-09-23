@@ -5,7 +5,7 @@ in vec2 vTextureCoord;
 out vec4 finalColor;
 
 uniform float uTime;
-uniform vec2 uResolution; // Sprite dimensions (width, height)
+uniform vec2 uResolution; // Beam dimensions in pixels (width, current height)
 uniform vec3 uCoreColor;  // Hot White / Cyan Core
 uniform vec3 uAuraColor;  // Hot Pink / Neon Violet Aura
 
@@ -36,14 +36,18 @@ void main() {
     // Continuous upward scrolling motion along beam axis
     float scrollTime = uTime * 10.0;
 
+    // Scale factor so turbulence keeps a consistent apparent frequency
+    // in pixels regardless of the beam's current pixel height.
+    float ySpan = uv.y * (uResolution.y / 40.0);
+
     // Multi-octave electric turbulence arc distortion
-    float n1 = noise(vec2(uv.y * 15.0 - scrollTime, uTime * 2.5)) * 0.08;
-    float n2 = noise(vec2(uv.y * 35.0 + scrollTime * 1.2, uTime * 4.0)) * 0.04;
+    float n1 = noise(vec2(ySpan * 1.5 - scrollTime, uTime * 2.5)) * 0.08;
+    float n2 = noise(vec2(ySpan * 3.5 + scrollTime * 1.2, uTime * 4.0)) * 0.04;
     float distortedX = abs(x + n1 - n2);
 
     // 2. Core Beam (Intense central core)
     float coreWidth = 0.04;
-    float core = smoothstep(coreWidth, 0.0, distortedX);
+    float core = 1.0 - smoothstep(0.0, coreWidth, distortedX);
 
     // 3. Inner Pulsing Energy Tube
     float tubePulse = 0.85 + 0.15 * sin(uTime * 15.0 + uv.y * 20.0);

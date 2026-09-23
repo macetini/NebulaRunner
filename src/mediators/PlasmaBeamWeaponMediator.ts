@@ -3,15 +3,20 @@ import { GameSignals } from "../core/GameSignals";
 import type { IContextItem } from "../core/meta/IContextItem";
 import type { SignalBus } from "../core/SignalBus";
 import type { PlasmaBeamView } from "../views/PlasmaBeamView";
+import type { PlayerView } from "../views/PlayerView";
+import type { WeaponSystem } from "../weapons/WeaponSystem";
 
 export class PlasmaBeamWeaponMediator implements IContextItem {
     private readonly view: PlasmaBeamView;
     private readonly signalBus: SignalBus;
-    private beamActiveThisFrame = false;
+    private readonly player: PlayerView;
+    private readonly weapons: WeaponSystem;
 
-    constructor(view: PlasmaBeamView, signalBus: SignalBus) {
+    constructor(view: PlasmaBeamView, signalBus: SignalBus, player: PlayerView, weapons: WeaponSystem) {
         this.view = view;
         this.signalBus = signalBus;
+        this.player = player;
+        this.weapons = weapons;
 
         this.signalBus.addEventListener(GameSignals.PLASMA_BEAM_ACTIVE, this.handleBeamActive);
     }
@@ -20,7 +25,6 @@ export class PlasmaBeamWeaponMediator implements IContextItem {
         const detail = (event as CustomEvent<{ x: number; y: number }>).detail;
         if (!detail) return;
 
-        this.beamActiveThisFrame = true;
         this.view.setBeamActive(true);
         this.view.updateBeam(detail.x, detail.y, 1);
     };
@@ -28,11 +32,12 @@ export class PlasmaBeamWeaponMediator implements IContextItem {
     public update(delta: number): void {
         this.view.update(delta);
 
-        // Turn off view if weapon stopped firing this tick
-        if (!this.beamActiveThisFrame) {
-            this.view.setBeamActive(false);
+        const plasmaCannonEquipped = this.weapons.activeWeaponId === 'plasmaCannon';
+        this.view.setBeamActive(plasmaCannonEquipped);
+
+        if (plasmaCannonEquipped) {
+            this.view.updateBeam(this.player.x, this.player.y, delta);
         }
-        this.beamActiveThisFrame = false;
     }
 
     public destroy(): void {
