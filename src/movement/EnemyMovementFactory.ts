@@ -2,13 +2,13 @@ import type { GameConfig } from '../core/GameConfig';
 import type { EnemyMovementType } from '../views/types/EnemyProfile';
 import { ChaseMovement } from './ChaseMovement';
 import { LoopingMovement } from './LoopingMovement';
-import type { MovementStrategy } from './MovementStrategy';
+import type { IMovementStrategy } from './meta/IMovementStrategy';
 import { SineChainMovement } from './SineChainMovement';
 import { SineMovement } from './SineMovement';
 import { StaticMovement } from './StaticMovement';
 import { StraightMovement } from './StraightMovement';
 
-type MovementCreator = (config: GameConfig, profileSpeedMultiplier: number) => MovementStrategy;
+type MovementCreator = (config: GameConfig, profileSpeedMultiplier: number) => IMovementStrategy;
 
 export class EnemyMovementFactory {
     private readonly creators: Record<EnemyMovementType, MovementCreator> = {
@@ -26,7 +26,7 @@ export class EnemyMovementFactory {
         this.config = config;
     }
 
-    public create(type: EnemyMovementType, profileSpeedMultiplier: number): MovementStrategy {
+    public create(type: EnemyMovementType, profileSpeedMultiplier: number): IMovementStrategy {
         return this.creators[type](this.config, profileSpeedMultiplier);
     }
 }

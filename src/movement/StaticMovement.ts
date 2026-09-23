@@ -1,7 +1,7 @@
 import type { GameConfig } from '../core/GameConfig';
-import type { MovementPosition, MovementStrategy } from './MovementStrategy';
+import type { MovementPosition, IMovementStrategy } from './meta/IMovementStrategy';
 
-export class StaticMovement implements MovementStrategy {
+export class StaticMovement implements IMovementStrategy {
     private readonly config: GameConfig;
 
     constructor(config: GameConfig) {

@@ -1,7 +1,7 @@
 import type { GameConfig } from '../core/GameConfig';
-import type { MovementPosition, MovementStrategy } from './MovementStrategy';
+import type { MovementPosition, IMovementStrategy } from './meta/IMovementStrategy';
 
-export class ChaseMovement implements MovementStrategy {
+export class ChaseMovement implements IMovementStrategy {
     private readonly config: GameConfig;
     private readonly profileSpeedMultiplier: number;
 

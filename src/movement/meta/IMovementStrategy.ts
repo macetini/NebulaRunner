@@ -3,7 +3,7 @@ export type MovementPosition = {
     y: number;
 };
 
-export interface MovementStrategy {
+export interface IMovementStrategy {
     reset(position: MovementPosition): void;
     update(position: MovementPosition, delta: number, targetX: number, speedMultiplier: number): void;
 }

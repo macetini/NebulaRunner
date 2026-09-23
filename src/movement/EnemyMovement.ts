@@ -1,12 +1,12 @@
 import type { GameConfig } from '../core/GameConfig';
 import type { EnemyProfile } from '../views/types/EnemyProfile';
 import { EnemyMovementFactory } from './EnemyMovementFactory';
-import type { MovementPosition, MovementStrategy } from './MovementStrategy';
+import type { MovementPosition, IMovementStrategy } from './meta/IMovementStrategy';
 
 export class EnemyMovement {
     private readonly position: MovementPosition = { x: 0, y: 0 };
     private readonly factory: EnemyMovementFactory;
-    private strategy: MovementStrategy;
+    private strategy: IMovementStrategy;
 
     constructor(profile: EnemyProfile, config: GameConfig) {
         this.factory = new EnemyMovementFactory(config);
