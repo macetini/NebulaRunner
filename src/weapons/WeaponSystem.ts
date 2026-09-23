@@ -40,7 +40,7 @@ export class WeaponSystem {
         this.activeWeapon.fire({
             x,
             y,
-            projectilePool: this.projectiles,
+            hitboxPool: this.projectiles,
             signalBus: this.signalBus,
         });
     }

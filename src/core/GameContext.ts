@@ -2,8 +2,8 @@ import * as PIXI from 'pixi.js';
 
 import { BuffSystem } from '../buffs/BuffSystem';
 import { CombatMediator } from '../mediators/combat/CombatMediator';
-import { PlasmaBeamWeaponMediator } from '../mediators/combat/PlasmaBeamWeaponMediator';
 import { HitBoxMediator } from '../mediators/combat/HitBoxMediator';
+import { PlasmaBeamMediator } from '../mediators/combat/PlasmaBeamMediator';
 import { WeaponDropMediator } from '../mediators/combat/WeaponDropMediator';
 import { WeaponSystemMediator } from '../mediators/combat/WeaponSystemMediator';
 import { BackgroundMediator } from '../mediators/fx/BackgroundMediator';
@@ -20,7 +20,8 @@ import { ParticlePool } from '../pools/ParticlePool';
 import { WeaponPool } from '../pools/WeaponPickupPool';
 import { CollisionService } from '../services/CollisionService';
 import { GameUi } from '../ui/GameUi';
-import { PlasmaBeamView } from '../views/combat/PlasmaBeamView';
+import { WeaponContainerView } from '../views/combat/WeaponContainerView';
+import { PlasmaBeamView } from '../views/combat/weaponViews/PlasmaBeamView';
 import { BackgroundView } from '../views/fx/BackgroundView';
 import { PlayerView } from '../views/gameplay/PlayerView';
 import { WeaponSystem } from '../weapons/WeaponSystem';
@@ -53,7 +54,10 @@ export class GameContext {
     // Views
     private backgroundView!: BackgroundView;
     private playerView!: PlayerView;
+    private weaponContainerView!: WeaponContainerView;
     private plasmaBeamView!: PlasmaBeamView;
+
+    private debugHitboxContainer?: PIXI.Container;
 
     // Passive Mediators requiring ticker updates outside updatables array
     private particleMediator!: ParticleMediator;
@@ -99,12 +103,19 @@ export class GameContext {
     private initViews(): void {
         this.backgroundView = new BackgroundView(this.app, gameConfig);
         this.playerView = new PlayerView(this.app, gameConfig);
-        this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
 
-        // Strict Z-Ordering on Scene Graph
+        this.weaponContainerView = new WeaponContainerView();
+        this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
+        this.weaponContainerView.registerWeaponView('plasmaBeam', this.plasmaBeamView);
+
         this.app.stage.addChild(this.backgroundView);
         this.app.stage.addChild(this.playerView);
-        this.app.stage.addChild(this.plasmaBeamView);
+        this.app.stage.addChild(this.weaponContainerView);
+
+        if (gameConfig.showWeaponHitboxes) {
+            this.debugHitboxContainer = new PIXI.Container();
+            this.app.stage.addChild(this.debugHitboxContainer);
+        }
 
         // Window resize binding
         this.app.renderer.on('resize', (w, h) => this.backgroundView.resize(w, h));
@@ -121,14 +132,14 @@ export class GameContext {
         // Weapon Mediators
         this.updatables.push(
             new WeaponSystemMediator(this.weaponSystem, this.signalBus),
-            new PlasmaBeamWeaponMediator(this.plasmaBeamView, this.signalBus, this.playerView, this.weaponSystem),
+            new PlasmaBeamMediator(this.plasmaBeamView, this.playerView),
             new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
         );
 
         // Buffs & Combat Feedback
         this.updatables.push(
             new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
-            new HitBoxMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height),
+            new HitBoxMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxContainer),
             new CombatMediator(this.app.stage, this.signalBus),
         );
 
@@ -200,6 +211,8 @@ export class GameContext {
         for (let i = 0; i < count; i++) {
             this.updatables[i].update(delta);
         }
+
+        this.weaponContainerView.update(delta);
 
         this.particleMediator.update(delta);
         this.gameUi.score.updateDistance(this.backgroundView.distanceTraveled);

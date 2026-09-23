@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import type { GameConfig } from "../../core/GameConfig";
 import { GameSignals } from "../../core/GameSignals";
 import type { IContextItem } from "../../core/meta/IContextItem";
@@ -8,18 +9,22 @@ export class HitBoxMediator implements IContextItem {
     private readonly pool: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
+
     private readonly screenHeight: number;
+    private readonly debugContainer?: PIXI.Container;
 
     constructor(
         pool: HitboxPool,
         signalBus: SignalBus,
         config: GameConfig,
-        screenHeight: number
+        screenHeight: number,
+        debugContainer?: PIXI.Container
     ) {
         this.pool = pool;
         this.signalBus = signalBus;
         this.config = config;
         this.screenHeight = screenHeight;
+        this.debugContainer = debugContainer;
 
         this.signalBus.addEventListener(GameSignals.ENEMY_FIRED, this.onEnemyFired);
     }
@@ -36,8 +41,15 @@ export class HitBoxMediator implements IContextItem {
         const playerSpeedStep = this.config.projectileSpeed * delta;
         const lowerBound = this.screenHeight;
 
+        const isDebugActive = this.config.showWeaponHitboxes && this.debugContainer !== undefined;
+
         for (let i = hitboxes.length - 1; i >= 0; i--) {
             const hitbox = hitboxes[i];
+
+            // Debug Sync: Attach unparented active hitboxes to the debug overlay layer
+            if (isDebugActive && !hitbox.parent) {
+                this.debugContainer!.addChild(hitbox);
+            }
 
             // Skip position movement for frame-bound shader hitboxes (lasers, beams, AoE)
             if (hitbox.isFrameBound) {

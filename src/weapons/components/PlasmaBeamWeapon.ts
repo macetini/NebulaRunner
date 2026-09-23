@@ -1,8 +1,8 @@
 import { GameSignals } from "../../core/GameSignals";
 import type { IPlayerWeapon, WeaponFireContext } from "../meta/IPlayerWeapon";
 
-export class PlasmaCannonWeapon implements IPlayerWeapon {
-    public readonly id = 'plasmaCannon';
+export class PlasmaBeamWeapon implements IPlayerWeapon {
+    public readonly id = 'plasmaBeam';
 
     public fire(context: WeaponFireContext): void {
         // 1. Dispatch signal to keep PlasmaBeamView active
@@ -12,7 +12,7 @@ export class PlasmaCannonWeapon implements IPlayerWeapon {
         });
 
         // 2. Spawn invisible beam hitboxes up to y = 0
-        context.projectilePool.spawnBeamSegment(context.x, context.y, {
+        context.hitboxPool.spawnBeamSegment(context.x, context.y, {
             width: 12, // Match or exceed effective shader beam core width
             damage: 0.1,
             isPiercing: true,

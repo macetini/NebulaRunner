@@ -1,21 +1,21 @@
 import { BlasterWeapon } from './components/BlasterWeapon';
 import { ClusterBombWeapon } from './components/ClusterBombWeapon';
 import { HomingSeekerWeapon } from './components/HomingSeekerWeapon';
-import { PlasmaCannonWeapon } from './components/PlasmaCannonWeapon';
+import { PlasmaBeamWeapon } from './components/PlasmaBeamWeapon';
 import { PulseLaserWeapon } from './components/PulseLaserWeapon';
 import { RearVulcanWeapon } from './components/RearVulcanWeapon';
 import { SonicBladeWeapon } from './components/SonicBladeWeapon';
 import { SpreadShotWeapon } from './components/SpreadShotWeapon';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 
-export const defaultWeaponId = 'plasmaCannon';
+export const defaultWeaponId = 'plasmaBeam';
 
 export class WeaponRegistry {
     private readonly weapons = new Map<string, IPlayerWeapon>();
 
     constructor() {
         this.register(new BlasterWeapon());
-        this.register(new PlasmaCannonWeapon());
+        this.register(new PlasmaBeamWeapon());
         this.register(new SpreadShotWeapon());
         this.register(new PulseLaserWeapon());
         this.register(new RearVulcanWeapon());

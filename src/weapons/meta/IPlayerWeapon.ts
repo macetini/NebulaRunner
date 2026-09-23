@@ -5,7 +5,7 @@ export type WeaponFireContext = {
     x: number;
     y: number;
 
-    projectilePool: HitboxPool;
+    hitboxPool: HitboxPool;
     signalBus: SignalBus;
 
     directionX?: number;

@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js';
-import plasmaFragment from '../../shaders/plasmaBeam.frag.glsl?raw';
-import meshVertexShader from '../../shaders/plasmaBeam.vert.glsl?raw';
 
-export class PlasmaBeamView extends PIXI.Container {
+import plasmaFragment from '../../../shaders/plasmaBeam.frag.glsl?raw';
+import meshVertexShader from '../../../shaders/plasmaBeam.vert.glsl?raw';
+import { AbstractWeaponView, type WeaponTransform } from './AbstractWeaponView';
+
+export class PlasmaBeamView extends AbstractWeaponView {
     private readonly mesh: PIXI.Mesh<PIXI.MeshGeometry, PIXI.Shader>;
     private readonly uniforms: Record<string, any>;
-    private time = 0;
     private readonly beamWidth = 160;
     private currentHeight: number;
 
     constructor(screenHeight: number) {
         super();
-
         this.currentHeight = screenHeight;
 
         const geometry = new PIXI.MeshGeometry({
@@ -21,12 +21,7 @@ export class PlasmaBeamView extends PIXI.Container {
                 this.beamWidth / 2, this.currentHeight,
                 -this.beamWidth / 2, this.currentHeight
             ]),
-            uvs: new Float32Array([
-                0, 0,
-                1, 0,
-                1, 1,
-                0, 1
-            ]),
+            uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
             indices: new Uint32Array([0, 1, 2, 0, 2, 3])
         });
 
@@ -51,33 +46,22 @@ export class PlasmaBeamView extends PIXI.Container {
             },
         });
 
-        this.mesh = new PIXI.Mesh({
-            geometry,
-            shader,
-        });
-
+        this.mesh = new PIXI.Mesh({ geometry, shader });
         this.addChild(this.mesh);
-        this.visible = false;
     }
 
-    public setBeamActive(active: boolean): void {
-        this.visible = active;
+    public override update(delta: number): void {
+        super.update(delta);
+        if (this.visible) {
+            this.uniforms.uTime = this.time;
+        }
     }
 
-    public setWeaponActive(active: boolean): void {
-        this.setBeamActive(active);
-    }
-
-    public update(delta: number): void {
-        this.time += delta / 60;
-        this.uniforms.uTime = this.time;
-    }
-
-    public updateBeam(playerX: number, playerY: number, _delta: number): void {
-        this.x = playerX;
+    public updateWeapon(transform: WeaponTransform, _delta: number): void {
+        this.x = transform.x;
         this.y = 0;
 
-        this.currentHeight = Math.max(1, playerY - 35);
+        this.currentHeight = Math.max(1, transform.y - 35);
 
         const posBuffer = this.mesh.geometry.getBuffer('aPosition');
         const data = posBuffer.data as Float32Array;
@@ -86,11 +70,5 @@ export class PlasmaBeamView extends PIXI.Container {
         posBuffer.update();
 
         this.uniforms.uResolution = [this.beamWidth, this.currentHeight];
-    }
-
-    public destroy(options?: PIXI.DestroyOptions): void {
-        this.mesh.geometry.destroy();
-        this.mesh.shader?.destroy();
-        super.destroy(options);
     }
 }

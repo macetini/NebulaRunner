@@ -7,7 +7,7 @@ export class WeaponTextureFactory {
 
     private static readonly itemDrawers: Record<string, IconDrawer> = {
         blaster: WeaponTextureFactory.drawBlasterIcon,
-        plasmaCannon: WeaponTextureFactory.drawPlasmaIcon,
+        plasmaBeam: WeaponTextureFactory.drawPlasmaIcon,
         spreadShot: WeaponTextureFactory.drawSpreadIcon,
         pulseLaser: WeaponTextureFactory.drawLaserIcon,
         rearVulcan: WeaponTextureFactory.drawVulcanIcon,

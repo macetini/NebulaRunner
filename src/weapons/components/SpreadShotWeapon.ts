@@ -7,8 +7,8 @@ export class SpreadShotWeapon implements IPlayerWeapon {
 
     public fire(context: WeaponFireContext): void {
         // Angled 3-way spread fan
-        context.projectilePool.spawn(context.x - 12, context.y - 20, false);
-        context.projectilePool.spawn(context.x, context.y - 25, false);
-        context.projectilePool.spawn(context.x + 12, context.y - 20, false);
+        context.hitboxPool.spawn(context.x - 12, context.y - 20, false);
+        context.hitboxPool.spawn(context.x, context.y - 25, false);
+        context.hitboxPool.spawn(context.x + 12, context.y - 20, false);
     }
 }

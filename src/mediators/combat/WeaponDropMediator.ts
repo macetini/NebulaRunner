@@ -60,7 +60,7 @@ export class WeaponDropMediator implements IContextItem {
         const { x, y, defeated } = (event as CustomEvent<{ x: number; y: number; defeated: boolean }>).detail;
 
         if (defeated && Math.random() < 0.08) {
-            const weaponIds = ['blaster', 'plasmaCannon', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'];
+            const weaponIds = ['blaster', 'plasmaBeam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'];
             const weaponId = weaponIds[Math.floor(Math.random() * weaponIds.length)];
             this.pool.spawn(x, y, this.config.buffFallSpeed, weaponId);
         }

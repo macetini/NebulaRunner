@@ -1,4 +1,3 @@
-// src/views/weapons/WeaponView.ts
 import * as PIXI from "pixi.js";
 
 export interface WeaponTransform {

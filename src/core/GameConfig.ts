@@ -1,6 +1,6 @@
 export type GameConfig = {
     godMode: boolean;
-    showWeaponHitboxes?: boolean;
+    showWeaponHitboxes: boolean;
     showPerformanceStats: boolean;
     playerInitialY: number;
     playerSpeed: number;
