@@ -6,12 +6,12 @@ import type { IContextItem } from "../core/meta/IContextItem";
 import type { SignalBus } from "../core/SignalBus";
 import type { BuffPool } from '../pools/BuffPool';
 import type { EnemyPool } from "../pools/EnemyPool";
-import type { ProjectilePool } from "../pools/ProjectilePool";
+import type { HitboxPool } from "../pools/HitboxPool";
 import type { WeaponPool } from '../pools/WeaponPickupPool';
-import type { BulletView } from "../views/BulletView";
-import type { EnemyView } from "../views/EnemyView";
-import type { PlayerView } from "../views/PlayerView";
-import { EnemyType } from '../views/types/EnemyType';
+import type { HitboxView } from '../views/combat/HitboxView';
+import { EnemyType } from '../views/combat/types/EnemyType';
+import type { EnemyView } from '../views/gameplay/EnemyView';
+import type { PlayerView } from '../views/gameplay/PlayerView';
 
 /**
  *
@@ -25,7 +25,7 @@ export class CollisionService implements IContextItem {
 
     private readonly player: PlayerView;
 
-    private readonly projectilePool: ProjectilePool;
+    private readonly projectilePool: HitboxPool;
     private readonly buffPool: BuffPool;
     private readonly weaponPool: WeaponPool;
     private readonly enemyPool: EnemyPool;
@@ -36,7 +36,7 @@ export class CollisionService implements IContextItem {
         signalBus: SignalBus,
         config: GameConfig,
         player: PlayerView,
-        projectilePool: ProjectilePool,
+        projectilePool: HitboxPool,
         enemyPool: EnemyPool,
         weaponPool: WeaponPool,
         buffPool: BuffPool,
@@ -71,7 +71,7 @@ export class CollisionService implements IContextItem {
         }
     }
 
-    private checkEnemyBulletWithPlayerCollision(bullets: BulletView[], player: PlayerView): void {
+    private checkEnemyBulletWithPlayerCollision(bullets: HitboxView[], player: PlayerView): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
             if (bullet.isEnemy) {
@@ -145,7 +145,7 @@ export class CollisionService implements IContextItem {
      * @param bullets
      * @param enemies
      */
-    private checkBulletWithEnemyCollision(bullets: BulletView[], enemies: EnemyView[]): void {
+    private checkBulletWithEnemyCollision(bullets: HitboxView[], enemies: EnemyView[]): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
             if (bullet.isEnemy) {

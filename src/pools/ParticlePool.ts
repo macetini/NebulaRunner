@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../core/GameConfig';
-import { ParticleView } from '../views/ParticleView';
+import { ParticleView } from '../views/fx/ParticleView';
 
 export class ParticlePool {
     public readonly activeParticles: ParticleView[] = [];

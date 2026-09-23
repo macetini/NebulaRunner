@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js';
+import type { GameConfig } from '../../core/GameConfig';
+import { EnemyTextureFactory } from '../../factories/EnemyTextureFactory';
+import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
+import { EnemyMovement } from '../../movement/EnemyMovement';
+import type { EnemyProfile } from '../combat/types/EnemyProfile';
+import type { EnemyType } from '../combat/types/EnemyType';
 
-import type { GameConfig } from '../core/GameConfig';
-import { GlowEffectFactory } from '../factories/GlowEffectFactory';
-import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
-import { EnemyMovement } from '../movement/EnemyMovement';
-import type { EnemyProfile } from './types/EnemyProfile';
-import { EnemyType } from './types/EnemyType';
 
 export class EnemyView extends PIXI.Sprite {
     private profile: EnemyProfile;

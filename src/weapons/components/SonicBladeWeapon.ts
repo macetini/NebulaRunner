@@ -6,6 +6,6 @@ export class SonicBladeWeapon implements IPlayerWeapon {
     fireCooldown: number = 350; // Example cooldown value in milliseconds
 
     public fire(context: WeaponFireContext): void {
-        context.projectiles.spawn(context.x, context.y - 20, false);
+        context.projectilePool.spawn(context.x, context.y - 20, false);
     }
 }

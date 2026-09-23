@@ -7,8 +7,8 @@ export class RearVulcanWeapon implements IPlayerWeapon {
 
     public fire(context: WeaponFireContext): void {
         // Forward twin streams + rear defense bullet
-        context.projectiles.spawn(context.x - 8, context.y - 20, false);
-        context.projectiles.spawn(context.x + 8, context.y - 20, false);
-        context.projectiles.spawn(context.x, context.y + 15, false);
+        context.projectilePool.spawn(context.x - 8, context.y - 20, false);
+        context.projectilePool.spawn(context.x + 8, context.y - 20, false);
+        context.projectilePool.spawn(context.x, context.y + 15, false);
     }
 }

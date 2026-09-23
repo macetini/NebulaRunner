@@ -1,5 +1,5 @@
 import type { EnemyPool } from '../pools/EnemyPool';
-import type { EnemyProfile } from '../views/types/EnemyProfile';
+import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
 import type { GameConfig } from '../core/GameConfig';
 
 export interface QueuedEnemy {

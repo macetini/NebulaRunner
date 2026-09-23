@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { BuffType } from '../buffs/BuffType';
 import { BuffTextureFactory } from '../factories/BuffTextureFactory';
-import { BuffView } from '../views/BuffView';
+import { BuffView } from '../views/gameplay/BuffView';
 
 export class BuffPool {
     public readonly activeBuffs: BuffView[] = [];

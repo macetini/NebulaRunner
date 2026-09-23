@@ -1,6 +1,6 @@
 import type { GameConfig } from '../../core/GameConfig';
 import type { EnemyPool } from '../../pools/EnemyPool';
-import type { EnemyProfile } from '../../views/types/EnemyProfile';
+import type { EnemyProfile } from '../../views/combat/types/EnemyProfile';
 import type { QueuedEnemy, SpawnPattern } from '../SpawnPattern';
 
 export class DefaultSpawnPattern implements SpawnPattern {

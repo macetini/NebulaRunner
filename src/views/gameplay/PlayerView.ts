@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js';
-
-import type { GameConfig } from '../core/GameConfig';
-import { GlowEffectFactory } from '../factories/GlowEffectFactory';
-import { PlayerShieldView } from './PlayerShieldView';
-import { PlayerTextureFactory } from '../factories/PlayerTextureFactory';
+import type { GameConfig } from '../../core/GameConfig';
+import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
+import { PlayerTextureFactory } from '../../factories/PlayerTextureFactory';
+import { PlayerShieldView } from '../combat/PlayerShieldView';
 
 export class PlayerView extends PIXI.Container {
     // Consts

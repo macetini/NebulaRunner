@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { WeaponTextureFactory } from '../factories/WeaponDropTextureFactory';
-import { WeaponPickupView } from '../views/WeaponPickupView';
+import { WeaponPickupView } from '../views/combat/WeaponPickupView';
 
 export class WeaponPool {
     public readonly activeWeaponPickups: WeaponPickupView[] = [];
@@ -45,3 +45,4 @@ export class WeaponPool {
 }
 
 export { WeaponPool as WeaponPickupPool };
+

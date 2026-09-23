@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { EnemyType } from '../views/types/EnemyType';
+import { EnemyType } from '../views/combat/types/EnemyType';
 
 export class EnemyTextureFactory {
     private static readonly textures = new Map<EnemyType, PIXI.Texture>();

@@ -1,10 +1,11 @@
-import type { BuffSystem } from "../buffs/BuffSystem";
-import { GameSignals } from "../core/GameSignals";
-import type { InputController } from "../core/InputController";
-import type { IContextItem } from "../core/meta/IContextItem";
-import { SignalBus } from "../core/SignalBus";
-import type { PlayerView } from "../views/PlayerView";
-import type { WeaponSystem } from "../weapons/WeaponSystem";
+import type { BuffSystem } from "../../buffs/BuffSystem";
+import { GameSignals } from "../../core/GameSignals";
+import type { InputController } from "../../core/InputController";
+import type { IContextItem } from "../../core/meta/IContextItem";
+import type { SignalBus } from "../../core/SignalBus";
+import type { PlayerView } from "../../views/gameplay/PlayerView";
+import type { WeaponSystem } from "../../weapons/WeaponSystem";
+
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;

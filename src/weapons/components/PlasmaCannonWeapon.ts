@@ -3,19 +3,18 @@ import type { IPlayerWeapon, WeaponFireContext } from "../meta/IPlayerWeapon";
 
 export class PlasmaCannonWeapon implements IPlayerWeapon {
     public readonly id = 'plasmaCannon';
-    public readonly fireCooldown = 1; // Sustained beam cadence
 
     public fire(context: WeaponFireContext): void {
-        // Dispatch signal to activate/tick the beam visual
+        // 1. Dispatch signal to keep PlasmaBeamView active
         context.signalBus?.dispatch(GameSignals.PLASMA_BEAM_ACTIVE, {
             x: context.x,
             y: context.y,
         });
 
-        // Spawn beam hitboxes in the projectile pool
-        context.projectiles.spawnBeamSegment(context.x, context.y, {
-            width: 24,
-            damage: 0.5,
+        // 2. Spawn invisible beam hitboxes up to y = 0
+        context.projectilePool.spawnBeamSegment(context.x, context.y, {
+            width: 12, // Match or exceed effective shader beam core width
+            damage: 0.1,
             isPiercing: true,
         });
     }

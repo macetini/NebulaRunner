@@ -1,17 +1,17 @@
-import type { GameConfig } from "../core/GameConfig";
-import { GameSignals } from "../core/GameSignals";
-import type { IContextItem } from "../core/meta/IContextItem";
-import { SignalBus } from "../core/SignalBus";
-import type { ProjectilePool } from "../pools/ProjectilePool";
+import type { GameConfig } from "../../core/GameConfig";
+import { GameSignals } from "../../core/GameSignals";
+import type { IContextItem } from "../../core/meta/IContextItem";
+import type { SignalBus } from "../../core/SignalBus";
+import type { HitboxPool } from "../../pools/HitboxPool";
 
 export class ProjectileMediator implements IContextItem {
-    private readonly pool: ProjectilePool;
+    private readonly pool: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
     private readonly screenHeight: number;
 
     constructor(
-        pool: ProjectilePool,
+        pool: HitboxPool,
         signalBus: SignalBus,
         config: GameConfig,
         screenHeight: number
@@ -31,26 +31,34 @@ export class ProjectileMediator implements IContextItem {
     };
 
     public update(delta: number): void {
-        const bullets = this.pool.activeBullets;
+        const hitboxes = this.pool.activeHitboxes;
         const enemySpeedStep = this.config.enemyProjectileSpeed * delta;
         const playerSpeedStep = this.config.projectileSpeed * delta;
         const lowerBound = this.screenHeight;
 
-        for (let i = bullets.length - 1; i >= 0; i--) {
-            const bullet = bullets[i];
+        for (let i = hitboxes.length - 1; i >= 0; i--) {
+            const hitbox = hitboxes[i];
 
-            if (bullet.isEnemy) {
-                bullet.y += enemySpeedStep;
-                if (bullet.y > lowerBound + bullet.height) {
-                    this.pool.recycle(bullet, i);
+            // Skip position movement for frame-bound shader hitboxes (lasers, beams, AoE)
+            if (hitbox.isFrameBound) {
+                continue;
+            }
+
+            if (hitbox.isEnemy) {
+                hitbox.y += enemySpeedStep;
+                if (hitbox.y > lowerBound + hitbox.height) {
+                    this.pool.recycle(hitbox, i);
                 }
             } else {
-                bullet.y -= playerSpeedStep;
-                if (bullet.y < -bullet.height) {
-                    this.pool.recycle(bullet, i);
+                hitbox.y -= playerSpeedStep;
+                if (hitbox.y < -hitbox.height) {
+                    this.pool.recycle(hitbox, i);
                 }
             }
         }
+
+        // Purge instant frame-bound shader hitboxes
+        this.pool.recycleFrameBoundHitboxes();
     }
 
     public destroy(): void {

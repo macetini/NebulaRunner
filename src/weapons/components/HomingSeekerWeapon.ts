@@ -6,7 +6,7 @@ export class HomingSeekerWeapon implements IPlayerWeapon {
     fireCooldown: number = 450; // Example cooldown value in milliseconds
 
     public fire(context: WeaponFireContext): void {
-        context.projectiles.spawn(context.x - 15, context.y - 10, false);
-        context.projectiles.spawn(context.x + 15, context.y - 10, false);
+        context.projectilePool.spawn(context.x - 15, context.y - 10, false);
+        context.projectilePool.spawn(context.x + 15, context.y - 10, false);
     }
 }

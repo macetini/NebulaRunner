@@ -1,15 +1,15 @@
 import type { SignalBus } from '../core/SignalBus';
-import type { ProjectilePool } from '../pools/ProjectilePool';
+import type { HitboxPool } from '../pools/HitboxPool';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 import { defaultWeaponId, WeaponRegistry } from './WeaponRegistry';
 
 export class WeaponSystem {
-    private readonly projectiles: ProjectilePool;
+    private readonly projectiles: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly registry: WeaponRegistry;
     private activeWeapon: IPlayerWeapon;
 
-    constructor(projectiles: ProjectilePool, signalBus: SignalBus) {
+    constructor(projectiles: HitboxPool, signalBus: SignalBus) {
         this.projectiles = projectiles;
         this.signalBus = signalBus;
         this.registry = new WeaponRegistry();
@@ -40,7 +40,7 @@ export class WeaponSystem {
         this.activeWeapon.fire({
             x,
             y,
-            projectiles: this.projectiles,
+            projectilePool: this.projectiles,
             signalBus: this.signalBus,
         });
     }

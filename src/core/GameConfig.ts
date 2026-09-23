@@ -1,5 +1,6 @@
 export type GameConfig = {
     godMode: boolean;
+    showWeaponHitboxes?: boolean;
     showPerformanceStats: boolean;
     playerInitialY: number;
     playerSpeed: number;
@@ -55,6 +56,7 @@ export type GameConfig = {
 export const gameConfig: GameConfig = {
     // Dev
     godMode: true,
+    showWeaponHitboxes: true,
     showPerformanceStats: true,
 
     // Player Settings

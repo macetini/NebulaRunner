@@ -1,11 +1,11 @@
 import type { SignalBus } from '../../core/SignalBus';
-import type { ProjectilePool } from '../../pools/ProjectilePool';
+import type { HitboxPool } from '../../pools/HitboxPool';
 
 export type WeaponFireContext = {
     x: number;
     y: number;
 
-    projectiles: ProjectilePool;
+    projectilePool: HitboxPool;
     signalBus: SignalBus;
 
     directionX?: number;
@@ -14,6 +14,5 @@ export type WeaponFireContext = {
 
 export interface IPlayerWeapon {
     readonly id: string;
-    /** Primary firing execution */
     fire(context: WeaponFireContext): void;
 }

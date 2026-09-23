@@ -1,10 +1,10 @@
 // src/mediators/PlasmaBeamWeaponMediator.ts
-import { GameSignals } from "../core/GameSignals";
-import type { IContextItem } from "../core/meta/IContextItem";
-import type { SignalBus } from "../core/SignalBus";
-import type { PlasmaBeamView } from "../views/PlasmaBeamView";
-import type { PlayerView } from "../views/PlayerView";
-import type { WeaponSystem } from "../weapons/WeaponSystem";
+import { GameSignals } from "../../core/GameSignals";
+import type { IContextItem } from "../../core/meta/IContextItem";
+import type { SignalBus } from "../../core/SignalBus";
+import type { PlasmaBeamView } from "../../views/combat/PlasmaBeamView";
+import type { PlayerView } from "../../views/PlayerView";
+import type { WeaponSystem } from "../../weapons/WeaponSystem";
 
 export class PlasmaBeamWeaponMediator implements IContextItem {
     private readonly view: PlasmaBeamView;

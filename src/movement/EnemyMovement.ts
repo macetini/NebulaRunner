@@ -1,5 +1,5 @@
 import type { GameConfig } from '../core/GameConfig';
-import type { EnemyProfile } from '../views/types/EnemyProfile';
+import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
 import { EnemyMovementFactory } from './EnemyMovementFactory';
 import type { MovementPosition, IMovementStrategy } from './meta/IMovementStrategy';
 

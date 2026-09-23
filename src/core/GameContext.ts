@@ -1,28 +1,28 @@
 import * as PIXI from 'pixi.js';
 
 import { BuffSystem } from '../buffs/BuffSystem';
-import { BackgroundMediator } from '../mediators/BackgroundMediator';
-import { BuffDropMediator } from '../mediators/BuffDropMediator';
-import { CombatMediator } from '../mediators/CombatMediator';
-import { EnemyMediator } from '../mediators/EnemyMediator';
-import { ParticleMediator } from '../mediators/ParticleMediator';
-import { PlasmaBeamWeaponMediator } from '../mediators/PlasmaBeamWeaponMediator';
-import { PlayerMediator } from '../mediators/PlayerMediator';
-import { ProjectileMediator } from '../mediators/ProjectileMediator';
-import { ScoreMediator } from '../mediators/ScoreMediator';
-import { WeaponDropMediator } from '../mediators/WeaponDropMediator';
-import { WeaponSystemMediator } from '../mediators/WeaponSystemMediator';
+import { CombatMediator } from '../mediators/combat/CombatMediator';
+import { PlasmaBeamWeaponMediator } from '../mediators/combat/PlasmaBeamWeaponMediator';
+import { ProjectileMediator } from '../mediators/combat/ProjectileMediator';
+import { WeaponDropMediator } from '../mediators/combat/WeaponDropMediator';
+import { WeaponSystemMediator } from '../mediators/combat/WeaponSystemMediator';
+import { BackgroundMediator } from '../mediators/fx/BackgroundMediator';
+import { ParticleMediator } from '../mediators/fx/ParticleMediator';
+import { BuffDropMediator } from '../mediators/gameplay/BuffDropMediator';
+import { EnemyMediator } from '../mediators/gameplay/EnemyMediator';
+import { PlayerMediator } from '../mediators/gameplay/PlayerMediator';
+import { ScoreMediator } from '../mediators/ui/ScoreMediator';
 import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import { BuffPool } from '../pools/BuffPool';
 import { EnemyPool } from '../pools/EnemyPool';
+import { HitboxPool } from '../pools/HitboxPool';
 import { ParticlePool } from '../pools/ParticlePool';
-import { ProjectilePool } from '../pools/ProjectilePool';
 import { WeaponPool } from '../pools/WeaponPickupPool';
 import { CollisionService } from '../services/CollisionService';
 import { GameUi } from '../ui/GameUi';
-import { BackgroundView } from '../views/BackgroundView';
-import { PlasmaBeamView } from '../views/PlasmaBeamView';
-import { PlayerView } from '../views/PlayerView';
+import { PlasmaBeamView } from '../views/combat/PlasmaBeamView';
+import { BackgroundView } from '../views/fx/BackgroundView';
+import { PlayerView } from '../views/gameplay/PlayerView';
 import { WeaponSystem } from '../weapons/WeaponSystem';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
@@ -30,7 +30,6 @@ import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
-
 /**
  * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
@@ -47,7 +46,7 @@ export class GameContext {
     private enemyPool!: EnemyPool;
     private buffPool!: BuffPool;
     private weaponPool!: WeaponPool;
-    private projectilePool!: ProjectilePool;
+    private projectilePool!: HitboxPool;
     private buffSystem!: BuffSystem;
     private weaponSystem!: WeaponSystem;
 
@@ -86,7 +85,7 @@ export class GameContext {
     // =========================================================================
 
     private initPoolsAndSystems(): void {
-        this.projectilePool = new ProjectilePool(this.app);
+        this.projectilePool = new HitboxPool(gameConfig);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
         this.buffPool = new BuffPool(this.app);
         this.weaponPool = new WeaponPool(this.app);
@@ -100,7 +99,7 @@ export class GameContext {
     private initViews(): void {
         this.backgroundView = new BackgroundView(this.app, gameConfig);
         this.playerView = new PlayerView(this.app, gameConfig);
-        this.plasmaBeamView = new PlasmaBeamView(this.app);
+        this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
 
         // Strict Z-Ordering on Scene Graph
         this.app.stage.addChild(this.backgroundView);

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../core/GameConfig';
-import { EnemyView } from '../views/EnemyView';
-import type { EnemyProfile } from '../views/types/EnemyProfile';
+import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
+import { EnemyView } from '../views/gameplay/EnemyView';
 
 export class EnemyPool {
     public readonly activeEnemies: EnemyView[] = [];

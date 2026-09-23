@@ -1,4 +1,4 @@
-import { EnemyType } from '../views/types/EnemyType';
+import { EnemyType } from '../views/combat/types/EnemyType';
 import type { SpawnPattern } from './SpawnPattern';
 import { DefaultSpawnPattern } from './patterns/DefaultSpawnPattern';
 import { SineChainSpawnPattern } from './patterns/SineChainSpawnPattern';

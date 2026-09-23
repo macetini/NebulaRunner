@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
-import { GlowEffectFactory } from '../factories/GlowEffectFactory';
+import { BuffType, type BuffType as BuffTypeValue } from '../../buffs/BuffType';
+import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
 
-export class WeaponPickupView extends PIXI.Container {
-    public weaponId: string;
+export class BuffView extends PIXI.Container {
+    public type: BuffTypeValue;
     public velocityX = 0;
     public velocityY = 0;
     private readonly aura: PIXI.Graphics;
@@ -11,28 +12,28 @@ export class WeaponPickupView extends PIXI.Container {
     private phase = 0;
     private animationTime = 0;
 
-    constructor(texture: PIXI.Texture, weaponId: string) {
+    constructor(texture: PIXI.Texture, type: BuffTypeValue) {
         super();
-        this.weaponId = weaponId;
-
+        this.type = type;
         this.aura = new PIXI.Graphics()
-            .circle(0, 0, 20)
-            .stroke({ width: 2, color: 0x00F0FF, alpha: 0.4 });
-        this.aura.alpha = 0.35;
-
+            .circle(0, 0, 25)
+            .stroke({ width: 2, color: 0xFFFFFF, alpha: 0.3 });
+        this.aura.alpha = 0.3;
         this.sprite = new PIXI.Sprite(texture);
         this.sprite.anchor.set(0.5);
-
         this.addChild(this.aura, this.sprite);
-        this.setTexture(texture, weaponId);
+        this.setType(texture, type);
         this.visible = false;
     }
 
-    public setTexture(texture: PIXI.Texture, weaponId: string): void {
+    public setType(texture: PIXI.Texture, type: BuffTypeValue): void {
         this.sprite.texture = texture;
-        this.weaponId = weaponId;
-        this.filters = [GlowEffectFactory.createBuff(0x00F0FF)];
-        this.aura.tint = 0x00F0FF;
+        this.type = type;
+        const color = type === BuffType.SHIELD
+            ? 0x55CCFF
+            : type === BuffType.EXPLOSION ? 0xFF6633 : 0xFFEE00;
+        this.filters = [GlowEffectFactory.createBuff(color)];
+        this.aura.tint = color;
     }
 
     public resetPosition(x: number, y: number, velocityY: number): void {
@@ -45,7 +46,7 @@ export class WeaponPickupView extends PIXI.Container {
         this.scale.set(1);
         this.alpha = 1;
         this.aura.scale.set(1);
-        this.aura.alpha = 0.35;
+        this.aura.alpha = 0.3;
         this.visible = true;
     }
 

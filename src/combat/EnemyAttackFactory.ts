@@ -1,4 +1,4 @@
-import { EnemyType } from '../views/types/EnemyType';
+import { EnemyType } from '../views/combat/types/EnemyType';
 import {
     NoAttackStrategy,
     RangedAttackStrategy,

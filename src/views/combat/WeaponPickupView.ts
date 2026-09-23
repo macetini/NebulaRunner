@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js';
-import { BuffType, type BuffType as BuffTypeValue } from '../buffs/BuffType';
-import { GlowEffectFactory } from '../factories/GlowEffectFactory';
+import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
 
-export class BuffView extends PIXI.Container {
-    public type: BuffTypeValue;
+export class WeaponPickupView extends PIXI.Container {
+    public weaponId: string;
     public velocityX = 0;
     public velocityY = 0;
     private readonly aura: PIXI.Graphics;
@@ -12,28 +11,28 @@ export class BuffView extends PIXI.Container {
     private phase = 0;
     private animationTime = 0;
 
-    constructor(texture: PIXI.Texture, type: BuffTypeValue) {
+    constructor(texture: PIXI.Texture, weaponId: string) {
         super();
-        this.type = type;
+        this.weaponId = weaponId;
+
         this.aura = new PIXI.Graphics()
-            .circle(0, 0, 25)
-            .stroke({ width: 2, color: 0xFFFFFF, alpha: 0.3 });
-        this.aura.alpha = 0.3;
+            .circle(0, 0, 20)
+            .stroke({ width: 2, color: 0x00F0FF, alpha: 0.4 });
+        this.aura.alpha = 0.35;
+
         this.sprite = new PIXI.Sprite(texture);
         this.sprite.anchor.set(0.5);
+
         this.addChild(this.aura, this.sprite);
-        this.setType(texture, type);
+        this.setTexture(texture, weaponId);
         this.visible = false;
     }
 
-    public setType(texture: PIXI.Texture, type: BuffTypeValue): void {
+    public setTexture(texture: PIXI.Texture, weaponId: string): void {
         this.sprite.texture = texture;
-        this.type = type;
-        const color = type === BuffType.SHIELD
-            ? 0x55CCFF
-            : type === BuffType.EXPLOSION ? 0xFF6633 : 0xFFEE00;
-        this.filters = [GlowEffectFactory.createBuff(color)];
-        this.aura.tint = color;
+        this.weaponId = weaponId;
+        this.filters = [GlowEffectFactory.createBuff(0x00F0FF)];
+        this.aura.tint = 0x00F0FF;
     }
 
     public resetPosition(x: number, y: number, velocityY: number): void {
@@ -46,7 +45,7 @@ export class BuffView extends PIXI.Container {
         this.scale.set(1);
         this.alpha = 1;
         this.aura.scale.set(1);
-        this.aura.alpha = 0.3;
+        this.aura.alpha = 0.35;
         this.visible = true;
     }
 

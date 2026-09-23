@@ -1,17 +1,16 @@
 import * as PIXI from 'pixi.js';
-
-import { EnemyAttackFactory } from '../combat/EnemyAttackFactory';
-import type { EnemyAttackStrategy } from '../combat/EnemyAttackStrategy';
-import { EnemyFactory } from '../core/EnemyFactory';
-import type { GameConfig } from '../core/GameConfig';
-import { GameSignals } from '../core/GameSignals';
-import type { IContextItem } from '../core/meta/IContextItem';
-import type { SignalBus } from '../core/SignalBus';
-import type { EnemyPool } from "../pools/EnemyPool";
-import type { QueuedEnemy } from '../spawning/SpawnPattern';
-import { SpawnPatternFactory } from '../spawning/SpawnPatternFactory';
-import type { EnemyView } from '../views/EnemyView';
-import type { PlayerView } from '../views/PlayerView';
+import { EnemyAttackFactory } from '../../combat/EnemyAttackFactory';
+import type { EnemyAttackStrategy } from '../../combat/EnemyAttackStrategy';
+import { EnemyFactory } from '../../core/EnemyFactory';
+import type { GameConfig } from '../../core/GameConfig';
+import { GameSignals } from '../../core/GameSignals';
+import type { IContextItem } from '../../core/meta/IContextItem';
+import type { SignalBus } from '../../core/SignalBus';
+import type { EnemyPool } from '../../pools/EnemyPool';
+import type { QueuedEnemy } from '../../spawning/SpawnPattern';
+import { SpawnPatternFactory } from '../../spawning/SpawnPatternFactory';
+import type { EnemyView } from '../../views/gameplay/EnemyView';
+import type { PlayerView } from '../../views/gameplay/PlayerView';
 
 type EnemyAttackBinding = {
     type: EnemyView['type'];

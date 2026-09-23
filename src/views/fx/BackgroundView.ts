@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from '../core/GameConfig';
-import backgroundFragment from '../shaders/background.frag.glsl?raw';
-import backgroundVertex from '../shaders/background.vert.glsl?raw';
+import type { GameConfig } from '../../core/GameConfig';
+import backgroundFragment from '../../shaders/background.frag.glsl?raw';
+import backgroundVertex from '../../shaders/background.vert.glsl?raw';
 
 export class BackgroundView extends PIXI.Container {
     private readonly shaderFilter: PIXI.Filter;
