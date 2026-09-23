@@ -4,7 +4,7 @@ import type { IContextItem } from "../../core/meta/IContextItem";
 import type { SignalBus } from "../../core/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 
-export class ProjectileMediator implements IContextItem {
+export class HitBoxMediator implements IContextItem {
     private readonly pool: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;

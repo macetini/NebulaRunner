@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 import { BuffSystem } from '../buffs/BuffSystem';
 import { CombatMediator } from '../mediators/combat/CombatMediator';
 import { PlasmaBeamWeaponMediator } from '../mediators/combat/PlasmaBeamWeaponMediator';
-import { ProjectileMediator } from '../mediators/combat/ProjectileMediator';
+import { HitBoxMediator } from '../mediators/combat/HitBoxMediator';
 import { WeaponDropMediator } from '../mediators/combat/WeaponDropMediator';
 import { WeaponSystemMediator } from '../mediators/combat/WeaponSystemMediator';
 import { BackgroundMediator } from '../mediators/fx/BackgroundMediator';
@@ -128,7 +128,7 @@ export class GameContext {
         // Buffs & Combat Feedback
         this.updatables.push(
             new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
-            new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height),
+            new HitBoxMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height),
             new CombatMediator(this.app.stage, this.signalBus),
         );
 

@@ -1,8 +1,8 @@
+import { GameSignals } from "../../core/GameSignals";
 import type { IContextItem } from "../../core/meta/IContextItem";
 import type { SignalBus } from "../../core/SignalBus";
-import type { WeaponSystem } from "../../weapons/WeaponSystem";
-import { GameSignals } from "../../core/GameSignals";
 import { defaultWeaponId } from "../../weapons/WeaponRegistry";
+import type { WeaponSystem } from "../../weapons/WeaponSystem";
 
 export class WeaponSystemMediator implements IContextItem {
     private readonly weapons: WeaponSystem;
