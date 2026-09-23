@@ -1,8 +1,11 @@
 import * as PIXI from 'pixi.js';
-import { GlowEffectFactory } from '../effects/GlowEffectFactory';
+import { GlowEffectFactory } from '../factories/GlowEffectFactory';
+import type { ProjectileSpawnOptions } from '../weapons/config/ProjectileConfig';
 
 export class BulletView extends PIXI.Sprite {
     public isEnemy: boolean = false;
+    public damage = 1;
+    public isPiercing = false;
     private static playerTexture: PIXI.Texture | null = null;
     private static enemyTexture: PIXI.Texture | null = null;
 
@@ -29,5 +32,21 @@ export class BulletView extends PIXI.Sprite {
         this.isEnemy = isEnemy;
         this.texture = isEnemy ? BulletView.enemyTexture! : BulletView.playerTexture!;
         this.filters = [GlowEffectFactory.createProjectile(isEnemy ? 0xFF3333 : 0xFFEE00)];
+        this.damage = 1;
+        this.isPiercing = false;
+        this.width = this.texture.width;
+        this.height = this.texture.height;
+    }
+
+    public configure(options: ProjectileSpawnOptions): void {
+        this.damage = options.damage ?? 1;
+        this.isPiercing = options.extraData?.isPiercing === true;
+
+        if (options.effect?.width !== undefined) {
+            this.width = options.effect.width;
+        }
+        if (options.effect?.height !== undefined) {
+            this.height = options.effect.height;
+        }
     }
 }

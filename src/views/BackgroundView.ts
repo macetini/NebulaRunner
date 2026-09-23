@@ -7,8 +7,8 @@ export class BackgroundView extends PIXI.Container {
     private readonly shaderFilter: PIXI.Filter;
     private readonly shaderSprite: PIXI.Sprite;
     private readonly backgroundSpeed: number;
-    private movementSpeed = 1;
 
+    private movementSpeed = 1;
     private nebulaTime = 0;
     private distance = 0;
 

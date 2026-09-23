@@ -1,4 +1,4 @@
-import type { BuffManager } from '../buffs/BuffManager';
+import type { BuffSystem } from '../buffs/BuffSystem';
 import { BuffType } from '../buffs/BuffType';
 import type { GameConfig } from '../core/GameConfig';
 import { GameSignals } from "../core/GameSignals";
@@ -7,6 +7,7 @@ import type { SignalBus } from "../core/SignalBus";
 import type { BuffPool } from '../pools/BuffPool';
 import type { EnemyPool } from "../pools/EnemyPool";
 import type { ProjectilePool } from "../pools/ProjectilePool";
+import type { WeaponPool } from '../pools/WeaponPickupPool';
 import type { BulletView } from "../views/BulletView";
 import type { EnemyView } from "../views/EnemyView";
 import type { PlayerView } from "../views/PlayerView";
@@ -19,37 +20,48 @@ import { EnemyType } from '../views/types/EnemyType';
  *
  */
 export class CollisionService implements IContextItem {
-    private readonly player: PlayerView;
-    private readonly projectilePool: ProjectilePool;
-    private readonly enemyPool: EnemyPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
+
+    private readonly player: PlayerView;
+
+    private readonly projectilePool: ProjectilePool;
     private readonly buffPool: BuffPool;
-    private readonly buffManager: BuffManager;
+    private readonly weaponPool: WeaponPool;
+    private readonly enemyPool: EnemyPool;
+
+    private readonly buffSystem: BuffSystem;
 
     constructor(
+        signalBus: SignalBus,
+        config: GameConfig,
         player: PlayerView,
         projectilePool: ProjectilePool,
         enemyPool: EnemyPool,
-        signalBus: SignalBus,
-        config: GameConfig,
+        weaponPool: WeaponPool,
         buffPool: BuffPool,
-        buffManager: BuffManager,
+        buffManager: BuffSystem,
     ) {
-        this.player = player;
-        this.projectilePool = projectilePool;
-        this.enemyPool = enemyPool;
         this.signalBus = signalBus;
         this.config = config;
+
+        this.player = player;
+
+        this.projectilePool = projectilePool;
+        this.enemyPool = enemyPool;
         this.buffPool = buffPool;
-        this.buffManager = buffManager;
+        this.weaponPool = weaponPool;
+
+        this.buffSystem = buffManager;
     }
 
     public update(): void {
         const bullets = this.projectilePool.activeBullets;
         const enemies = this.enemyPool.activeEnemies;
+
         this.checkBulletWithEnemyCollision(bullets, enemies);
-        this.checkPlayerWithBuffCollision();
+        this.checkPlayerWithBuffDropCollision();
+        this.checkPlayerWithWeaponDropCollision();
 
         if (this.config.godMode === false || this.player.boostActive) {
             this.checkEnemyWithPlayerCollision(this.player, enemies);
@@ -68,7 +80,7 @@ export class CollisionService implements IContextItem {
                     if (player.boostActive) {
                         continue;
                     }
-                    if (this.buffManager.consumeShield()) {
+                    if (this.buffSystem.consumeShield()) {
                         this.player.triggerShieldHit();
                         return;
                     }
@@ -82,7 +94,7 @@ export class CollisionService implements IContextItem {
         }
     }
 
-    private checkPlayerWithBuffCollision(): void {
+    private checkPlayerWithBuffDropCollision(): void {
         const buffs = this.buffPool.activeBuffs;
         for (let index = buffs.length - 1; index >= 0; index -= 1) {
             const buff = buffs[index];
@@ -95,6 +107,19 @@ export class CollisionService implements IContextItem {
             }
         }
     }
+
+    private checkPlayerWithWeaponDropCollision(): void {
+        const weaponDrops = this.weaponPool.activeWeaponPickups;
+        for (let index = weaponDrops.length - 1; index >= 0; index -= 1) {
+            const weaponDrop = weaponDrops[index];
+
+            if (this.checkCollision(this.player.x, this.player.y, weaponDrop.x, weaponDrop.y)) {
+                this.weaponPool.recycle(weaponDrop, index);
+                this.signalBus.dispatch(GameSignals.WEAPON_PICKED_UP, { weaponId: weaponDrop.weaponId });
+            }
+        }
+    }
+
 
     private triggerExplosion(x: number, y: number): void {
         const enemies = this.enemyPool.activeEnemies;
@@ -131,7 +156,7 @@ export class CollisionService implements IContextItem {
                 const enemy = enemies[j];
 
                 if (this.checkCollision(bullet.x, bullet.y, enemy.x, enemy.y)) {
-                    const enemyDefeated = enemy.takeHit();
+                    const enemyDefeated = enemy.takeHit(bullet.damage);
                     this.signalBus.dispatch(GameSignals.ENEMY_DIED, {
                         x: enemy.x,
                         y: enemy.y,
@@ -140,7 +165,9 @@ export class CollisionService implements IContextItem {
                         color: enemy.color,
                     });
 
-                    this.projectilePool.recycle(bullet, i);
+                    if (!bullet.isPiercing) {
+                        this.projectilePool.recycle(bullet, i);
+                    }
                     if (enemyDefeated) {
                         this.enemyPool.recycle(enemy, j);
                     }
@@ -158,7 +185,7 @@ export class CollisionService implements IContextItem {
      * @param player
      * @param enemies
      */
-    checkEnemyWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
+    private checkEnemyWithPlayerCollision(player: PlayerView, enemies: EnemyView[]): void {
         for (let i = enemies.length - 1; i >= 0; i--) {
             const enemy = enemies[i];
             if (enemy.type === EnemyType.STATIC_BOX) {
@@ -177,7 +204,7 @@ export class CollisionService implements IContextItem {
                     continue;
                 }
                 this.enemyPool.recycle(enemy, i);
-                if (this.buffManager.consumeShield()) {
+                if (this.buffSystem.consumeShield()) {
                     this.player.triggerShieldHit();
                     return;
                 }

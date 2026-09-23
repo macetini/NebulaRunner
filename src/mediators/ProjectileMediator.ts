@@ -16,12 +16,6 @@ export class ProjectileMediator implements IContextItem {
         this.config = config;
         this.screenHeight = screenHeight;
 
-        this.signalBus.addEventListener(GameSignals.PLAYER_FIRED, (e: Event) => {
-            const customEvent = e as CustomEvent;
-            const { x, y } = customEvent.detail;
-            this.pool.spawn(x, y - 25, false);
-        });
-
         this.signalBus.addEventListener(GameSignals.ENEMY_FIRED, (e: Event) => {
             const customEvent = e as CustomEvent;
             const { x, y } = customEvent.detail;

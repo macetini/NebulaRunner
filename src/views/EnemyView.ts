@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import type { GameConfig } from '../core/GameConfig';
-import { GlowEffectFactory } from '../effects/GlowEffectFactory';
+import { GlowEffectFactory } from '../factories/GlowEffectFactory';
 import { EnemyTextureFactory } from '../factories/EnemyTextureFactory';
 import { EnemyMovement } from '../movement/EnemyMovement';
 import type { EnemyProfile } from './types/EnemyProfile';
@@ -44,8 +44,8 @@ export class EnemyView extends PIXI.Sprite {
         this.movement.resetPosition(x, y);
     }
 
-    public takeHit(): boolean {
-        this.health -= 1;
+    public takeHit(damage: number = 1): boolean {
+        this.health -= damage;
         this.alpha = this.health > 0 ? 0.55 : 1;
         return this.health <= 0;
     }

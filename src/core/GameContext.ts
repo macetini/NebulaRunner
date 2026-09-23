@@ -1,23 +1,29 @@
 import * as PIXI from 'pixi.js';
 
-import { BuffManager } from '../buffs/BuffManager';
+import { BuffSystem } from '../buffs/BuffSystem';
 import { BackgroundMediator } from '../mediators/BackgroundMediator';
-import { BuffMediator } from '../mediators/BuffMediator';
-import { CombatFeedbackMediator } from '../mediators/CombatFeedbackMediator';
+import { BuffDropMediator } from '../mediators/BuffDropMediator';
+import { CombatMediator } from '../mediators/CombatMediator';
 import { EnemyMediator } from '../mediators/EnemyMediator';
 import { ParticleMediator } from '../mediators/ParticleMediator';
+import { PlasmaBeamWeaponMediator } from '../mediators/PlasmaBeamWeaponMediator';
 import { PlayerMediator } from '../mediators/PlayerMediator';
 import { ProjectileMediator } from '../mediators/ProjectileMediator';
 import { ScoreMediator } from '../mediators/ScoreMediator';
+import { WeaponDropMediator } from '../mediators/WeaponDropMediator';
+import { WeaponSystemMediator } from '../mediators/WeaponSystemMediator';
 import { LocalStorageSaveStorage } from '../persistence/LocalStorageSaveStorage';
 import { BuffPool } from '../pools/BuffPool';
 import { EnemyPool } from '../pools/EnemyPool';
 import { ParticlePool } from '../pools/ParticlePool';
 import { ProjectilePool } from '../pools/ProjectilePool';
+import { WeaponPool } from '../pools/WeaponPickupPool';
 import { CollisionService } from '../services/CollisionService';
 import { GameUi } from '../ui/GameUi';
 import { BackgroundView } from '../views/BackgroundView';
+import { PlasmaBeamView } from '../views/PlasmaBeamView';
 import { PlayerView } from '../views/PlayerView';
+import { WeaponSystem } from '../weapons/WeaponSystem';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
@@ -25,114 +31,161 @@ import { InputController } from './InputController';
 import type { IContextItem } from './meta/IContextItem';
 import { SignalBus } from './SignalBus';
 
-
 /**
- * Game context, manages game state and bootstraps the whole system.
- *
+ * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
 export class GameContext {
     private readonly app: PIXI.Application;
-    private input!: InputController;
-
     private readonly signalBus: SignalBus;
-    private readonly items: IContextItem[] = [];
-    private state: GameState = 'ready';
     private readonly gameUi = new GameUi(gameConfig.showPerformanceStats);
+    private readonly updatables: IContextItem[] = [];
+
+    private input!: InputController;
+    private state: GameState = 'ready';
+
+    // Core Pools & Systems
     private enemyPool!: EnemyPool;
+    private buffPool!: BuffPool;
+    private weaponPool!: WeaponPool;
     private projectilePool!: ProjectilePool;
-    private particleMediator!: ParticleMediator;
-    private buffManager!: BuffManager;
+    private buffSystem!: BuffSystem;
+    private weaponSystem!: WeaponSystem;
+
+    // Views
     private backgroundView!: BackgroundView;
     private playerView!: PlayerView;
+    private plasmaBeamView!: PlasmaBeamView;
 
-    constructor(
-        app: PIXI.Application,
-    ) {
+    // Passive Mediators requiring ticker updates outside updatables array
+    private particleMediator!: ParticleMediator;
+    private scoreMediator!: ScoreMediator;
+
+    constructor(app: PIXI.Application) {
         this.app = app;
         this.signalBus = new SignalBus();
     }
 
     /**
-     * Initializes the game.
+     * Bootstraps all game systems, stage views, and mediators.
      */
     public init(): void {
         this.input = new InputController(this.app.canvas, this.app.screen.width);
 
-        // Pools
+        this.initPoolsAndSystems();
+        this.initViews();
+        this.initMediators();
+        this.initServices();
+        this.initUiAndLifecycle();
+
+        // High-performance ticker update loop
+        this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
+    }
+
+    // =========================================================================
+    // Initialization Sub-methods
+    // =========================================================================
+
+    private initPoolsAndSystems(): void {
         this.projectilePool = new ProjectilePool(this.app);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
-        const buffPool = new BuffPool(this.app);
-        this.buffManager = new BuffManager(gameConfig, this.signalBus);
+        this.buffPool = new BuffPool(this.app);
+        this.weaponPool = new WeaponPool(this.app);
 
-        this.playerView = new PlayerView(this.app, gameConfig);
-        const playerMediator = new PlayerMediator(this.playerView, this.signalBus, this.input, this.buffManager);
+        this.buffSystem = new BuffSystem(gameConfig, this.signalBus);
+        this.weaponSystem = new WeaponSystem(this.projectilePool, this.signalBus);
 
-        // Mediators
+        this.updatables.push(this.buffSystem);
+    }
+
+    private initViews(): void {
         this.backgroundView = new BackgroundView(this.app, gameConfig);
-        const backgroundMediator = new BackgroundMediator(this.backgroundView, () => this.playerView.movementSpeedMultiplierValue);
+        this.plasmaBeamView = new PlasmaBeamView(this.app);
+        this.playerView = new PlayerView(this.app, gameConfig);
+
+        // Strict Z-Ordering on Scene Graph
         this.app.stage.addChild(this.backgroundView);
-        this.app.renderer.on('resize', (width, height) => this.backgroundView.resize(width, height));
-        this.items.push(backgroundMediator);
-
+        this.app.stage.addChild(this.plasmaBeamView);
         this.app.stage.addChild(this.playerView);
-        this.items.push(playerMediator);
 
-        const enemyMediator = new EnemyMediator(this.app, this.enemyPool, gameConfig, this.playerView, this.signalBus);
-        this.items.push(enemyMediator);
+        // Window resize binding
+        this.app.renderer.on('resize', (w, h) => this.backgroundView.resize(w, h));
+    }
 
-        this.items.push(this.buffManager);
-        this.items.push(new BuffMediator(buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView));
+    private initMediators(): void {
+        // Player & Background
+        this.updatables.push(
+            new BackgroundMediator(this.backgroundView, () => this.playerView.movementSpeedMultiplierValue),
+            new PlayerMediator(this.playerView, this.signalBus, this.input, this.buffSystem, this.weaponSystem),
+            new EnemyMediator(this.app, this.enemyPool, gameConfig, this.playerView, this.signalBus),
+        );
 
-        const projectileMediator = new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height);
-        this.items.push(projectileMediator);
+        // Weapon Mediators
+        this.updatables.push(
+            new WeaponSystemMediator(this.weaponSystem, this.signalBus),
+            new PlasmaBeamWeaponMediator(this.plasmaBeamView, this.signalBus),
+            new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
+        );
 
-        const combatFeedbackMediator = new CombatFeedbackMediator(this.app.stage, this.signalBus);
-        this.items.push(combatFeedbackMediator);
+        // Buffs & Combat Feedback
+        this.updatables.push(
+            new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
+            new ProjectileMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height),
+            new CombatMediator(this.app.stage, this.signalBus),
+        );
 
         // Particle System
         const particlePool = new ParticlePool(this.app, gameConfig);
         this.particleMediator = new ParticleMediator(particlePool, this.signalBus);
 
-        const scoreMediator = new ScoreMediator(this.gameUi.score, this.signalBus, new LocalStorageSaveStorage());
+        // Score Mediator
+        this.scoreMediator = new ScoreMediator(this.gameUi.score, this.signalBus, new LocalStorageSaveStorage());
+    }
 
-        this.gameUi.state.showReady(this.app.screen.width, this.app.screen.height, scoreMediator.best);
-        this.app.stage.addChild(this.gameUi);
-
-        // Services
+    private initServices(): void {
         const collisionService = new CollisionService(
+            this.signalBus,
+            gameConfig,
             this.playerView,
             this.projectilePool,
             this.enemyPool,
-            this.signalBus,
-            gameConfig,
-            buffPool,
-            this.buffManager,
+            this.weaponPool,
+            this.buffPool,
+            this.buffSystem,
         );
-        this.items.push(collisionService);
+        this.updatables.push(collisionService);
+    }
+
+    private initUiAndLifecycle(): void {
+        this.gameUi.state.showReady(this.app.screen.width, this.app.screen.height, this.scoreMediator.best);
+        this.app.stage.addChild(this.gameUi);
 
         this.signalBus.addEventListener(GameSignals.PLAYER_DIED, () => {
             this.state = 'gameOver';
             this.gameUi.state.showGameOver(
                 this.app.screen.width,
                 this.app.screen.height,
-                scoreMediator.current,
-                scoreMediator.best,
+                this.scoreMediator.current,
+                this.scoreMediator.best,
             );
             this.app.stage.addChild(this.gameUi);
         });
-
-        //Update Loop
-        this.app.ticker.add((ticker) => this.update(ticker.deltaTime));
     }
 
+    // =========================================================================
+    // Game Loop & Lifecycle
+    // =========================================================================
+
+    /**
+     * Ticker update loop optimized for zero GC allocations.
+     */
     public update(delta: number = 0): void {
         this.gameUi.updatePerformanceStats(this.app.ticker.FPS, delta, this.app.screen.width);
         this.gameUi.updateBoostCharge(this.playerView.boostChargeValue, this.playerView.boostMaximumCharge);
         this.gameUi.updateBuffStatus(
-            this.buffManager.rapidFireTimeRemaining,
-            this.buffManager.rapidFireDuration,
-            this.buffManager.shieldTimeRemaining,
-            this.buffManager.shieldDuration,
+            this.buffSystem.rapidFireTimeRemaining,
+            this.buffSystem.rapidFireDuration,
+            this.buffSystem.shieldTimeRemaining,
+            this.buffSystem.shieldDuration,
         );
 
         if (this.state !== 'playing') {
@@ -143,16 +196,22 @@ export class GameContext {
             return;
         }
 
-        for (const item of this.items) {
-            item.update(delta);
+        // Fast index-based loop (No Iterator GC allocations)
+        const count = this.updatables.length;
+        for (let i = 0; i < count; i++) {
+            this.updatables[i].update(delta);
         }
+
         this.particleMediator.update(delta);
         this.gameUi.score.updateDistance(this.backgroundView.distanceTraveled);
     }
 
     private startRun(): void {
         this.enemyPool.clear();
+        this.buffPool.clear();
+        this.weaponPool.clear();
         this.projectilePool.clear();
+
         this.backgroundView.resetDistance();
         this.gameUi.score.updateDistance(0);
         this.state = 'playing';

@@ -11,12 +11,13 @@ type FeedbackEffect = {
     rotationSpeed: number;
 };
 
-export class CombatFeedbackMediator implements IContextItem {
+export class CombatMediator implements IContextItem {
     private readonly stage: PIXI.Container;
     private readonly effects: FeedbackEffect[] = [];
 
     constructor(stage: PIXI.Container, signalBus: SignalBus) {
         this.stage = stage;
+
         signalBus.addEventListener(GameSignals.ENEMY_DIED, this.handleEnemyHit);
         signalBus.addEventListener(GameSignals.PLAYER_DIED, this.handlePlayerDeath);
         signalBus.addEventListener(GameSignals.EXPLOSION_TRIGGERED, this.handleExplosion);
@@ -25,6 +26,7 @@ export class CombatFeedbackMediator implements IContextItem {
     public update(delta: number): void {
         for (let index = this.effects.length - 1; index >= 0; index -= 1) {
             const effect = this.effects[index];
+
             effect.age += delta;
             effect.view.scale.set(1 + effect.age * effect.growth);
             effect.view.rotation += effect.rotationSpeed;
@@ -43,11 +45,15 @@ export class CombatFeedbackMediator implements IContextItem {
             y: number;
             defeated: boolean;
         }>).detail;
+
         const view = new PIXI.Graphics()
             .circle(0, 0, defeated ? 16 : 10)
             .stroke({ width: defeated ? 3 : 2, color: defeated ? 0xFFFFFF : 0xFFEE00 });
+
         view.position.set(x, y);
+
         this.stage.addChild(view);
+
         this.effects.push({
             view,
             age: 0,
@@ -59,15 +65,20 @@ export class CombatFeedbackMediator implements IContextItem {
 
     private readonly handlePlayerDeath = (event: Event): void => {
         const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
+
         const view = new PIXI.Graphics();
+
         for (let index = 0; index < 8; index += 1) {
             const angle = (Math.PI * 2 * index) / 8;
             view.moveTo(Math.cos(angle) * 8, Math.sin(angle) * 8);
             view.lineTo(Math.cos(angle) * 28, Math.sin(angle) * 28);
         }
+
         view.stroke({ width: 3, color: 0x00FFFF });
         view.position.set(x, y);
+
         this.stage.addChild(view);
+
         this.effects.push({
             view,
             age: 0,
@@ -79,6 +90,7 @@ export class CombatFeedbackMediator implements IContextItem {
 
     private readonly handleExplosion = (event: Event): void => {
         const { x, y } = (event as CustomEvent<{ x: number; y: number }>).detail;
+
         const view = new PIXI.Graphics()
             .circle(0, 0, 900)
             .fill({ color: 0xFFFFFF, alpha: 0.12 })
@@ -90,9 +102,12 @@ export class CombatFeedbackMediator implements IContextItem {
             view.moveTo(Math.cos(angle) * 24, Math.sin(angle) * 24);
             view.lineTo(Math.cos(angle) * 56, Math.sin(angle) * 56);
         }
+
         view.stroke({ width: 3, color: 0xFFFFFF, alpha: 0.9 });
         view.position.set(x, y);
+
         this.stage.addChild(view);
+
         this.effects.push({
             view,
             age: 0,

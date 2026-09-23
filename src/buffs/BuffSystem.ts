@@ -4,7 +4,7 @@ import type { IContextItem } from '../core/meta/IContextItem';
 import type { SignalBus } from '../core/SignalBus';
 import { BuffType } from './BuffType';
 
-export class BuffManager implements IContextItem {
+export class BuffSystem implements IContextItem {
     private readonly config: GameConfig;
     private rapidFireRemaining = 0;
     private shieldRemaining = 0;

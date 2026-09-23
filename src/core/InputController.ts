@@ -26,8 +26,10 @@ export class InputController {
 
         globalThis.addEventListener('keydown', this.handleKeyDown);
         globalThis.addEventListener('keyup', this.handleKeyUp);
+
         canvas.addEventListener('pointerdown', this.handlePointerDown);
         canvas.addEventListener('pointermove', this.handlePointerMove);
+
         globalThis.addEventListener('pointerup', this.handlePointerEnd);
         globalThis.addEventListener('pointercancel', this.handlePointerEnd);
     }
@@ -39,6 +41,7 @@ export class InputController {
     public consumeStartRequest(): boolean {
         const requested = this.startRequested;
         this.startRequested = false;
+
         return requested;
     }
 
@@ -72,9 +75,11 @@ export class InputController {
         if (event.code === 'ArrowLeft' || event.code === 'KeyA') {
             this.state.left = false;
         }
+
         if (event.code === 'ArrowRight' || event.code === 'KeyD') {
             this.state.right = false;
         }
+
         if (event.code === 'Space') {
             this.state.fire = false;
         }

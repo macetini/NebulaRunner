@@ -6,7 +6,7 @@ import type { SignalBus } from '../core/SignalBus';
 import type { BuffPool } from '../pools/BuffPool';
 import type { PlayerView } from '../views/PlayerView';
 
-export class BuffMediator implements IContextItem {
+export class BuffDropMediator implements IContextItem {
     private readonly pool: BuffPool;
     private readonly config: GameConfig;
     private readonly screenHeight: number;
@@ -17,6 +17,7 @@ export class BuffMediator implements IContextItem {
         this.config = config;
         this.screenHeight = screenHeight;
         this.player = player;
+
         signalBus.addEventListener(GameSignals.ENEMY_DIED, this.handleEnemyDefeated);
         signalBus.addEventListener(GameSignals.RUN_RESTARTED, this.handleRestart);
     }
@@ -65,11 +66,13 @@ export class BuffMediator implements IContextItem {
             y: number;
             defeated: boolean;
         }>).detail;
+
         if (defeated && Math.random() < this.config.buffDropChance) {
             const dropRoll = Math.random();
             const type = dropRoll < 0.34
                 ? BuffType.RAPID_FIRE
                 : dropRoll < 0.67 ? BuffType.SHIELD : BuffType.EXPLOSION;
+
             this.pool.spawn(x, y, this.config.buffFallSpeed, type);
         }
     };
