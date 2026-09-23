@@ -1,7 +1,6 @@
 type InputState = {
     left: boolean;
     right: boolean;
-    fire: boolean;
     touchActive: boolean;
     touchX: number;
 };
@@ -11,7 +10,6 @@ export class InputController {
     private readonly state: InputState = {
         left: false,
         right: false,
-        fire: false,
         touchActive: false,
         touchX: 0,
     };
@@ -63,7 +61,6 @@ export class InputController {
             this.state.right = true;
         }
         if (event.code === 'Space') {
-            this.state.fire = true;
             this.startRequested = true;
         }
         if (event.code === 'ArrowUp' || event.code === 'KeyW') {
@@ -79,10 +76,6 @@ export class InputController {
         if (event.code === 'ArrowRight' || event.code === 'KeyD') {
             this.state.right = false;
         }
-
-        if (event.code === 'Space') {
-            this.state.fire = false;
-        }
     };
 
     private readonly handlePointerDown = (event: PointerEvent): void => {
@@ -94,7 +87,6 @@ export class InputController {
         this.pointerStartY = event.clientY;
         this.startRequested = true;
         this.state.touchActive = true;
-        this.state.fire = true;
         this.state.touchX = this.getCanvasX(event.clientX);
     };
 
@@ -116,7 +108,6 @@ export class InputController {
         this.activePointerId = null;
         this.pointerStartY = 0;
         this.state.touchActive = false;
-        this.state.fire = false;
     };
 
     private getCanvasX(clientX: number): number {
