@@ -99,13 +99,13 @@ export class GameContext {
 
     private initViews(): void {
         this.backgroundView = new BackgroundView(this.app, gameConfig);
-        this.plasmaBeamView = new PlasmaBeamView(this.app);
         this.playerView = new PlayerView(this.app, gameConfig);
+        this.plasmaBeamView = new PlasmaBeamView(this.app);
 
         // Strict Z-Ordering on Scene Graph
         this.app.stage.addChild(this.backgroundView);
-        this.app.stage.addChild(this.plasmaBeamView);
         this.app.stage.addChild(this.playerView);
+        this.app.stage.addChild(this.plasmaBeamView);
 
         // Window resize binding
         this.app.renderer.on('resize', (w, h) => this.backgroundView.resize(w, h));
