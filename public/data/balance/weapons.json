@@ -1,0 +1,28 @@
+[
+  {
+    "id": "plasma_beam",
+    "damage": 0.1,
+    "fireCooldown": 10,
+    "piercing": true,
+    "projectile": {
+      "projectileId": "plasma_beam",
+      "vx": 0,
+      "vy": -30,
+      "owner": "player",
+      "behavior": "beam"
+    }
+  },
+  {
+    "id": "blaster",
+    "damage": 1,
+    "fireCooldown": 10,
+    "piercing": false,
+    "projectile": {
+      "projectileId": "blaster",
+      "vx": 0,
+      "vy": -30,
+      "owner": "player",
+      "behavior": "straight"
+    }
+  }
+]

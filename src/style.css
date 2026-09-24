@@ -21,3 +21,58 @@ canvas {
   transform: translate(-50%, -50%);
   touch-action: none;
 }
+
+.loading-screen {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  background: #000015;
+  color: #d8f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+  opacity: 1;
+}
+
+.loading-screen--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-screen__content {
+  width: min(320px, calc(100vw - 48px));
+  text-align: center;
+}
+
+.loading-screen h1 {
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.loading-screen p {
+  margin: 0 0 20px;
+  color: #8caab5;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+}
+
+.loading-screen__track {
+  height: 4px;
+  overflow: hidden;
+  background: #19313d;
+}
+
+.loading-screen__progress {
+  height: 6px;
+  background: #53d7e8;
+  width: 0%;
+  transition: width 0.3s ease-out;
+}
+
+.loading-screen__progress--error {
+  background: #f44;
+}

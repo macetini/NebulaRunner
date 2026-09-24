@@ -2,6 +2,9 @@ export type GameConfig = {
     godMode: boolean;
     showWeaponHitboxes: boolean;
     showPerformanceStats: boolean;
+
+    weaponsDataUrl: string;
+
     playerInitialY: number;
     playerSpeed: number;
     boostDuration: number;
@@ -58,6 +61,9 @@ export const gameConfig: GameConfig = {
     godMode: true,
     showWeaponHitboxes: true,
     showPerformanceStats: true,
+
+    // URLs for external data
+    weaponsDataUrl: "/data/balance/weapons.json",
 
     // Player Settings
     playerInitialY: 610,
