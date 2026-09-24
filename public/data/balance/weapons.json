@@ -1,8 +1,21 @@
 [
   {
-    "id": "plasma_beam",
-    "damage": 0.1,
+    "id": "blaster",
+    "damage": 1.0,
     "fireCooldown": 10,
+    "piercing": false,
+    "projectile": {
+      "projectileId": "blaster_bolt",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "straight"
+    }
+  },
+  {
+    "id": "plasma_beam",
+    "damage": 0.25,
+    "fireCooldown": 1,
     "piercing": true,
     "projectile": {
       "projectileId": "plasma_beam",
@@ -13,16 +26,81 @@
     }
   },
   {
-    "id": "blaster",
-    "damage": 1,
-    "fireCooldown": 10,
+    "id": "spreadShot",
+    "damage": 0.8,
+    "fireCooldown": 14,
     "piercing": false,
     "projectile": {
-      "projectileId": "blaster",
+      "projectileId": "spread_pellet",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "spread"
+    }
+  },
+  {
+    "id": "pulseLaser",
+    "damage": 0.6,
+    "fireCooldown": 4,
+    "piercing": false,
+    "projectile": {
+      "projectileId": "pulse_laser",
       "vx": 0,
       "vy": 0,
       "owner": "player",
       "behavior": "straight"
+    }
+  },
+  {
+    "id": "rearVulcan",
+    "damage": 0.9,
+    "fireCooldown": 8,
+    "piercing": false,
+    "projectile": {
+      "projectileId": "vulcan_bullet",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "directional"
+    }
+  },
+  {
+    "id": "sonicBlade",
+    "damage": 2.2,
+    "fireCooldown": 20,
+    "piercing": true,
+    "projectile": {
+      "projectileId": "sonic_wave",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "wave"
+    }
+  },
+  {
+    "id": "homingSeeker",
+    "damage": 1.5,
+    "fireCooldown": 22,
+    "piercing": false,
+    "projectile": {
+      "projectileId": "seeker_missile",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "homing"
+    }
+  },
+  {
+    "id": "clusterBomb",
+    "damage": 3.5,
+    "fireCooldown": 32,
+    "piercing": true,
+    "projectile": {
+      "projectileId": "cluster_bomb",
+      "vx": 0,
+      "vy": 0,
+      "owner": "player",
+      "behavior": "explosive"
     }
   }
 ]

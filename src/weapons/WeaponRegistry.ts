@@ -33,7 +33,6 @@ export class WeaponRegistry {
             if (!factory) {
                 throw new Error(`Unknown weapon balance ID: ${weapon.id}`);
             }
-
             const weaponInstance = factory(weapon);
             this.register(weaponInstance);
         }
