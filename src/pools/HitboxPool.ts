@@ -1,4 +1,4 @@
-import { HitboxView } from "../views/combat/HitboxView";
+import { HitboxSprite } from "../views/combat/HitboxSprite";
 import type { ProjectileEmission } from "../projectiles/ProjectileEmission";
 
 export interface BeamHitboxOptions {
@@ -8,23 +8,23 @@ export interface BeamHitboxOptions {
 }
 
 export class HitboxPool {
-    public readonly activeHitboxes: HitboxView[] = [];
-    private readonly hitBoxView: HitboxView[] = [];
+    public readonly activeHitboxes: HitboxSprite[] = [];
+    private readonly hitBoxView: HitboxSprite[] = [];
     private readonly showDebugHitboxes: boolean;
 
     constructor(showDebugHitboxes: boolean = false) {
         this.showDebugHitboxes = showDebugHitboxes;
     }
 
-    public get activeBullets(): HitboxView[] {
+    public get getActive(): HitboxSprite[] {
         return this.activeHitboxes;
     }
 
-    public pool(emission: ProjectileEmission): HitboxView {
+    public pool(emission: ProjectileEmission): HitboxSprite {
         let hitbox = this.hitBoxView.find((h) => !h.visible);
 
         if (!hitbox) {
-            hitbox = new HitboxView();
+            hitbox = new HitboxSprite();
             this.hitBoxView.push(hitbox);
         }
 
@@ -37,22 +37,7 @@ export class HitboxPool {
         return hitbox;
     }
 
-    public recycleFrameBoundHitboxes(): void {
-        for (let i = this.activeHitboxes.length - 1; i >= 0; i--) {
-            const hitbox = this.activeHitboxes[i];
-            if (hitbox.isFrameBound) {
-                hitbox.visible = false;
-                hitbox.isFrameBound = false;
-                this.activeHitboxes.splice(i, 1);
-            }
-        }
-    }
-
-    public recycleBeamSegments(): void {
-        this.recycleFrameBoundHitboxes();
-    }
-
-    public recycle(hitbox: HitboxView, index: number): void {
+    public recycle(hitbox: HitboxSprite, index: number): void {
         hitbox.visible = false;
         this.activeHitboxes.splice(index, 1);
     }

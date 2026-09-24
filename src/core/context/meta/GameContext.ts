@@ -146,7 +146,7 @@ export class GameContext {
         // Buffs & Combat Feedback
         this.updatables.push(
             new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
-            new ProjectileMediator(this.hitboxPool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxContainer),
+            new ProjectileMediator(this.hitboxPool, this.signalBus, gameConfig, this.app.screen.height, this.playerView, this.debugHitboxContainer),
             new CombatMediator(this.app.stage, this.signalBus),
         );
 

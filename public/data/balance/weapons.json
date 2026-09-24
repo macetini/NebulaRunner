@@ -2,12 +2,13 @@
   {
     "id": "blaster",
     "damage": 1.0,
-    "fireCooldown": 10,
+    "fireCooldown": 1,
     "piercing": false,
     "projectile": {
-      "projectileId": "blaster_bolt",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "straight"
     }
@@ -18,9 +19,7 @@
     "fireCooldown": 1,
     "piercing": true,
     "projectile": {
-      "projectileId": "plasma_beam",
-      "vx": 0,
-      "vy": 0,
+      "width": 12,
       "owner": "player",
       "behavior": "beam"
     }
@@ -31,9 +30,10 @@
     "fireCooldown": 14,
     "piercing": false,
     "projectile": {
-      "projectileId": "spread_pellet",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "spread"
     }
@@ -44,9 +44,10 @@
     "fireCooldown": 4,
     "piercing": false,
     "projectile": {
-      "projectileId": "pulse_laser",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "straight"
     }
@@ -57,9 +58,10 @@
     "fireCooldown": 8,
     "piercing": false,
     "projectile": {
-      "projectileId": "vulcan_bullet",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "directional"
     }
@@ -70,9 +72,10 @@
     "fireCooldown": 20,
     "piercing": true,
     "projectile": {
-      "projectileId": "sonic_wave",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "wave"
     }
@@ -83,9 +86,10 @@
     "fireCooldown": 22,
     "piercing": false,
     "projectile": {
-      "projectileId": "seeker_missile",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "homing"
     }
@@ -96,9 +100,10 @@
     "fireCooldown": 32,
     "piercing": true,
     "projectile": {
-      "projectileId": "cluster_bomb",
       "vx": 0,
       "vy": 0,
+      "width": 5,
+      "height": 10,
       "owner": "player",
       "behavior": "explosive"
     }

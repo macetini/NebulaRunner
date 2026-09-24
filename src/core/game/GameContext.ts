@@ -60,7 +60,7 @@ export class GameContext {
     private weaponContainerView!: WeaponContainerView;
     private plasmaBeamView!: PlasmaBeamView;
 
-    private debugHitboxContainer?: PIXI.Container;
+    private debugHitboxLayer?: PIXI.Container;
 
     // Passive Mediators requiring ticker updates outside updatables array
     private particleMediator!: ParticleMediator;
@@ -120,8 +120,8 @@ export class GameContext {
         this.app.stage.addChild(this.weaponContainerView);
 
         if (gameConfig.showWeaponHitboxes) {
-            this.debugHitboxContainer = new PIXI.Container();
-            this.app.stage.addChild(this.debugHitboxContainer);
+            this.debugHitboxLayer = new PIXI.Container();
+            this.app.stage.addChild(this.debugHitboxLayer);
         }
 
         // Window resize binding
@@ -146,7 +146,7 @@ export class GameContext {
         // Buffs & Combat Feedback
         this.updatables.push(
             new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
-            new ProjectileMediator(this.hitboxPool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxContainer),
+            new ProjectileMediator(this.hitboxPool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxLayer, this.playerView),
             new CombatMediator(this.app.stage, this.signalBus),
         );
 

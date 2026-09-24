@@ -8,7 +8,7 @@ import type { BuffPool } from '../pools/BuffPool';
 import type { EnemyPool } from "../pools/EnemyPool";
 import type { HitboxPool } from "../pools/HitboxPool";
 import type { WeaponPool } from '../pools/WeaponPickupPool';
-import type { HitboxView } from '../views/combat/HitboxView';
+import type { HitboxSprite } from '../views/combat/HitboxSprite';
 import { EnemyType } from '../views/combat/types/EnemyType';
 import type { EnemyView } from '../views/gameplay/EnemyView';
 import type { PlayerView } from '../views/gameplay/PlayerView';
@@ -56,10 +56,10 @@ export class CollisionService implements IContextItem {
     }
 
     public update(): void {
-        const bullets = this.projectilePool.activeBullets;
+        const activeProjectiles = this.projectilePool.getActive;
         const enemies = this.enemyPool.activeEnemies;
 
-        this.checkBulletWithEnemyCollision(bullets, enemies);
+        this.checkBulletWithEnemyCollision(activeProjectiles, enemies);
         this.checkPlayerWithBuffDropCollision();
         this.checkPlayerWithWeaponDropCollision();
 
@@ -67,11 +67,11 @@ export class CollisionService implements IContextItem {
             this.checkEnemyWithPlayerCollision(this.player, enemies);
         }
         if (this.config.godMode === false) {
-            this.checkEnemyBulletWithPlayerCollision(bullets, this.player);
+            this.checkEnemyBulletWithPlayerCollision(activeProjectiles, this.player);
         }
     }
 
-    private checkEnemyBulletWithPlayerCollision(bullets: HitboxView[], player: PlayerView): void {
+    private checkEnemyBulletWithPlayerCollision(bullets: HitboxSprite[], player: PlayerView): void {
         for (let i = bullets.length - 1; i >= 0; i--) {
             const bullet = bullets[i];
             if (bullet.isEnemy) {
@@ -98,9 +98,11 @@ export class CollisionService implements IContextItem {
         const buffs = this.buffPool.activeBuffs;
         for (let index = buffs.length - 1; index >= 0; index -= 1) {
             const buff = buffs[index];
+
             if (this.checkCollision(this.player.x, this.player.y, buff.x, buff.y)) {
                 this.buffPool.recycle(buff, index);
                 this.signalBus.dispatch(GameSignals.BUFF_COLLECTED, { type: buff.type });
+
                 if (buff.type === BuffType.EXPLOSION) {
                     this.triggerExplosion(buff.x, buff.y);
                 }
@@ -142,12 +144,12 @@ export class CollisionService implements IContextItem {
      *
      * Checks if a bullet hits an enemy
      *
-     * @param bullets
+     * @param projectiles
      * @param enemies
      */
-    private checkBulletWithEnemyCollision(bullets: HitboxView[], enemies: EnemyView[]): void {
-        for (let i = bullets.length - 1; i >= 0; i--) {
-            const bullet = bullets[i];
+    private checkBulletWithEnemyCollision(projectiles: HitboxSprite[], enemies: EnemyView[]): void {
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            const bullet = projectiles[i];
             if (bullet.isEnemy) {
                 continue; // Enemy bullets do not damage other enemies
             }
