@@ -1,13 +1,13 @@
 import * as PIXI from 'pixi.js';
+import type { IContextItem } from "../../core/context/meta/IContextItem";
 import type { GameConfig } from "../../core/game/GameConfig";
 import { GameSignals } from "../../core/game/GameSignals";
-import type { IContextItem } from "../../core/context/meta/IContextItem";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
 
 export class ProjectileMediator implements IContextItem {
-    private readonly pool: HitboxPool;
+    private readonly hitBoxPool: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
 
@@ -21,7 +21,7 @@ export class ProjectileMediator implements IContextItem {
         screenHeight: number,
         debugContainer?: PIXI.Container
     ) {
-        this.pool = pool;
+        this.hitBoxPool = pool;
         this.signalBus = signalBus;
         this.config = config;
         this.screenHeight = screenHeight;
@@ -32,20 +32,15 @@ export class ProjectileMediator implements IContextItem {
     }
 
     private onPlayerFired = (e: Event): void => {
-        const { emissions } = (e as CustomEvent<{ emissions: ProjectileEmission[] }>).detail;
-        for (const emission of emissions) {
-            this.pool.pool(emission);
-        }
+        const emission = (e as CustomEvent<{ emission: ProjectileEmission }>).detail.emission;
+        this.hitBoxPool.pool(emission);
     };
 
-    private onEnemyFired = (e: Event): void => {
-        const customEvent = e as CustomEvent<{ x: number; y: number }>;
-        //const { x, y } = customEvent.detail;
-        //this.pool.spawn(x, y + 25, true);
+    private onEnemyFired = (_e: Event): void => {
     };
 
     public update(delta: number): void {
-        const hitboxes = this.pool.activeHitboxes;
+        const hitboxes = this.hitBoxPool.activeHitboxes;
         const enemySpeedStep = this.config.enemyProjectileSpeed * delta;
         const playerSpeedStep = this.config.projectileSpeed * delta;
         const lowerBound = this.screenHeight;
@@ -68,18 +63,18 @@ export class ProjectileMediator implements IContextItem {
             if (hitbox.isEnemy) {
                 hitbox.y += enemySpeedStep;
                 if (hitbox.y > lowerBound + hitbox.height) {
-                    this.pool.recycle(hitbox, i);
+                    this.hitBoxPool.recycle(hitbox, i);
                 }
             } else {
                 hitbox.y -= playerSpeedStep;
                 if (hitbox.y < -hitbox.height) {
-                    this.pool.recycle(hitbox, i);
+                    this.hitBoxPool.recycle(hitbox, i);
                 }
             }
         }
 
         // Purge instant frame-bound shader hitboxes
-        this.pool.recycleFrameBoundHitboxes();
+        this.hitBoxPool.recycleFrameBoundHitboxes();
     }
 
     public destroy(): void {

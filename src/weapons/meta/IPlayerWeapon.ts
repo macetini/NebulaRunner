@@ -7,5 +7,5 @@ export type WeaponFireContext = {
 
 export interface IPlayerWeapon {
     readonly id: string;
-    fire(context: WeaponFireContext): ProjectileEmission[];
+    fire(context: WeaponFireContext): ProjectileEmission;
 }

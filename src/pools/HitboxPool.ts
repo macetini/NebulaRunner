@@ -28,10 +28,11 @@ export class HitboxPool {
             this.hitBoxView.push(hitbox);
         }
 
-        hitbox.setType(emission.options.owner === "enemy");
+        hitbox.setType(emission.options.owner === 'enemy');
         hitbox.configure(emission.options, this.showDebugHitboxes);
         hitbox.position.set(emission.x, emission.y);
         hitbox.visible = true;
+
         this.activeHitboxes.push(hitbox);
         return hitbox;
     }

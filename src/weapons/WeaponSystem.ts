@@ -34,7 +34,7 @@ export class WeaponSystem implements IContextItem {
         return this.activeWeapon.id;
     }
 
-    public fire(x: number, y: number): ProjectileEmission[] {
+    public fire(x: number, y: number): ProjectileEmission {
         return this.activeWeapon.fire({
             x,
             y,

@@ -1,7 +1,7 @@
 import type { BuffSystem } from "../../buffs/BuffSystem";
+import type { IContextItem } from "../../core/context/meta/IContextItem";
 import { GameSignals } from "../../core/game/GameSignals";
 import type { InputController } from "../../core/game/InputController";
-import type { IContextItem } from "../../core/context/meta/IContextItem";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { PlayerView } from "../../views/gameplay/PlayerView";
 import type { WeaponSystem } from "../../weapons/WeaponSystem";
@@ -87,8 +87,8 @@ export class PlayerMediator implements IContextItem {
     private handleWeaponFiring(delta: number): void {
         this.fireTimer -= delta;
         if (this.fireTimer <= 0) {
-            const emissions = this.weapons.fire(this.view.x, this.view.y);
-            this.signalBus.dispatch(GameSignals.PLAYER_FIRED, { emissions });
+            const emission = this.weapons.fire(this.view.x, this.view.y);
+            this.signalBus.dispatch(GameSignals.PLAYER_FIRED, { emission });
             this.fireTimer = this.buffs.fireCooldown;
         }
     }

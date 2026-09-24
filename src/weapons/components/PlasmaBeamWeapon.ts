@@ -11,11 +11,11 @@ export class PlasmaBeamWeapon implements IPlayerWeapon {
         this.id = balance.id;
     }
 
-    public fire(context: WeaponFireContext): ProjectileEmission[] {
-        return [{
+    public fire(context: WeaponFireContext): ProjectileEmission {
+        return {
             x: context.x,
             y: context.y,
             options: this.balance.projectile,
-        }];
+        };
     }
 }

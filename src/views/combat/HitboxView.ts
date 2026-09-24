@@ -15,15 +15,12 @@ export class HitboxView extends PIXI.Sprite {
 
     public setType(isEnemy: boolean): void {
         this.isEnemy = isEnemy;
-        this.damage = 1;
-        this.isPiercing = false;
-        this.isFrameBound = false;
         this.tint = isEnemy ? 0xff0000 : 0x00ff00;
     }
 
     public configure(options: ProjectileSpawnOptions, isDebug: boolean = false): void {
         this.damage = 1;
         this.isFrameBound = options.behavior === "beam";
-        this.alpha = isDebug ? 0.35 : 0;
+        this.alpha = isDebug ? 0.7 : 0;
     }
 }

@@ -7,7 +7,7 @@ export type ProjectileBehaviorType =
     | 'beam'
     | 'cluster_split';
 
-export type ProjectileOwner = "player" | "enemy";
+export type ProjectileOwner = 'player' | 'enemy';
 
 /**
  * Options used when spawning a projectile.
