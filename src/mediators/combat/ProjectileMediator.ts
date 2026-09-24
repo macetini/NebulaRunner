@@ -4,8 +4,9 @@ import { GameSignals } from "../../core/GameSignals";
 import type { IContextItem } from "../../core/meta/IContextItem";
 import type { SignalBus } from "../../core/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
+import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
 
-export class HitBoxMediator implements IContextItem {
+export class ProjectileMediator implements IContextItem {
     private readonly pool: HitboxPool;
     private readonly signalBus: SignalBus;
     private readonly config: GameConfig;
@@ -27,12 +28,20 @@ export class HitBoxMediator implements IContextItem {
         this.debugContainer = debugContainer;
 
         this.signalBus.addEventListener(GameSignals.ENEMY_FIRED, this.onEnemyFired);
+        this.signalBus.addEventListener(GameSignals.PLAYER_FIRED, this.onPlayerFired);
     }
 
+    private onPlayerFired = (e: Event): void => {
+        const { emissions } = (e as CustomEvent<{ emissions: ProjectileEmission[] }>).detail;
+        for (const emission of emissions) {
+            this.pool.pool(emission);
+        }
+    };
+
     private onEnemyFired = (e: Event): void => {
-        const customEvent = e as CustomEvent<{ x: number; y: number }>;
-        const { x, y } = customEvent.detail;
-        this.pool.spawn(x, y + 25, true);
+        //const customEvent = e as CustomEvent<{ x: number; y: number }>;
+        //const { x, y } = customEvent.detail;
+        //this.pool.spawn(x, y + 25, true);
     };
 
     public update(delta: number): void {
@@ -75,5 +84,6 @@ export class HitBoxMediator implements IContextItem {
 
     public destroy(): void {
         this.signalBus.removeEventListener(GameSignals.ENEMY_FIRED, this.onEnemyFired);
+        this.signalBus.removeEventListener(GameSignals.PLAYER_FIRED, this.onPlayerFired);
     }
 }

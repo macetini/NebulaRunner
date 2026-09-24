@@ -1,14 +1,20 @@
+import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
 import type { IPlayerWeapon, WeaponFireContext } from "../meta/IPlayerWeapon";
 
 export class SpreadShotWeapon implements IPlayerWeapon {
     public readonly id = 'spreadShot';
 
-    fireCooldown: number = 500;
-
-    public fire(context: WeaponFireContext): void {
-        // Angled 3-way spread fan
-        context.hitboxPool.spawn(context.x - 12, context.y - 20, false);
-        context.hitboxPool.spawn(context.x, context.y - 25, false);
-        context.hitboxPool.spawn(context.x + 12, context.y - 20, false);
+    public fire(context: WeaponFireContext): ProjectileEmission[] {
+        return [{
+            x: context.x,
+            y: context.y,
+            options: {
+                vx: 0,
+                vy: -30,
+                projectileId: this.id,
+                owner: "player",
+                behavior: "beam",
+            },
+        }];
     }
 }

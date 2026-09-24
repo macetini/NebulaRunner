@@ -1,6 +1,5 @@
-import type { GameConfig } from "../core/GameConfig";
 import { HitboxView } from "../views/combat/HitboxView";
-import type { ProjectileSpawnOptions } from "../weapons/config/ProjectileConfig";
+import type { ProjectileEmission } from "../projectiles/ProjectileEmission";
 
 export interface BeamHitboxOptions {
     width?: number;
@@ -9,66 +8,32 @@ export interface BeamHitboxOptions {
 }
 
 export class HitboxPool {
-    private readonly config?: GameConfig;
     public readonly activeHitboxes: HitboxView[] = [];
-    private readonly pool: HitboxView[] = [];
+    private readonly hitBoxView: HitboxView[] = [];
+    private readonly showDebugHitboxes: boolean;
 
-    constructor(config?: GameConfig) {
-        this.config = config;
+    constructor(showDebugHitboxes: boolean = false) {
+        this.showDebugHitboxes = showDebugHitboxes;
     }
 
     public get activeBullets(): HitboxView[] {
         return this.activeHitboxes;
     }
 
-    public spawn(x: number, y: number, isEnemy: boolean = false, options?: ProjectileSpawnOptions): HitboxView {
-        let hitbox = this.pool.find((h) => !h.visible);
+    public pool(emission: ProjectileEmission): HitboxView {
+        let hitbox = this.hitBoxView.find((h) => !h.visible);
 
         if (!hitbox) {
             hitbox = new HitboxView();
-            this.pool.push(hitbox);
+            this.hitBoxView.push(hitbox);
         }
 
-        hitbox.setType(isEnemy);
-        if (options) {
-            const isDebug = this.config?.showWeaponHitboxes ?? false;
-            hitbox.configure(options, isDebug);
-        }
-        hitbox.x = x;
-        hitbox.y = y;
+        hitbox.setType(emission.options.owner === "enemy");
+        hitbox.configure(emission.options, this.showDebugHitboxes);
+        hitbox.position.set(emission.x, emission.y);
         hitbox.visible = true;
-
         this.activeHitboxes.push(hitbox);
         return hitbox;
-    }
-
-    public spawnBeamSegment(x: number, y: number, options: BeamHitboxOptions = {}): void {
-        const width = options.width ?? 24;
-        const damage = options.damage ?? 0.5;
-        const step = width * 0.8;
-
-        const spawnOptions: ProjectileSpawnOptions = {
-            vx: 0,
-            vy: 0,
-            damage,
-            behavior: "laser_beam",
-            effect: {
-                shape: "beam",
-                color: 0x00ffff,
-                radius: width / 2,
-                width,
-                height: step,
-            },
-            extraData: {
-                isPiercing: options.isPiercing ?? true,
-                isShaderWeapon: true,
-                isFrameBound: true,
-            },
-        };
-
-        for (let currentY = y; currentY >= 0; currentY -= step) {
-            this.spawn(x, currentY, false, spawnOptions);
-        }
     }
 
     public recycleFrameBoundHitboxes(): void {

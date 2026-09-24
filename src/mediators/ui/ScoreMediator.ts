@@ -2,7 +2,7 @@ import { GameSignals } from "../../core/GameSignals";
 import type { IContextItem } from "../../core/meta/IContextItem";
 import type { SignalBus } from "../../core/SignalBus";
 import type { SaveStorage } from "../../persistence/SaveStorage";
-import type { ScoreView } from "../../ui/ScoreView";
+import type { ScoreView } from "../../views/ui/ScoreView";
 
 export class ScoreMediator implements IContextItem {
     private static readonly BEST_SCORE_KEY = "nebula-runner:v1:best-score";

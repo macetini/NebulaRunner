@@ -8,7 +8,7 @@ import { SonicBladeWeapon } from './components/SonicBladeWeapon';
 import { SpreadShotWeapon } from './components/SpreadShotWeapon';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 
-export const defaultWeaponId = 'plasmaBeam';
+export const defaultWeaponId = 'plasma_beam';
 
 export class WeaponRegistry {
     private readonly weapons = new Map<string, IPlayerWeapon>();

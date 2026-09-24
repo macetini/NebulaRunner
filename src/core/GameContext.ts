@@ -2,8 +2,8 @@ import * as PIXI from 'pixi.js';
 
 import { BuffSystem } from '../buffs/BuffSystem';
 import { CombatMediator } from '../mediators/combat/CombatMediator';
-import { HitBoxMediator } from '../mediators/combat/HitBoxMediator';
 import { PlasmaBeamMediator } from '../mediators/combat/PlasmaBeamMediator';
+import { ProjectileMediator } from '../mediators/combat/ProjectileMediator';
 import { WeaponDropMediator } from '../mediators/combat/WeaponDropMediator';
 import { WeaponSystemMediator } from '../mediators/combat/WeaponSystemMediator';
 import { BackgroundMediator } from '../mediators/fx/BackgroundMediator';
@@ -19,11 +19,11 @@ import { HitboxPool } from '../pools/HitboxPool';
 import { ParticlePool } from '../pools/ParticlePool';
 import { WeaponPool } from '../pools/WeaponPickupPool';
 import { CollisionService } from '../services/CollisionService';
-import { GameUi } from '../ui/GameUi';
 import { WeaponContainerView } from '../views/combat/WeaponContainerView';
 import { PlasmaBeamView } from '../views/combat/weaponViews/PlasmaBeamView';
 import { BackgroundView } from '../views/fx/BackgroundView';
 import { PlayerView } from '../views/gameplay/PlayerView';
+import { GameUi } from '../views/ui/GameUi';
 import { WeaponSystem } from '../weapons/WeaponSystem';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
@@ -43,11 +43,13 @@ export class GameContext {
     private input!: InputController;
     private state: GameState = 'ready';
 
-    // Core Pools & Systems
+    // Core Pools
     private enemyPool!: EnemyPool;
     private buffPool!: BuffPool;
     private weaponPool!: WeaponPool;
-    private projectilePool!: HitboxPool;
+    private hitboxPool!: HitboxPool;
+
+    // Core Systems
     private buffSystem!: BuffSystem;
     private weaponSystem!: WeaponSystem;
 
@@ -89,15 +91,16 @@ export class GameContext {
     // =========================================================================
 
     private initPoolsAndSystems(): void {
-        this.projectilePool = new HitboxPool(gameConfig);
+        this.hitboxPool = new HitboxPool(gameConfig.showWeaponHitboxes);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
         this.buffPool = new BuffPool(this.app);
         this.weaponPool = new WeaponPool(this.app);
 
         this.buffSystem = new BuffSystem(gameConfig, this.signalBus);
-        this.weaponSystem = new WeaponSystem(this.projectilePool, this.signalBus);
+        this.weaponSystem = new WeaponSystem();
 
         this.updatables.push(this.buffSystem);
+        this.updatables.push(this.weaponSystem);
     }
 
     private initViews(): void {
@@ -106,7 +109,7 @@ export class GameContext {
 
         this.weaponContainerView = new WeaponContainerView();
         this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
-        this.weaponContainerView.registerWeaponView('plasmaBeam', this.plasmaBeamView);
+        this.weaponContainerView.registerWeaponView('plasma_beam', this.plasmaBeamView);
 
         this.app.stage.addChild(this.backgroundView);
         this.app.stage.addChild(this.playerView);
@@ -132,14 +135,14 @@ export class GameContext {
         // Weapon Mediators
         this.updatables.push(
             new WeaponSystemMediator(this.weaponSystem, this.signalBus),
-            new PlasmaBeamMediator(this.plasmaBeamView, this.playerView),
+            new PlasmaBeamMediator(this.plasmaBeamView, this.playerView, this.weaponSystem),
             new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
         );
 
         // Buffs & Combat Feedback
         this.updatables.push(
             new BuffDropMediator(this.buffPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
-            new HitBoxMediator(this.projectilePool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxContainer),
+            new ProjectileMediator(this.hitboxPool, this.signalBus, gameConfig, this.app.screen.height, this.debugHitboxContainer),
             new CombatMediator(this.app.stage, this.signalBus),
         );
 
@@ -156,7 +159,7 @@ export class GameContext {
             this.signalBus,
             gameConfig,
             this.playerView,
-            this.projectilePool,
+            this.hitboxPool,
             this.enemyPool,
             this.weaponPool,
             this.buffPool,
@@ -222,7 +225,7 @@ export class GameContext {
         this.enemyPool.clear();
         this.buffPool.clear();
         this.weaponPool.clear();
-        this.projectilePool.clear();
+        this.hitboxPool.clear();
 
         this.backgroundView.resetDistance();
         this.gameUi.score.updateDistance(0);

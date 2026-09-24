@@ -1,12 +1,20 @@
+import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
 import type { IPlayerWeapon, WeaponFireContext } from "../meta/IPlayerWeapon";
 
 export class HomingSeekerWeapon implements IPlayerWeapon {
     public readonly id = 'homingSeeker';
 
-    fireCooldown: number = 450; // Example cooldown value in milliseconds
-
-    public fire(context: WeaponFireContext): void {
-        context.hitboxPool.spawn(context.x - 15, context.y - 10, false);
-        context.hitboxPool.spawn(context.x + 15, context.y - 10, false);
+    public fire(context: WeaponFireContext): ProjectileEmission[] {
+        return [{
+            x: context.x,
+            y: context.y,
+            options: {
+                vx: 0,
+                vy: -30,
+                projectileId: this.id,
+                owner: "player",
+                behavior: "beam",
+            },
+        }];
     }
 }

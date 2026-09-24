@@ -1,17 +1,14 @@
-import type { SignalBus } from '../core/SignalBus';
-import type { HitboxPool } from '../pools/HitboxPool';
+import type { IContextItem } from '../core/meta/IContextItem';
+import type { ProjectileEmission } from '../projectiles/ProjectileEmission';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 import { defaultWeaponId, WeaponRegistry } from './WeaponRegistry';
 
-export class WeaponSystem {
-    private readonly projectiles: HitboxPool;
-    private readonly signalBus: SignalBus;
+export class WeaponSystem implements IContextItem {
+
     private readonly registry: WeaponRegistry;
     private activeWeapon: IPlayerWeapon;
 
-    constructor(projectiles: HitboxPool, signalBus: SignalBus) {
-        this.projectiles = projectiles;
-        this.signalBus = signalBus;
+    constructor() {
         this.registry = new WeaponRegistry();
         this.activeWeapon = this.registry.get(defaultWeaponId)!;
     }
@@ -36,12 +33,13 @@ export class WeaponSystem {
         return this.activeWeapon.id;
     }
 
-    public fire(x: number, y: number): void {
-        this.activeWeapon.fire({
+    public fire(x: number, y: number): ProjectileEmission[] {
+        return this.activeWeapon.fire({
             x,
             y,
-            hitboxPool: this.projectiles,
-            signalBus: this.signalBus,
         });
+    }
+
+    update(_delta: number): void {
     }
 }

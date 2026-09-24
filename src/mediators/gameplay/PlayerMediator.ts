@@ -87,7 +87,8 @@ export class PlayerMediator implements IContextItem {
     private handleWeaponFiring(delta: number): void {
         this.fireTimer -= delta;
         if (this.fireTimer <= 0) {
-            this.weapons.fire(this.view.x, this.view.y);
+            const emissions = this.weapons.fire(this.view.x, this.view.y);
+            this.signalBus.dispatch(GameSignals.PLAYER_FIRED, { emissions });
             this.fireTimer = this.buffs.fireCooldown;
         }
     }

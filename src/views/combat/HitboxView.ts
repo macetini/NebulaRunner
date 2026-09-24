@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import type { ProjectileSpawnOptions } from "../../weapons/config/ProjectileConfig";
+import type { ProjectileSpawnOptions } from "../../projectiles/ProjectileConfig";
 
 export class HitboxView extends PIXI.Sprite {
     public isEnemy: boolean = false;
@@ -22,17 +22,8 @@ export class HitboxView extends PIXI.Sprite {
     }
 
     public configure(options: ProjectileSpawnOptions, isDebug: boolean = false): void {
-        this.damage = options.damage ?? 1;
-        this.isPiercing = options.extraData?.isPiercing === true;
-        this.isFrameBound = options.behavior === "laser_beam" || options.extraData?.isFrameBound === true;
-
+        this.damage = 1;
+        this.isFrameBound = options.behavior === "beam";
         this.alpha = isDebug ? 0.35 : 0;
-
-        if (options.effect?.width !== undefined) {
-            this.width = options.effect.width;
-        }
-        if (options.effect?.height !== undefined) {
-            this.height = options.effect.height;
-        }
     }
 }
