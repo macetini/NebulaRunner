@@ -11,30 +11,33 @@ import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 
 export const defaultWeaponId = 'plasma_beam';  // Put this in config
 
-type WeaponFactory = (balance: WeaponBalance) => IPlayerWeapon;
+// Class constructor interface
+type WeaponConstructor = new (balance: WeaponBalance) => IPlayerWeapon;
 
-const weaponFactories = new Map<string, WeaponFactory>([
-    ['blaster', (balance) => new BlasterWeapon(balance)],
-    ['plasma_beam', (balance) => new PlasmaBeamWeapon(balance)],
-    ['spreadShot', (balance) => new SpreadShotWeapon(balance)],
-    ['pulseLaser', (balance) => new PulseLaserWeapon(balance)],
-    ['rearVulcan', (balance) => new RearVulcanWeapon(balance)],
-    ['sonicBlade', (balance) => new SonicBladeWeapon(balance)],
-    ['homingSeeker', (balance) => new HomingSeekerWeapon(balance)],
-    ['clusterBomb', (balance) => new ClusterBombWeapon(balance)],
-]);
+// Directly map ID strings to Weapon Class constructors
+const weaponConstructors: Record<string, WeaponConstructor> = {
+    blaster: BlasterWeapon,
+    plasma_beam: PlasmaBeamWeapon,
+    spreadShot: SpreadShotWeapon,
+    pulseLaser: PulseLaserWeapon,
+    rearVulcan: RearVulcanWeapon,
+    sonicBlade: SonicBladeWeapon,
+    homingSeeker: HomingSeekerWeapon,
+    clusterBomb: ClusterBombWeapon,
+};
 
 export class WeaponRegistry {
     private readonly weapons = new Map<string, IPlayerWeapon>();
 
-    constructor(weapons: WeaponBalance[]) {
-        for (const weapon of weapons) {
-            const factory = weaponFactories.get(weapon.id);
-            if (!factory) {
-                throw new Error(`Unknown weapon balance ID: ${weapon.id}`);
+    constructor(weaponsBalance: WeaponBalance[]) {
+        for (const balance of weaponsBalance) {
+            const WeaponClass = weaponConstructors[balance.id];
+            if (!WeaponClass) {
+                console.warn(`[WeaponRegistry] Unknown weapon ID: "${balance.id}"`);
+                continue;
             }
-            const weaponInstance = factory(weapon);
-            this.register(weaponInstance);
+            // Dynamically instantiate with 'new'
+            this.register(new WeaponClass(balance));
         }
     }
 
