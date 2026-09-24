@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from '../../core/GameConfig';
+import type { GameConfig } from '../../core/game/GameConfig';
 import backgroundFragment from '../../shaders/background.frag.glsl?raw';
 import backgroundVertex from '../../shaders/background.vert.glsl?raw';
 

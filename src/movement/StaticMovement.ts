@@ -1,4 +1,4 @@
-import type { GameConfig } from '../core/GameConfig';
+import type { GameConfig } from '../core/game/GameConfig';
 import type { MovementPosition, IMovementStrategy } from './meta/IMovementStrategy';
 
 export class StaticMovement implements IMovementStrategy {

@@ -1,4 +1,4 @@
-import type { IContextItem } from '../core/meta/IContextItem';
+import type { IContextItem } from '../core/context/meta/IContextItem';
 import type { ProjectileEmission } from '../projectiles/ProjectileEmission';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 import { defaultWeaponId, WeaponRegistry } from './WeaponRegistry';

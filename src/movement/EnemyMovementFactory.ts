@@ -1,4 +1,4 @@
-import type { GameConfig } from '../core/GameConfig';
+import type { GameConfig } from '../core/game/GameConfig';
 import type { EnemyMovementType } from '../views/combat/types/EnemyProfile';
 import { ChaseMovement } from './ChaseMovement';
 import { LoopingMovement } from './LoopingMovement';

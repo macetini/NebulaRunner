@@ -1,5 +1,5 @@
 // src/mediators/combat/PlasmaBeamWeaponMediator.ts
-import type { IContextItem } from '../../core/meta/IContextItem';
+import type { IContextItem } from '../../core/context/meta/IContextItem';
 import type { PlasmaBeamView } from '../../views/combat/weaponViews/PlasmaBeamView';
 import type { PlayerView } from '../../views/gameplay/PlayerView';
 import type { WeaponSystem } from '../../weapons/WeaponSystem';

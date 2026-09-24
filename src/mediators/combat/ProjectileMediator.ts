@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from "../../core/GameConfig";
-import { GameSignals } from "../../core/GameSignals";
-import type { IContextItem } from "../../core/meta/IContextItem";
-import type { SignalBus } from "../../core/SignalBus";
+import type { GameConfig } from "../../core/game/GameConfig";
+import { GameSignals } from "../../core/game/GameSignals";
+import type { IContextItem } from "../../core/context/meta/IContextItem";
+import type { SignalBus } from "../../core/game/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
 
@@ -39,7 +39,7 @@ export class ProjectileMediator implements IContextItem {
     };
 
     private onEnemyFired = (e: Event): void => {
-        //const customEvent = e as CustomEvent<{ x: number; y: number }>;
+        const customEvent = e as CustomEvent<{ x: number; y: number }>;
         //const { x, y } = customEvent.detail;
         //this.pool.spawn(x, y + 25, true);
     };

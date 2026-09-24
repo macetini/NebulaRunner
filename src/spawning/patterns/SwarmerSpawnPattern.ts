@@ -1,4 +1,4 @@
-import type { GameConfig } from '../../core/GameConfig';
+import type { GameConfig } from '../../core/game/GameConfig';
 import type { EnemyPool } from '../../pools/EnemyPool';
 import type { EnemyProfile } from '../../views/combat/types/EnemyProfile';
 import type { QueuedEnemy, SpawnPattern } from '../SpawnPattern';

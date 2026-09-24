@@ -1,9 +1,9 @@
 import type { BuffSystem } from '../buffs/BuffSystem';
 import { BuffType } from '../buffs/BuffType';
-import type { GameConfig } from '../core/GameConfig';
-import { GameSignals } from "../core/GameSignals";
-import type { IContextItem } from "../core/meta/IContextItem";
-import type { SignalBus } from "../core/SignalBus";
+import type { GameConfig } from '../core/game/GameConfig';
+import { GameSignals } from "../core/game/GameSignals";
+import type { IContextItem } from "../core/context/meta/IContextItem";
+import type { SignalBus } from "../core/game/SignalBus";
 import type { BuffPool } from '../pools/BuffPool';
 import type { EnemyPool } from "../pools/EnemyPool";
 import type { HitboxPool } from "../pools/HitboxPool";

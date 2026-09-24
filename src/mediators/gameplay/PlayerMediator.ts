@@ -1,8 +1,8 @@
 import type { BuffSystem } from "../../buffs/BuffSystem";
-import { GameSignals } from "../../core/GameSignals";
-import type { InputController } from "../../core/InputController";
-import type { IContextItem } from "../../core/meta/IContextItem";
-import type { SignalBus } from "../../core/SignalBus";
+import { GameSignals } from "../../core/game/GameSignals";
+import type { InputController } from "../../core/game/InputController";
+import type { IContextItem } from "../../core/context/meta/IContextItem";
+import type { SignalBus } from "../../core/game/SignalBus";
 import type { PlayerView } from "../../views/gameplay/PlayerView";
 import type { WeaponSystem } from "../../weapons/WeaponSystem";
 

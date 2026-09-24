@@ -1,6 +1,6 @@
-import { GameSignals } from "../../core/GameSignals";
-import type { IContextItem } from "../../core/meta/IContextItem";
-import type { SignalBus } from "../../core/SignalBus";
+import { GameSignals } from "../../core/game/GameSignals";
+import type { IContextItem } from "../../core/context/meta/IContextItem";
+import type { SignalBus } from "../../core/game/SignalBus";
 import type { SaveStorage } from "../../persistence/SaveStorage";
 import type { ScoreView } from "../../views/ui/ScoreView";
 

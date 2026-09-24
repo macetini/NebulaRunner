@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from '../core/GameConfig';
+import type { GameConfig } from '../core/game/GameConfig';
 import { ParticleView } from '../views/fx/ParticleView';
 
 export class ParticlePool {

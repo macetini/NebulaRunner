@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from '../../core/GameConfig';
+import type { GameConfig } from '../../core/game/GameConfig';
 import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
 import { PlayerTextureFactory } from '../../factories/PlayerTextureFactory';
 import { PlayerShieldView } from '../combat/PlayerShieldView';

@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js';
 import { EnemyAttackFactory } from '../../combat/EnemyAttackFactory';
 import type { EnemyAttackStrategy } from '../../combat/EnemyAttackStrategy';
-import { EnemyFactory } from '../../core/EnemyFactory';
-import type { GameConfig } from '../../core/GameConfig';
-import { GameSignals } from '../../core/GameSignals';
-import type { IContextItem } from '../../core/meta/IContextItem';
-import type { SignalBus } from '../../core/SignalBus';
+import type { IContextItem } from '../../core/context/meta/IContextItem';
+import type { GameConfig } from '../../core/game/GameConfig';
+import { GameSignals } from '../../core/game/GameSignals';
+import type { SignalBus } from '../../core/game/SignalBus';
+import { EnemyFactory } from '../../factories/EnemyFactory';
 import type { EnemyPool } from '../../pools/EnemyPool';
 import type { QueuedEnemy } from '../../spawning/SpawnPattern';
 import { SpawnPatternFactory } from '../../spawning/SpawnPatternFactory';

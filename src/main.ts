@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GameContext } from './core/GameContext';
+import { GameContext } from './core/game/GameContext';
 import './style.css';
 
 class NebulaRunner {

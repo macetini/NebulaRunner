@@ -1,6 +1,6 @@
-import type { GameConfig } from '../core/GameConfig';
-import { GameSignals } from '../core/GameSignals';
-import type { SignalBus } from '../core/SignalBus';
+import type { GameConfig } from '../core/game/GameConfig';
+import { GameSignals } from '../core/game/GameSignals';
+import type { SignalBus } from '../core/game/SignalBus';
 
 export type EnemyAttackContext = {
     delta: number;

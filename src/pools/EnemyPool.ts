@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import type { GameConfig } from '../core/GameConfig';
+import type { GameConfig } from '../core/game/GameConfig';
 import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
 import { EnemyView } from '../views/gameplay/EnemyView';
 

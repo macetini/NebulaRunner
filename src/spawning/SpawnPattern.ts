@@ -1,6 +1,6 @@
 import type { EnemyPool } from '../pools/EnemyPool';
 import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
-import type { GameConfig } from '../core/GameConfig';
+import type { GameConfig } from '../core/game/GameConfig';
 
 export interface QueuedEnemy {
     x: number;
