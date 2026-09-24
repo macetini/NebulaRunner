@@ -13,7 +13,6 @@ class NebulaRunner {
 
   private async init() {
     await this.app.init({
-      preference: 'webgl',
       background: '#000015',
       width: 450,
       height: 800,

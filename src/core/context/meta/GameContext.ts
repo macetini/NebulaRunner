@@ -76,7 +76,8 @@ export class GameContext {
     public init(): void {
         this.input = new InputController(this.app.canvas, this.app.screen.width);
 
-        this.initPoolsAndSystems();
+        this.initPools();
+        this.initSystems();
         this.initViews();
         this.initMediators();
         this.initServices();
@@ -90,12 +91,14 @@ export class GameContext {
     // Initialization Sub-methods
     // =========================================================================
 
-    private initPoolsAndSystems(): void {
+    private initPools(): void {
         this.hitboxPool = new HitboxPool(gameConfig.showWeaponHitboxes);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
         this.buffPool = new BuffPool(this.app);
         this.weaponPool = new WeaponPool(this.app);
+    }
 
+    private initSystems(): void {
         this.buffSystem = new BuffSystem(gameConfig, this.signalBus);
         this.weaponSystem = new WeaponSystem();
 

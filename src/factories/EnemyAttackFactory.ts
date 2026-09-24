@@ -3,7 +3,7 @@ import {
     NoAttackStrategy,
     RangedAttackStrategy,
     type EnemyAttackStrategy,
-} from './EnemyAttackStrategy';
+} from '../combat/EnemyAttackStrategy';
 
 type AttackCreator = () => EnemyAttackStrategy;
 
