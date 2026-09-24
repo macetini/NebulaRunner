@@ -1,3 +1,4 @@
+import type { WeaponBalance } from '../data/types/WeaponBalance';
 import { BlasterWeapon } from './components/BlasterWeapon';
 import { ClusterBombWeapon } from './components/ClusterBombWeapon';
 import { HomingSeekerWeapon } from './components/HomingSeekerWeapon';
@@ -8,20 +9,34 @@ import { SonicBladeWeapon } from './components/SonicBladeWeapon';
 import { SpreadShotWeapon } from './components/SpreadShotWeapon';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 
-export const defaultWeaponId = 'plasma_beam';
+export const defaultWeaponId = 'plasma_beam';  // Put this in config
+
+type WeaponFactory = (balance: WeaponBalance) => IPlayerWeapon;
+
+const weaponFactories = new Map<string, WeaponFactory>([
+    ['blaster', (balance) => new BlasterWeapon(balance)],
+    ['plasma_beam', (balance) => new PlasmaBeamWeapon(balance)],
+    ['spreadShot', (balance) => new SpreadShotWeapon(balance)],
+    ['pulseLaser', (balance) => new PulseLaserWeapon(balance)],
+    ['rearVulcan', (balance) => new RearVulcanWeapon(balance)],
+    ['sonicBlade', (balance) => new SonicBladeWeapon(balance)],
+    ['homingSeeker', (balance) => new HomingSeekerWeapon(balance)],
+    ['clusterBomb', (balance) => new ClusterBombWeapon(balance)],
+]);
 
 export class WeaponRegistry {
     private readonly weapons = new Map<string, IPlayerWeapon>();
 
-    constructor() {
-        this.register(new BlasterWeapon());
-        this.register(new PlasmaBeamWeapon());
-        this.register(new SpreadShotWeapon());
-        this.register(new PulseLaserWeapon());
-        this.register(new RearVulcanWeapon());
-        this.register(new SonicBladeWeapon());
-        this.register(new HomingSeekerWeapon());
-        this.register(new ClusterBombWeapon());
+    constructor(weapons: WeaponBalance[]) {
+        for (const weapon of weapons) {
+            const factory = weaponFactories.get(weapon.id);
+            if (!factory) {
+                throw new Error(`Unknown weapon balance ID: ${weapon.id}`);
+            }
+
+            const weaponInstance = factory(weapon);
+            this.register(weaponInstance);
+        }
     }
 
     public register(weapon: IPlayerWeapon): void {

@@ -25,12 +25,13 @@ import { BackgroundView } from '../../views/fx/BackgroundView';
 import { PlayerView } from '../../views/gameplay/PlayerView';
 import { GameUi } from '../../views/ui/GameUi';
 import { WeaponSystem } from '../../weapons/WeaponSystem';
+import type { GameBootstrapData } from '../bootstrap/GameBootstrapData';
+import type { IContextItem } from '../context/meta/IContextItem';
 import { gameConfig } from './GameConfig';
 import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import { SignalBus } from './SignalBus';
-import type { IContextItem } from '../context/meta/IContextItem';
 /**
  * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
@@ -73,10 +74,11 @@ export class GameContext {
     /**
      * Bootstraps all game systems, stage views, and mediators.
      */
-    public init(): void {
+    public init(bootstrapData: GameBootstrapData): void {
         this.input = new InputController(this.app.canvas, this.app.screen.width);
 
-        this.initPoolsAndSystems();
+        this.initPools();
+        this.initSystems(bootstrapData);
         this.initViews();
         this.initMediators();
         this.initServices();
@@ -90,14 +92,16 @@ export class GameContext {
     // Initialization Sub-methods
     // =========================================================================
 
-    private initPoolsAndSystems(): void {
+    private initPools(): void {
         this.hitboxPool = new HitboxPool(gameConfig.showWeaponHitboxes);
         this.enemyPool = new EnemyPool(this.app, gameConfig);
         this.buffPool = new BuffPool(this.app);
         this.weaponPool = new WeaponPool(this.app);
+    }
 
+    private initSystems(data: GameBootstrapData): void {
         this.buffSystem = new BuffSystem(gameConfig, this.signalBus);
-        this.weaponSystem = new WeaponSystem();
+        this.weaponSystem = new WeaponSystem(data.balance.weapons);
 
         this.updatables.push(this.buffSystem);
         this.updatables.push(this.weaponSystem);

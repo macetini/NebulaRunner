@@ -7,7 +7,7 @@
     "projectile": {
       "projectileId": "plasma_beam",
       "vx": 0,
-      "vy": -30,
+      "vy": 0,
       "owner": "player",
       "behavior": "beam"
     }
@@ -20,7 +20,7 @@
     "projectile": {
       "projectileId": "blaster",
       "vx": 0,
-      "vy": -30,
+      "vy": 0,
       "owner": "player",
       "behavior": "straight"
     }

@@ -31,6 +31,7 @@ import type { GameState } from '../../game/GameState';
 import { InputController } from '../../game/InputController';
 import type { IContextItem } from './IContextItem';
 import { SignalBus } from '../../game/SignalBus';
+import type { GameBootstrapData } from '../../bootstrap/GameBootstrapData';
 /**
  * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
@@ -73,11 +74,11 @@ export class GameContext {
     /**
      * Bootstraps all game systems, stage views, and mediators.
      */
-    public init(): void {
+    public init(bootstrapData: GameBootstrapData): void {
         this.input = new InputController(this.app.canvas, this.app.screen.width);
 
         this.initPools();
-        this.initSystems();
+        this.initSystems(bootstrapData);
         this.initViews();
         this.initMediators();
         this.initServices();
@@ -98,9 +99,9 @@ export class GameContext {
         this.weaponPool = new WeaponPool(this.app);
     }
 
-    private initSystems(): void {
+    private initSystems(data: GameBootstrapData): void {
         this.buffSystem = new BuffSystem(gameConfig, this.signalBus);
-        this.weaponSystem = new WeaponSystem();
+        this.weaponSystem = new WeaponSystem(data.balance.weapons);
 
         this.updatables.push(this.buffSystem);
         this.updatables.push(this.weaponSystem);
