@@ -24,8 +24,8 @@ export class ProjectileMediator implements IContextItem {
         signalBus: SignalBus,
         config: GameConfig,
         screenHeight: number,
-        debugContainer: PIXI.Container | undefined,
         playerView: PlayerView,
+        debugContainer: PIXI.Container | undefined,
     ) {
         this.hitBoxPool = pool;
         this.signalBus = signalBus;
