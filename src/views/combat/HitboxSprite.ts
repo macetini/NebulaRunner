@@ -1,3 +1,4 @@
+// src/views/combat/HitboxSprite.ts
 import * as PIXI from "pixi.js";
 import type { ProjectileState } from "../../projectiles/type/ProjectileState";
 

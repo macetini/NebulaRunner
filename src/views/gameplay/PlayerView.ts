@@ -1,3 +1,4 @@
+// src/views/gameplay/PlayerView.ts
 import * as PIXI from 'pixi.js';
 import type { GameConfig } from '../../core/game/GameConfig';
 import { GlowEffectFactory } from '../../factories/GlowEffectFactory';
