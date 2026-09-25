@@ -9,6 +9,7 @@ import { WeaponSystemMediator } from '../../mediators/combat/WeaponSystemMediato
 import { BackgroundMediator } from '../../mediators/fx/BackgroundMediator';
 import { ParticleMediator } from '../../mediators/fx/ParticleMediator';
 import { BuffDropMediator } from '../../mediators/gameplay/BuffDropMediator';
+import { BlasterMediator } from '../../mediators/combat/BlasterMediator';
 import { EnemyMediator } from '../../mediators/gameplay/EnemyMediator';
 import { PlayerMediator } from '../../mediators/gameplay/PlayerMediator';
 import { ScoreMediator } from '../../mediators/ui/ScoreMediator';
@@ -145,6 +146,7 @@ export class GameContext {
         this.updatables.push(
             new WeaponSystemMediator(this.weaponSystem, this.signalBus),
             new PlasmaBeamMediator(this.plasmaBeamView, this.playerView, this.weaponSystem),
+            new BlasterMediator(this.blasterView, this.playerView, this.weaponSystem),
             new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
         );
 

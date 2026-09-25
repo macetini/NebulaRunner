@@ -1,4 +1,4 @@
-// src/views/combat/weaponViews/PlasmaBeamView.ts
+//
 import * as PIXI from 'pixi.js';
 
 import plasmaFragment from '../../../shaders/plasmaBeam.frag.glsl?raw';

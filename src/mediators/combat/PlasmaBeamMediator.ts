@@ -16,15 +16,17 @@ export class PlasmaBeamMediator implements IContextItem {
     }
 
     public update(_delta: number): void {
-        this.view.setWeaponActive(this.weaponSystem.activeWeaponId === 'plasma_beam');
+        const isActive = this.weaponSystem.activeWeaponId === 'plasma_beam';
+        this.view.setWeaponActive(isActive);
 
-        // Continuously attach shader mesh coordinates to the ship position
-        this.view.updateWeapon(
-            {
-                x: this.playerView.x,
-                y: this.playerView.muzzleY,
-            }
-        );
+        if (isActive) {
+            this.view.updateWeapon(
+                {
+                    x: this.playerView.x,
+                    y: this.playerView.muzzleY,
+                }
+            );
+        }
     }
 
     public destroy(): void {
