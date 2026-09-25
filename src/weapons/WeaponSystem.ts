@@ -1,8 +1,9 @@
 import type { IContextItem } from '../core/context/meta/IContextItem';
+import { gameConfig } from '../core/game/GameConfig';
 import type { WeaponBalance } from '../data/types/WeaponBalance';
 import type { ProjectileEmission } from '../projectiles/ProjectileEmission';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
-import { defaultWeaponId, WeaponRegistry } from './WeaponRegistry';
+import { WeaponRegistry } from './WeaponRegistry';
 
 export class WeaponSystem implements IContextItem {
 
@@ -11,7 +12,7 @@ export class WeaponSystem implements IContextItem {
 
     constructor(weapons: WeaponBalance[]) {
         this.registry = new WeaponRegistry(weapons);
-        this.activeWeapon = this.registry.get(defaultWeaponId)!;
+        this.activeWeapon = this.registry.get(gameConfig.playerDefaultWeaponId)!;
     }
 
     public register(weapon: IPlayerWeapon): void {
