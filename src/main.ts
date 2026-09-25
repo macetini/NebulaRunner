@@ -27,9 +27,6 @@ class NebulaRunner {
           background: '#000015',
           width: 450,
           height: 800,
-          antialias: true,
-          autoDensity: false,
-          resolution: Math.min(window.devicePixelRatio || 1, 2),
         }),
         balanceLoader.loadAll(),
       ]);

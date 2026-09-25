@@ -1,7 +1,7 @@
 import type { IContextItem } from "../../core/context/meta/IContextItem";
+import { gameConfig } from "../../core/game/GameConfig";
 import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
-import { defaultWeaponId } from "../../weapons/WeaponRegistry";
 import type { WeaponSystem } from "../../weapons/WeaponSystem";
 
 export class WeaponSystemMediator implements IContextItem {
@@ -17,7 +17,7 @@ export class WeaponSystemMediator implements IContextItem {
     }
 
     private readonly handleRestart = (): void => {
-        this.weapons.equip(defaultWeaponId);
+        this.weapons.equip(gameConfig.playerDefaultWeaponId);
     };
 
     /**

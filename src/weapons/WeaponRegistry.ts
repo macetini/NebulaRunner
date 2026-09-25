@@ -9,8 +9,6 @@ import { SonicBladeWeapon } from './components/SonicBladeWeapon';
 import { SpreadShotWeapon } from './components/SpreadShotWeapon';
 import type { IPlayerWeapon } from './meta/IPlayerWeapon';
 
-export const defaultWeaponId = 'plasma_beam';  // Put this in config
-
 // Class constructor interface
 type WeaponConstructor = new (balance: WeaponBalance) => IPlayerWeapon;
 

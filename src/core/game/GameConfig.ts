@@ -70,7 +70,7 @@ export const gameConfig: GameConfig = {
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
-    playerDefaultWeaponId: "blaster",
+    playerDefaultWeaponId: 'blaster',
 
     boostDuration: 36,
     boostMaximumCharge: 100,
