@@ -5,7 +5,7 @@ import type { QueuedEnemy, SpawnPattern } from '../SpawnPattern';
 
 export class SwarmerSpawnPattern implements SpawnPattern {
     public calculateSpawnX(screenWidth: number, _config: GameConfig): number {
-        const swarmMargin = Math.min(50, screenWidth * 0.5);
+        const swarmMargin = Math.min(50, screenWidth / 2);
         const usableWidth = Math.max(0, screenWidth - swarmMargin * 2);
         return swarmMargin + Math.random() * usableWidth;
     }

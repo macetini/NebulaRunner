@@ -5,9 +5,9 @@ import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
-import type { ProjectileState } from '../../projectiles/type/ProjectileState';
-import type { HitboxSprite } from '../../views/combat/HitboxSprite';
-import type { PlayerView } from '../../views/gameplay/PlayerView';
+import type { ProjectileState } from "../../projectiles/type/ProjectileState";
+import type { HitboxSprite } from "../../views/combat/HitboxSprite";
+import type { PlayerView } from "../../views/gameplay/PlayerView";
 
 export class ProjectileMediator implements IContextItem {
     private readonly hitBoxPool: HitboxPool;
@@ -16,9 +16,10 @@ export class ProjectileMediator implements IContextItem {
     private readonly screenHeight: number;
     private readonly debugContainer?: PIXI.Container;
     private readonly playerView: PlayerView;
-    private activeBeam?: HitboxSprite;
 
     private readonly isDebugActive: boolean;
+
+    private activeBeam?: HitboxSprite;
 
     constructor(
         pool: HitboxPool,
@@ -65,43 +66,63 @@ export class ProjectileMediator implements IContextItem {
 
         if (emission.data.projectile.behavior === "beam") {
             this.handleBeamEmission(emission);
-            return;
+        } else {
+            this.handleStandardEmission(emission);
         }
-
-        this.handleStandardEmission(emission);
-
     };
 
     private handleStandardEmission(emission: ProjectileEmission): void {
-        this.clearActiveBeams();
+        this.clearActiveBeam();
 
-        const state = this.createProjectileState(emission);
+        const proj = emission.data.projectile;
+        const state = this.createProjectileState(
+            emission,
+            emission.x,
+            emission.y - this.playerView.height / 2,
+            proj.width,
+            proj.height ?? 1,
+        );
+
         const hitbox = this.hitBoxPool.pool(state);
-
         this.attachDebugHitbox(hitbox);
     }
 
     private handleBeamEmission(emission: ProjectileEmission): void {
-        const beamHeight = Math.max(1, emission.y - this.playerView.height / 2);
+        const beamHeight = this.computeBeamHeight();
+        const proj = emission.data.projectile;
 
-        // 💡 NEW LOGIC: Map directly to state with dynamic beam height
-        const state = this.createProjectileState(emission, beamHeight);
+        const state = this.createProjectileState(
+            emission,
+            emission.x,
+            beamHeight / 2,
+            proj.width,
+            beamHeight,
+        );
 
         if (this.activeBeam) {
-            this.updateActiveBeam(state, beamHeight);
+            this.activeBeam.configure(state, this.config.showWeaponHitboxes);
+            this.activeBeam.position.set(state.x, beamHeight / 2);
+            this.activeBeam.height = beamHeight;
             return;
         }
 
         this.createNewBeam(state);
     }
 
-    private createProjectileState(emission: ProjectileEmission, overrideHeight?: number): ProjectileState {
+    private createProjectileState(
+        emission: ProjectileEmission,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+    ): ProjectileState {
         const proj = emission.data.projectile;
+
         return {
-            x: emission.x,
-            y: emission.y - this.playerView.height * 0.5,
-            width: proj.width,
-            height: overrideHeight ?? proj.height ?? 1,
+            x,
+            y,
+            width,
+            height,
             vx: proj.vx ?? 0,
             vy: proj.vy ?? 0,
             damage: emission.data.damage,
@@ -111,26 +132,20 @@ export class ProjectileMediator implements IContextItem {
         };
     }
 
-    private updateActiveBeam(state: ProjectileState, beamHeight: number): void {
-        // 💡 NEW LOGIC: Configure using state instead of raw emission.data
-        this.activeBeam!.configure(
-            state,
-            this.config.showWeaponHitboxes
-        );
-        this.activeBeam!.position.set(state.x, beamHeight / 2);
+    private computeBeamHeight(): number {
+        return Math.max(1, this.playerView.y - this.playerView.height / 2);
     }
 
     private createNewBeam(state: ProjectileState): HitboxSprite {
-        // 💡 NEW LOGIC: No more nested spread overrides on emission.data!
-        this.activeBeam = this.hitBoxPool.pool(state);
-        this.attachDebugHitbox(this.activeBeam);
-        return this.activeBeam;
+        const beam = this.hitBoxPool.pool(state);
+        this.activeBeam = beam;
+
+        this.attachDebugHitbox(beam);
+        return beam;
     }
 
-    private clearActiveBeams(): void {
-        if (!this.activeBeam) {
-            return;
-        }
+    private clearActiveBeam(): void {
+        if (!this.activeBeam) return;
 
         const index = this.hitBoxPool.activeHitboxes.indexOf(this.activeBeam);
         if (index >= 0) {
@@ -140,11 +155,11 @@ export class ProjectileMediator implements IContextItem {
     }
 
     private readonly onWeaponChanged = (): void => {
-        this.clearActiveBeams();
+        this.clearActiveBeam();
     };
 
     private readonly onRunRestarted = (): void => {
-        this.activeBeam = undefined;
+        this.clearActiveBeam();
     };
 
     // -----------------------------
@@ -157,18 +172,18 @@ export class ProjectileMediator implements IContextItem {
     // -----------------------------
     public update(delta: number): void {
         this.updateActiveBeamPosition();
-        this.updateHitboxes(delta);
+        this.updateProjectileLifecycle(delta);
     }
 
     private updateActiveBeamPosition(): void {
         if (!this.activeBeam) return;
 
-        const beamHeight = Math.max(1, this.playerView.y - this.playerView.height * 0.5);
-        this.activeBeam.position.set(this.playerView.x, beamHeight * 0.5);
+        const beamHeight = this.computeBeamHeight();
+        this.activeBeam.position.set(this.playerView.x, beamHeight / 2);
         this.activeBeam.height = beamHeight;
     }
 
-    private updateHitboxes(delta: number): void {
+    private updateProjectileLifecycle(delta: number): void {
         const hitboxes = this.hitBoxPool.activeHitboxes;
         const enemyStep = this.config.enemyProjectileSpeed * delta;
         const playerStep = this.config.projectileSpeed * delta;
@@ -182,24 +197,16 @@ export class ProjectileMediator implements IContextItem {
             if (hitbox.isBeam) continue;
 
             if (hitbox.isEnemy) {
-                this.updateEnemyHitbox(hitbox, enemyStep, lowerBound, i);
+                hitbox.y += enemyStep;
+                if (hitbox.y > lowerBound + hitbox.height) {
+                    this.hitBoxPool.recycle(hitbox, i);
+                }
             } else {
-                this.updatePlayerHitbox(hitbox, playerStep, i);
+                hitbox.y -= playerStep;
+                if (hitbox.y < -hitbox.height) {
+                    this.hitBoxPool.recycle(hitbox, i);
+                }
             }
-        }
-    }
-
-    private updateEnemyHitbox(hitbox: HitboxSprite, step: number, lowerBound: number, index: number): void {
-        hitbox.y += step;
-        if (hitbox.y > lowerBound + hitbox.height) {
-            this.hitBoxPool.recycle(hitbox, index);
-        }
-    }
-
-    private updatePlayerHitbox(hitbox: HitboxSprite, step: number, index: number): void {
-        hitbox.y -= step;
-        if (hitbox.y < -hitbox.height) {
-            this.hitBoxPool.recycle(hitbox, index);
         }
     }
 

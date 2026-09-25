@@ -70,7 +70,7 @@ export const gameConfig: GameConfig = {
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
-    playerDefaultWeaponId: 'blaster', // 'blaster', 'plasma_beam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'
+    playerDefaultWeaponId: 'plasma_beam', // 'blaster', 'plasma_beam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'
 
     boostDuration: 36,
     boostMaximumCharge: 100,

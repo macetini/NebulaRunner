@@ -49,11 +49,11 @@ export class GameStateView extends PIXI.Container {
     }
 
     private positionLabels(width: number, height: number): void {
-        this.titleLabel.x = (width - this.titleLabel.width) * 0.5;
+        this.titleLabel.x = (width - this.titleLabel.width) / 2;
         this.titleLabel.y = height * 0.4;
-        this.promptLabel.x = (width - this.promptLabel.width) * 0.5;
+        this.promptLabel.x = (width - this.promptLabel.width) / 2;
         this.promptLabel.y = this.titleLabel.y + this.titleLabel.height + 16;
-        this.scoreLabel.x = (width - this.scoreLabel.width) * 0.5;
+        this.scoreLabel.x = (width - this.scoreLabel.width) / 2;
         this.scoreLabel.y = this.promptLabel.y + this.promptLabel.height + 12;
     }
 }

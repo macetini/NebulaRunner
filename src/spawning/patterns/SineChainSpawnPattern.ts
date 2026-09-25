@@ -6,7 +6,7 @@ import type { QueuedEnemy, SpawnPattern } from '../SpawnPattern';
 export class SineChainSpawnPattern implements SpawnPattern {
     public calculateSpawnX(screenWidth: number, config: GameConfig): number {
         const chainAmplitude = config.enemySineOscillationAmplitude * 4.5;
-        const chainMargin = Math.min(chainAmplitude + 15, screenWidth * 0.5);
+        const chainMargin = Math.min(chainAmplitude + 15, screenWidth / 2);
         const usableWidth = Math.max(0, screenWidth - chainMargin * 2);
         return chainMargin + Math.random() * usableWidth;
     }

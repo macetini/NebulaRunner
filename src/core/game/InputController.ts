@@ -20,7 +20,7 @@ export class InputController {
 
     constructor(canvas: HTMLCanvasElement, screenWidth: number) {
         this.canvas = canvas;
-        this.state.touchX = screenWidth * 0.5;
+        this.state.touchX = screenWidth / 2;
 
         globalThis.addEventListener('keydown', this.handleKeyDown);
         globalThis.addEventListener('keyup', this.handleKeyUp);

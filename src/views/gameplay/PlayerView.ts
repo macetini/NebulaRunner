@@ -28,7 +28,7 @@ export class PlayerView extends PIXI.Container {
         this.shield = new PlayerShieldView();
         this.addChild(this.shield);
 
-        this.x = app.screen.width * 0.5;
+        this.x = app.screen.width / 2;
         this.y = config.playerInitialY;
 
         this.app = app;
@@ -53,7 +53,7 @@ export class PlayerView extends PIXI.Container {
     }
 
     public resetPosition(): void {
-        this.x = this.app.screen.width * 0.5;
+        this.x = this.app.screen.width / 2;
         this.y = this.config.playerInitialY;
         this.boostRemaining = 0;
         this.boostCharge = this.config.boostMaximumCharge;
@@ -130,15 +130,15 @@ export class PlayerView extends PIXI.Container {
     }
 
     public moveLeft(delta: number): void {
-        if (this.x - this.width * 0.5 >= this.BOUND_BUFFER) {
-            const minimumX = this.BOUND_BUFFER + this.width * 0.5;
+        if (this.x - this.width / 2 >= this.BOUND_BUFFER) {
+            const minimumX = this.BOUND_BUFFER + this.width / 2;
             this.x = Math.max(minimumX, this.x - this.getMoveStep(delta));
         }
     }
 
     public moveRight(delta: number): void {
-        if (this.x + this.width * 0.5 <= this.app.screen.width - this.BOUND_BUFFER) {
-            const maximumX = this.app.screen.width - this.BOUND_BUFFER - this.width * 0.5;
+        if (this.x + this.width / 2 <= this.app.screen.width - this.BOUND_BUFFER) {
+            const maximumX = this.app.screen.width - this.BOUND_BUFFER - this.width / 2;
             this.x = Math.min(maximumX, this.x + this.getMoveStep(delta));
         }
     }
