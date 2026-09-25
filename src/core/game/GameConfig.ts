@@ -59,7 +59,7 @@ export type GameConfig = {
 export const gameConfig: GameConfig = {
     // Dev
     godMode: true,
-    showWeaponHitboxes: true,
+    showWeaponHitboxes: false,
     showPerformanceStats: true,
 
     // URLs for external data

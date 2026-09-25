@@ -15,7 +15,7 @@ export class SonicBladeWeapon implements IPlayerWeapon {
         return {
             x: context.x,
             y: context.y,
-            options: this.balance.projectile,
+            data: this.balance,
         };
     }
 }

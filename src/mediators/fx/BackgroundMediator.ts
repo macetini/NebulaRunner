@@ -1,5 +1,6 @@
-import type { IContextItem } from "../core/meta/IContextItem";
-import type { BackgroundView } from "../views/BackgroundView";
+import type { IContextItem } from "../../core/context/meta/IContextItem";
+import type { BackgroundView } from "../../views/fx/BackgroundView";
+
 
 export class BackgroundMediator implements IContextItem {
     private readonly view: BackgroundView;

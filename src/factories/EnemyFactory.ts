@@ -1,6 +1,6 @@
+import type { GameConfig } from '../core/game/GameConfig';
 import type { EnemyProfile } from '../views/combat/types/EnemyProfile';
 import { EnemyType } from '../views/combat/types/EnemyType';
-import type { GameConfig } from './GameConfig';
 
 export class EnemyFactory {
     private readonly config: GameConfig;
