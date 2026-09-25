@@ -1,0 +1,111 @@
+[
+  {
+    "id": "blaster",
+    "damage": 1.0,
+    "fireCooldown": 1,
+    "piercing": false,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "straight"
+    }
+  },
+  {
+    "id": "plasma_beam",
+    "damage": 100,
+    "fireCooldown": 1,
+    "piercing": true,
+    "projectile": {
+      "width": 12,
+      "owner": "player",
+      "behavior": "beam"
+    }
+  },
+  {
+    "id": "spreadShot",
+    "damage": 0.8,
+    "fireCooldown": 14,
+    "piercing": false,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "spread"
+    }
+  },
+  {
+    "id": "pulseLaser",
+    "damage": 0.6,
+    "fireCooldown": 4,
+    "piercing": false,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "straight"
+    }
+  },
+  {
+    "id": "rearVulcan",
+    "damage": 0.9,
+    "fireCooldown": 8,
+    "piercing": false,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "directional"
+    }
+  },
+  {
+    "id": "sonicBlade",
+    "damage": 2.2,
+    "fireCooldown": 20,
+    "piercing": true,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "wave"
+    }
+  },
+  {
+    "id": "homingSeeker",
+    "damage": 1.5,
+    "fireCooldown": 22,
+    "piercing": false,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "homing"
+    }
+  },
+  {
+    "id": "clusterBomb",
+    "damage": 3.5,
+    "fireCooldown": 32,
+    "piercing": true,
+    "projectile": {
+      "vx": 0,
+      "vy": 0,
+      "width": 5,
+      "height": 10,
+      "owner": "player",
+      "behavior": "explosive"
+    }
+  }
+]
