@@ -16,10 +16,8 @@ class NebulaRunner {
 
   private async init(): Promise<void> {
     try {
-      this.loadingScreen.setMessage('INITIALIZING');
+      this.loadingScreen.setMessage('LOADING');
       this.loadingScreen.setProgress(20);
-
-      const balanceLoader = new BalanceLoader();
 
       // Run WebGL renderer initialization and data loading concurrently
       const [, balanceData] = await Promise.all([
@@ -28,12 +26,12 @@ class NebulaRunner {
           width: 450,
           height: 800,
         }),
-        balanceLoader.loadAll(),
+        new BalanceLoader().loadAll(),
       ]);
 
       document.body.appendChild(this.app.canvas);
 
-      this.loadingScreen.setMessage('BOOTSTRAPPING SYSTEMS...');
+      this.loadingScreen.setMessage('GET READY');
       this.loadingScreen.setProgress(80);
 
       // Instantiate GameContext once app renderer is fully ready
