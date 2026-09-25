@@ -75,7 +75,6 @@ export class ProjectileMediator implements IContextItem {
     private handleStandardEmission(emission: ProjectileEmission): void {
         this.clearActiveBeams();
 
-        // 💡 NEW LOGIC: Convert Emission event to runtime state before pooling
         const state = this.createProjectileState(emission);
         const hitbox = this.hitBoxPool.pool(state);
 
@@ -83,7 +82,7 @@ export class ProjectileMediator implements IContextItem {
     }
 
     private handleBeamEmission(emission: ProjectileEmission): void {
-        const beamHeight = Math.max(1, emission.y - 35);
+        const beamHeight = Math.max(1, emission.y - this.playerView.height / 2);
 
         // 💡 NEW LOGIC: Map directly to state with dynamic beam height
         const state = this.createProjectileState(emission, beamHeight);
@@ -100,7 +99,7 @@ export class ProjectileMediator implements IContextItem {
         const proj = emission.data.projectile;
         return {
             x: emission.x,
-            y: emission.y,
+            y: emission.y - this.playerView.height * 0.5,
             width: proj.width,
             height: overrideHeight ?? proj.height ?? 1,
             vx: proj.vx ?? 0,
@@ -164,8 +163,8 @@ export class ProjectileMediator implements IContextItem {
     private updateActiveBeamPosition(): void {
         if (!this.activeBeam) return;
 
-        const beamHeight = Math.max(1, this.playerView.y - 35);
-        this.activeBeam.position.set(this.playerView.x, beamHeight / 2);
+        const beamHeight = Math.max(1, this.playerView.y - this.playerView.height * 0.5);
+        this.activeBeam.position.set(this.playerView.x, beamHeight * 0.5);
         this.activeBeam.height = beamHeight;
     }
 

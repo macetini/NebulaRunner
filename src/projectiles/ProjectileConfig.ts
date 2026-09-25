@@ -19,6 +19,7 @@ export type ProjectileSpawnOptions = {
     vy?: number;                            // Vertical velocity. Positive = down, negative = up. (Optional - not required for all 'beam' types)
     width: number;                          // Projectile width in pixels.
     height?: number;                        // Projectile height in pixels. (Optional - Not required for 'beam' projectiles)
+    //offsetY?: number;                       // Vertical offset for the projectile's spawn position. (Optional)
     owner: ProjectileOwner;                 // Projectile faction. Controls collision targets and movement direction.
     behavior: ProjectileBehaviorType;       // Examples: straight, homing, beam, cluster_split.
 };

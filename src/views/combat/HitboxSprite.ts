@@ -21,7 +21,7 @@ export class HitboxSprite extends PIXI.Sprite {
     public configure(state: ProjectileState, isDebug: boolean = false): void {
         this.damage = state.damage;
         this.isBeam = state.behavior === "beam";
-        this.isPiercing = state.isPiercing || this.isBeam;
+        this.isPiercing = state.isPiercing;
 
         this.width = state.width;
         this.height = state.height;

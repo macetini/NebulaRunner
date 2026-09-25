@@ -1,5 +1,5 @@
-import { GameSignals } from "../../core/game/GameSignals";
 import type { IContextItem } from "../../core/context/meta/IContextItem";
+import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { ParticlePool } from "../../pools/ParticlePool";
 

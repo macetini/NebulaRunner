@@ -61,7 +61,7 @@ export class PlasmaBeamView extends AbstractWeaponView {
         this.x = transform.x;
         this.y = 0;
 
-        this.currentHeight = Math.max(1, transform.y - 35);
+        this.currentHeight = Math.max(1, transform.y);
 
         const posBuffer = this.mesh.geometry.getBuffer('aPosition');
         const data = posBuffer.data as Float32Array;

@@ -61,7 +61,7 @@ export type GameConfig = {
 export const gameConfig: GameConfig = {
     // Dev
     godMode: true,
-    showWeaponHitboxes: false,
+    showWeaponHitboxes: true,
     showPerformanceStats: true,
 
     // URLs for external data
@@ -70,7 +70,7 @@ export const gameConfig: GameConfig = {
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
-    playerDefaultWeaponId: 'blaster',
+    playerDefaultWeaponId: 'blaster', // 'blaster', 'plasma_beam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'
 
     boostDuration: 36,
     boostMaximumCharge: 100,
