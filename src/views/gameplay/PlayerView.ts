@@ -159,4 +159,8 @@ export class PlayerView extends PIXI.Container {
     private getMoveStep(delta: number): number {
         return this.config.playerSpeed * this.movementSpeedMultiplier * delta;
     }
+
+    public get muzzleY(): number {
+        return this.y - this.height / 2;
+    }
 }

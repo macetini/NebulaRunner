@@ -6,6 +6,7 @@ export class HitboxSprite extends PIXI.Sprite {
     public damage: number = 1;
     public isPiercing: boolean = false;
     public isBeam: boolean = false;
+    public state?: ProjectileState; // Added runtime state reference
 
     constructor() {
         // PIXI.Texture.WHITE is built into Pixi.js—no app/renderer required!
@@ -19,6 +20,7 @@ export class HitboxSprite extends PIXI.Sprite {
     }
 
     public configure(state: ProjectileState, isDebug: boolean = false): void {
+        this.state = state; // Store reference for mediators & collision checks
         this.damage = state.damage;
         this.isBeam = state.behavior === "beam";
         this.isPiercing = state.isPiercing;

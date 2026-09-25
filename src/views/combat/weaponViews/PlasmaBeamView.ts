@@ -57,7 +57,7 @@ export class PlasmaBeamView extends AbstractWeaponView {
         }
     }
 
-    public updateWeapon(transform: WeaponTransform, _delta: number): void {
+    public updateWeapon(transform: WeaponTransform): void {
         this.x = transform.x;
         this.y = 0;
 

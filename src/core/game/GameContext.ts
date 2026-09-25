@@ -1,5 +1,5 @@
+// src/core/game/GameContext.ts
 import * as PIXI from 'pixi.js';
-
 import { BuffSystem } from '../../buffs/BuffSystem';
 import { CombatMediator } from '../../mediators/combat/CombatMediator';
 import { PlasmaBeamMediator } from '../../mediators/combat/PlasmaBeamMediator';

@@ -1,3 +1,4 @@
+// src/mediators/combat/ProjectileMediator.ts
 import * as PIXI from 'pixi.js';
 import type { IContextItem } from "../../core/context/meta/IContextItem";
 import type { GameConfig } from "../../core/game/GameConfig";
@@ -78,7 +79,7 @@ export class ProjectileMediator implements IContextItem {
         const state = this.createProjectileState(
             emission,
             emission.x,
-            emission.y - this.playerView.height / 2,
+            this.playerView.muzzleY,
             proj.width,
             proj.height ?? 1,
         );
@@ -133,7 +134,7 @@ export class ProjectileMediator implements IContextItem {
     }
 
     private computeBeamHeight(): number {
-        return Math.max(1, this.playerView.y - this.playerView.height / 2);
+        return Math.max(1, this.playerView.muzzleY);
     }
 
     private createNewBeam(state: ProjectileState): HitboxSprite {
@@ -168,7 +169,7 @@ export class ProjectileMediator implements IContextItem {
     private onEnemyFired = (_e: Event): void => { };
 
     // -----------------------------
-    // Update Loop
+    // Update Loop & Boundary Logic
     // -----------------------------
     public update(delta: number): void {
         this.updateActiveBeamPosition();
@@ -185,9 +186,6 @@ export class ProjectileMediator implements IContextItem {
 
     private updateProjectileLifecycle(delta: number): void {
         const hitboxes = this.hitBoxPool.activeHitboxes;
-        const enemyStep = this.config.enemyProjectileSpeed * delta;
-        const playerStep = this.config.projectileSpeed * delta;
-        const lowerBound = this.screenHeight;
 
         for (let i = hitboxes.length - 1; i >= 0; i--) {
             const hitbox = hitboxes[i];
@@ -196,18 +194,40 @@ export class ProjectileMediator implements IContextItem {
 
             if (hitbox.isBeam) continue;
 
-            if (hitbox.isEnemy) {
-                hitbox.y += enemyStep;
-                if (hitbox.y > lowerBound + hitbox.height) {
-                    this.hitBoxPool.recycle(hitbox, i);
-                }
-            } else {
-                hitbox.y -= playerStep;
-                if (hitbox.y < -hitbox.height) {
-                    this.hitBoxPool.recycle(hitbox, i);
-                }
+            // 1. Move projectile based on behavior
+            this.updateProjectilePosition(hitbox, delta);
+
+            // 2. Centralized out-of-bounds recycling
+            if (this.isOutOfBounds(hitbox)) {
+                this.hitBoxPool.recycle(hitbox, i);
+                continue;
+            }
+
+            // 3. Keep internal collision state synchronized
+            if (hitbox.state) {
+                hitbox.state.x = hitbox.x;
+                hitbox.state.y = hitbox.y;
             }
         }
+    }
+
+    private updateProjectilePosition(hitbox: HitboxSprite, delta: number): void {
+        if (hitbox.isEnemy) {
+            hitbox.y += this.config.enemyProjectileSpeed * delta;
+        } else {
+            // Default straight movement (extend here for wave/homing/spread)
+            hitbox.y -= this.config.projectileSpeed * delta;
+        }
+    }
+
+    private isOutOfBounds(hitbox: HitboxSprite): boolean {
+        const halfHeight = hitbox.height / 2;
+
+        if (hitbox.isEnemy) {
+            return hitbox.y > this.screenHeight + halfHeight;
+        }
+
+        return hitbox.y < -halfHeight;
     }
 
     // -----------------------------
