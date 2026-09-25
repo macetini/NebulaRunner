@@ -15,7 +15,7 @@
   },
   {
     "id": "plasma_beam",
-    "damage": 0.25,
+    "damage": 100,
     "fireCooldown": 1,
     "piercing": true,
     "projectile": {

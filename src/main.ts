@@ -28,7 +28,7 @@ class NebulaRunner {
           width: 450,
           height: 800,
           antialias: true,
-          autoDensity: true,
+          autoDensity: false,
           resolution: Math.min(window.devicePixelRatio || 1, 2),
         }),
         balanceLoader.loadAll(),

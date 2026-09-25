@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import type { ProjectileSpawnOptions } from "../../projectiles/ProjectileConfig";
+import type { ProjectileState } from "../../projectiles/type/ProjectileState";
 
 export class HitboxSprite extends PIXI.Sprite {
     public isEnemy: boolean = false;
@@ -18,12 +18,14 @@ export class HitboxSprite extends PIXI.Sprite {
         this.tint = isEnemy ? 0xff0000 : 0x00ff00;
     }
 
-    public configure(options: ProjectileSpawnOptions, isDebug: boolean = false): void {
-        this.damage = 1;
-        this.isBeam = options.behavior === "beam";
-        this.isPiercing = options.behavior === "beam";
-        this.width = options.width;
-        this.height = options.height ?? 1;
+    public configure(state: ProjectileState, isDebug: boolean = false): void {
+        this.damage = state.damage;
+        this.isBeam = state.behavior === "beam";
+        this.isPiercing = state.isPiercing || this.isBeam;
+
+        this.width = state.width;
+        this.height = state.height;
+
         this.alpha = isDebug ? 0.7 : 0;
     }
 }

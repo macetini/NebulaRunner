@@ -1,8 +1,12 @@
 export type ProjectileBehaviorType =
     | 'straight'
-    | 'sinewave'
-    | 'homing'
     | 'beam'
+    | 'homing'
+    | 'sinewave'
+    | 'wave'             // Added to match sonicBlade
+    | 'spread'           // Added to match spreadShot
+    | 'directional'      // Added to match rearVulcan
+    | 'explosive'        // Added to match clusterBomb
     | 'cluster_split';
 
 export type ProjectileOwner = 'player' | 'enemy';

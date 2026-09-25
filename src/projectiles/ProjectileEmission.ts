@@ -1,7 +1,7 @@
-import type { ProjectileSpawnOptions } from "./ProjectileConfig";
+import type { WeaponBalance } from "../data/types/WeaponBalance";
 
 export type ProjectileEmission = {
     x: number;
     y: number;
-    options: ProjectileSpawnOptions;
+    data: WeaponBalance;
 };

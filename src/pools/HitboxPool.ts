@@ -1,5 +1,5 @@
+import type { ProjectileState } from "../projectiles/type/ProjectileState";
 import { HitboxSprite } from "../views/combat/HitboxSprite";
-import type { ProjectileEmission } from "../projectiles/ProjectileEmission";
 
 export interface BeamHitboxOptions {
     width?: number;
@@ -20,7 +20,8 @@ export class HitboxPool {
         return this.activeHitboxes;
     }
 
-    public pool(emission: ProjectileEmission): HitboxSprite {
+    // 💡 Update parameter type from ProjectileEmission to ProjectileState
+    public pool(state: ProjectileState): HitboxSprite {
         let hitbox = this.hitBoxView.find((h) => !h.visible);
 
         if (!hitbox) {
@@ -28,9 +29,10 @@ export class HitboxPool {
             this.hitBoxView.push(hitbox);
         }
 
-        hitbox.setType(emission.options.owner === 'enemy');
-        hitbox.configure(emission.options, this.showDebugHitboxes);
-        hitbox.position.set(emission.x, emission.y);
+        // 💡 Read clean properties directly from runtime state
+        hitbox.setType(state.owner === 'enemy');
+        hitbox.configure(state, this.showDebugHitboxes);
+        hitbox.position.set(state.x, state.y);
         hitbox.visible = true;
 
         this.activeHitboxes.push(hitbox);

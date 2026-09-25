@@ -1,5 +1,5 @@
-import { GameSignals } from "../../core/game/GameSignals";
 import type { IContextItem } from "../../core/context/meta/IContextItem";
+import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
 import { defaultWeaponId } from "../../weapons/WeaponRegistry";
 import type { WeaponSystem } from "../../weapons/WeaponSystem";
@@ -27,7 +27,7 @@ export class WeaponSystemMediator implements IContextItem {
         const { weaponId } = (event as CustomEvent<{ weaponId?: string }>).detail ?? {};
 
         if (typeof weaponId === 'string' && weaponId.length > 0) {
-            this.weapons.equip(weaponId);
+            //this.weapons.equip(weaponId);
         }
     };
 

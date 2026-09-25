@@ -44,6 +44,14 @@ export class PlayerView extends PIXI.Container {
         this.playerSprite.width = value;
     }
 
+    public override get height(): number {
+        return this.playerSprite.height;
+    }
+
+    public override set height(value: number) {
+        this.playerSprite.height = value;
+    }
+
     public resetPosition(): void {
         this.x = this.app.screen.width * 0.5;
         this.y = this.config.playerInitialY;
@@ -70,7 +78,7 @@ export class PlayerView extends PIXI.Container {
     }
 
     public tryBoost(): boolean {
-        if (this.boostActive || this.boostCharge < this.config.boostMaximumCharge) {
+        if (this.boostActive) {// || this.boostCharge < this.config.boostMaximumCharge) {
             return false;
         }
 

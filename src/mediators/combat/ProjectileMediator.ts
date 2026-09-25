@@ -5,6 +5,7 @@ import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
+import type { ProjectileState } from '../../projectiles/type/ProjectileState';
 import type { HitboxSprite } from '../../views/combat/HitboxSprite';
 import type { PlayerView } from '../../views/gameplay/PlayerView';
 
@@ -62,49 +63,69 @@ export class ProjectileMediator implements IContextItem {
     private onPlayerFired = (e: Event): void => {
         const emission = (e as CustomEvent<{ emission: ProjectileEmission }>).detail.emission;
 
-        if (emission.options.behavior === "beam") {
+        if (emission.data.projectile.behavior === "beam") {
             this.handleBeamEmission(emission);
-        } else {
-            this.handleStandardEmission(emission);
+            return;
         }
+
+        this.handleStandardEmission(emission);
+
     };
 
     private handleStandardEmission(emission: ProjectileEmission): void {
         this.clearActiveBeams();
-        const hitbox = this.hitBoxPool.pool(emission);
+
+        // 💡 NEW LOGIC: Convert Emission event to runtime state before pooling
+        const state = this.createProjectileState(emission);
+        const hitbox = this.hitBoxPool.pool(state);
+
         this.attachDebugHitbox(hitbox);
     }
 
-    // -----------------------------
-    // Beam Handling
-    // -----------------------------
     private handleBeamEmission(emission: ProjectileEmission): void {
         const beamHeight = Math.max(1, emission.y - 35);
 
+        // 💡 NEW LOGIC: Map directly to state with dynamic beam height
+        const state = this.createProjectileState(emission, beamHeight);
+
         if (this.activeBeam) {
-            this.updateActiveBeam(emission, beamHeight);
+            this.updateActiveBeam(state, beamHeight);
             return;
         }
 
-        this.createNewBeam(emission, beamHeight);
+        this.createNewBeam(state);
     }
 
-    private updateActiveBeam(emission: ProjectileEmission, beamHeight: number): void {
+    private createProjectileState(emission: ProjectileEmission, overrideHeight?: number): ProjectileState {
+        const proj = emission.data.projectile;
+        return {
+            x: emission.x,
+            y: emission.y,
+            width: proj.width,
+            height: overrideHeight ?? proj.height ?? 1,
+            vx: proj.vx ?? 0,
+            vy: proj.vy ?? 0,
+            damage: emission.data.damage,
+            isPiercing: emission.data.piercing,
+            owner: proj.owner,
+            behavior: proj.behavior,
+        };
+    }
+
+    private updateActiveBeam(state: ProjectileState, beamHeight: number): void {
+        // 💡 NEW LOGIC: Configure using state instead of raw emission.data
         this.activeBeam!.configure(
-            { ...emission.options, height: beamHeight },
+            state,
             this.config.showWeaponHitboxes
         );
-        this.activeBeam!.position.set(emission.x, beamHeight / 2);
+        this.activeBeam!.position.set(state.x, beamHeight / 2);
     }
 
-    private createNewBeam(emission: ProjectileEmission, beamHeight: number): void {
-        this.activeBeam = this.hitBoxPool.pool({
-            x: emission.x,
-            y: beamHeight / 2,
-            options: { ...emission.options, height: beamHeight }
-        });
-
+    private createNewBeam(state: ProjectileState): HitboxSprite {
+        // 💡 NEW LOGIC: No more nested spread overrides on emission.data!
+        this.activeBeam = this.hitBoxPool.pool(state);
         this.attachDebugHitbox(this.activeBeam);
+        return this.activeBeam;
     }
 
     private clearActiveBeams(): void {
