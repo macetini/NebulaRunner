@@ -1,3 +1,4 @@
+// src/core/game/GameConfig.ts
 export type GameConfig = {
     godMode: boolean;
     showWeaponHitboxes: boolean;
@@ -70,7 +71,7 @@ export const gameConfig: GameConfig = {
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
-    playerDefaultWeaponId: 'plasma_beam', // 'blaster', 'plasma_beam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'
+    playerDefaultWeaponId: 'blaster', // 'blaster', 'plasma_beam', 'spreadShot', 'pulseLaser', 'rearVulcan', 'sonicBlade', 'homingSeeker', 'clusterBomb'
 
     boostDuration: 36,
     boostMaximumCharge: 100,

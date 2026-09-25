@@ -32,6 +32,7 @@ import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import { SignalBus } from './SignalBus';
+import { BlasterView } from '../../views/combat/weaponViews/BlasterView';
 /**
  * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
@@ -59,6 +60,7 @@ export class GameContext {
     private playerView!: PlayerView;
     private weaponContainerView!: WeaponContainerView;
     private plasmaBeamView!: PlasmaBeamView;
+    private blasterView!: BlasterView;
 
     private debugHitboxLayer?: PIXI.Container;
 
@@ -114,6 +116,9 @@ export class GameContext {
         this.weaponContainerView = new WeaponContainerView();
         this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
         this.weaponContainerView.registerWeaponView('plasma_beam', this.plasmaBeamView);
+
+        this.blasterView = new BlasterView(this.app.screen.height);
+        this.weaponContainerView.registerWeaponView('blaster', this.blasterView);
 
         this.app.stage.addChild(this.backgroundView);
         this.app.stage.addChild(this.playerView);
