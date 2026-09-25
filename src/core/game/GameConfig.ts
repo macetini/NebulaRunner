@@ -65,7 +65,7 @@ export const gameConfig: GameConfig = {
     showPerformanceStats: true,
 
     // URLs for external data
-    weaponsDataUrl: "https://macetini.github.io/NebulaRunner/data/balance/weapons.json",
+    weaponsDataUrl: "data/balance/weapons.json",
 
     // Player Settings
     playerInitialY: 610,
