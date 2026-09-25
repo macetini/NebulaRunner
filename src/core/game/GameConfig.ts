@@ -7,6 +7,8 @@ export type GameConfig = {
 
     playerInitialY: number;
     playerSpeed: number;
+    playerDefaultWeaponId: string;
+
     boostDuration: number;
     boostMaximumCharge: number;
     boostChargePerEnemy: number;
@@ -63,11 +65,13 @@ export const gameConfig: GameConfig = {
     showPerformanceStats: true,
 
     // URLs for external data
-    weaponsDataUrl: "/data/balance/weapons.json",
+    weaponsDataUrl: "https://macetini.github.io/NebulaRunner/data/balance/weapons.json",
 
     // Player Settings
     playerInitialY: 610,
     playerSpeed: 6,
+    playerDefaultWeaponId: "blaster",
+
     boostDuration: 36,
     boostMaximumCharge: 100,
     boostChargePerEnemy: 20,
