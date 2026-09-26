@@ -1,90 +1,179 @@
 // src/views/combat/weaponViews/BlasterView.ts
 import * as PIXI from 'pixi.js';
-
 import fragmentShader from '../../../shaders/blaster.frag.glsl?raw';
 import vertexShader from '../../../shaders/blaster.vert.glsl?raw';
-import { AbstractWeaponView, type WeaponTransform } from './AbstractWeaponView';
 
-export class BlasterView extends AbstractWeaponView {
-    private readonly mesh: PIXI.Mesh<PIXI.MeshGeometry, PIXI.Shader>;
-    private readonly uniforms: Record<string, any>;
-    private readonly beamWidth = 400;
-    private currentHeight: number;
+import type { BalanceData } from '../../../data/types/BalanceData';
+import type { WeaponBalance } from '../../../data/types/WeaponBalance';
+import { TrajectoryRegistry } from '../../../projectiles/trajectories/TrajectoryRegistry';
+import { type IWeaponView } from './meta/IWeaponView';
 
-    constructor(screenHeight: number) {
+interface IBoltInstance {
+    mesh: PIXI.Mesh<PIXI.MeshGeometry, PIXI.Shader>;
+    uniformGroup: PIXI.UniformGroup;
+    active: boolean;
+    x: number;
+    y: number;
+}
+
+export class BlasterView extends PIXI.Container implements IWeaponView {
+    private sharedGeometry!: PIXI.MeshGeometry;
+    private sharedGlProgram!: PIXI.GlProgram;
+
+    private readonly pool: IBoltInstance[] = [];
+
+    private spawnTimer = 0;
+    private muzzlePosition: PIXI.Point = new PIXI.Point();
+
+    private data: WeaponBalance;
+
+    private isFiring = false;
+
+    public id = 'blaster';
+    public time = 0;
+
+    constructor(allData: BalanceData) {
         super();
-        this.currentHeight = screenHeight;
+        console.log('Constructing BlasterView');
 
-        const geometry = new PIXI.MeshGeometry({
+        this.data = allData.weapons.find(weapon => weapon.id === this.id)!;
+
+        this.initSharedResources();
+
+        // Pre-warm pool of bolt meshes
+        for (let i = 0; i < 15; i++) {
+            this.pool.push(this.createBoltInstance());
+        }
+    }
+
+    private initSharedResources(): void {
+        const hw = this.data.projectile.width / 2;
+        const hh = (this.data.projectile.height ?? 10) / 2;
+
+        this.sharedGeometry = new PIXI.MeshGeometry({
             positions: new Float32Array([
-                -this.beamWidth / 2, 0,
-                this.beamWidth / 2, 0,
-                this.beamWidth / 2, this.currentHeight,
-                -this.beamWidth / 2, this.currentHeight
+                -hw, -hh,
+                hw, -hh,
+                hw, hh,
+                -hw, hh
             ]),
             uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
             indices: new Uint32Array([0, 1, 2, 0, 2, 3])
         });
 
-        // 2. Define uniform group matching the blaster shader requirements
-        const uniformGroup = new PIXI.UniformGroup({
-            uTime: { value: 0, type: 'f32' },
-            uSize: { value: [this.beamWidth, this.currentHeight], type: 'vec2<f32>' },
-            uBeamWidth: { value: 0.005, type: 'f32' },
-            uBeamLength: { value: 0.4, type: 'f32' },
-        });
-
-        this.uniforms = uniformGroup.uniforms;
-
-        // 3. Instantiate GlProgram and Shader
-        const glProgram = new PIXI.GlProgram({
+        this.sharedGlProgram = new PIXI.GlProgram({
             vertex: vertexShader,
             fragment: fragmentShader,
-            name: 'blaster-shader',
+            name: 'blaster-bolt-shader',
+        });
+    }
+
+    public setMuzzlePosition(x: number, y: number): void {
+        this.muzzlePosition.x = x;
+        this.muzzlePosition.y = y;
+    }
+
+    private createBoltInstance(): IBoltInstance {
+        const uniformGroup = new PIXI.UniformGroup({
+            uTime: { value: 0, type: 'f32' },
+            uSize: {
+                value: [
+                    this.data.projectile.width,
+                    this.data.projectile.height ?? 10],
+                type: 'vec2<f32>'
+            },
+            uBeamWidth: { value: 0.12, type: 'f32' },
+            uBeamLength: { value: 1.0, type: 'f32' },
         });
 
         const shader = new PIXI.Shader({
-            glProgram,
+            glProgram: this.sharedGlProgram,
             resources: {
                 blasterUniforms: uniformGroup,
             },
         });
 
-        // 4. Instantiate Mesh and set additive blending
-        this.mesh = new PIXI.Mesh({ geometry, shader });
-        this.mesh.blendMode = 'add';
+        const mesh = new PIXI.Mesh({ geometry: this.sharedGeometry, shader });
+        mesh.blendMode = 'add';
+        mesh.visible = false;
+        this.addChild(mesh);
 
-        this.addChild(this.mesh);
-        this.visible = false;
+        return { mesh, uniformGroup, active: false, x: 0, y: 0 };
     }
 
-    public override update(delta: number): void {
-        super.update(delta);
-        if (this.visible) {
-            // Drive animation uniform using view time
-            this.uniforms.uTime = this.time;
+    public activateWeapon(): void {
+        console.log('Activating Blaster Weapon');
+        this.isFiring = this.visible = true;
+    }
+
+    public deactivateWeapon(): void {
+        console.log('Deactivating Blaster Weapon');
+        this.isFiring = this.visible = false;
+        this.spawnTimer = 0;
+
+        // Reset active bolts in pool
+        for (const bolt of this.pool) {
+            bolt.active = false;
+            bolt.mesh.visible = false;
         }
     }
 
-    public updateWeapon(transform: WeaponTransform): void {
-        this.x = transform.x;
-        this.y = 0;
+    public update(delta: number): void {
+        const dt = delta / 60;
+        this.time += dt;
 
-        console.log('Updating weapon with transform:', transform);
+        if (this.isFiring) {
+            this.spawnTimer += dt;
+            if (this.spawnTimer >= this.data.fireCooldown) {
+                this.spawnTimer = 0;
+                this.spawnBolt(this.muzzlePosition.x, this.muzzlePosition.y);
+            }
+        }
 
-        this.currentHeight = Math.max(1, transform.y);
+        const straightStrategy = TrajectoryRegistry.getStrategy('straight');
 
-        const posBuffer = this.mesh.geometry.getBuffer('aPosition');
-        const data = posBuffer.data as Float32Array;
-        data[5] = this.currentHeight;
-        data[7] = this.currentHeight;
-        posBuffer.update();
+        for (const bolt of this.pool) {
+            if (!bolt.active) continue;
 
-        // Pass updated dimensions to shader
-        this.uniforms.uSize = [20, 20]//[this.beamWidth, this.currentHeight];
+            bolt.uniformGroup.uniforms.uTime = this.time;
+
+            const nextPos = straightStrategy.calculateNextPosition(
+                {
+                    x: bolt.x,
+                    y: bolt.y,
+                    vx: this.data.projectile.vx ?? 0,
+                    vy: this.data.projectile.vy ?? 0,
+                },
+                delta
+            );
+
+            bolt.x = nextPos.x;
+            bolt.y = nextPos.y;
+
+            bolt.mesh.x = bolt.x;
+            bolt.mesh.y = bolt.y;
+
+            // Recycle bolt if it moves off-screen (adjust bounds to your game screen size)
+            if (bolt.y + bolt.mesh.height / 2 < 0) {
+                bolt.active = false;
+                bolt.mesh.visible = false;
+            }
+        }
     }
 
-    public setWeaponActive(isActive: boolean): void {
-        this.visible = isActive;
+    private spawnBolt(startX: number, startY: number): void {
+        let bolt = this.pool.find(b => !b.active);
+        if (!bolt) {
+            bolt = this.createBoltInstance();
+            this.pool.push(bolt);
+        }
+
+        bolt.active = true;
+        bolt.x = startX;
+        bolt.y = startY;
+
+        bolt.mesh.x = startX;
+        bolt.mesh.y = startY;
+        bolt.mesh.visible = true;
     }
 }

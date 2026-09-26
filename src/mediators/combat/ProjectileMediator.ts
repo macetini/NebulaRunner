@@ -6,6 +6,7 @@ import { GameSignals } from "../../core/game/GameSignals";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { HitboxPool } from "../../pools/HitboxPool";
 import type { ProjectileEmission } from "../../projectiles/ProjectileEmission";
+import { TrajectoryRegistry } from '../../projectiles/trajectories/TrajectoryRegistry';
 import type { ProjectileState } from "../../projectiles/type/ProjectileState";
 import type { HitboxSprite } from "../../views/combat/HitboxSprite";
 import type { PlayerView } from "../../views/gameplay/PlayerView";
@@ -211,23 +212,32 @@ export class ProjectileMediator implements IContextItem {
         }
     }
 
-    private updateProjectilePosition(hitbox: HitboxSprite, delta: number): void {
+    private isOutOfBounds(hitbox: HitboxSprite): boolean {
+        const padding = hitbox.height / 2;
+
         if (hitbox.isEnemy) {
-            hitbox.y += this.config.enemyProjectileSpeed * delta;
-        } else {
-            // Default straight movement (extend here for wave/homing/spread)
-            hitbox.y -= this.config.projectileSpeed * delta;
+            return hitbox.y > this.screenHeight + padding;
         }
+
+        return hitbox.y < -padding;
     }
 
-    private isOutOfBounds(hitbox: HitboxSprite): boolean {
-        const halfHeight = hitbox.height / 2;
+    private updateProjectilePosition(hitbox: HitboxSprite, delta: number): void {
+        if (!hitbox.state) return;
 
-        if (hitbox.isEnemy) {
-            return hitbox.y > this.screenHeight + halfHeight;
-        }
+        const strategy = TrajectoryRegistry.getStrategy(hitbox.state.behavior);
+        const nextPos = strategy.calculateNextPosition(
+            {
+                x: hitbox.x,
+                y: hitbox.y,
+                vx: hitbox.state.vx,
+                vy: hitbox.state.vy,
+            },
+            delta
+        );
 
-        return hitbox.y < -halfHeight;
+        hitbox.x = nextPos.x;
+        hitbox.y = nextPos.y;
     }
 
     // -----------------------------

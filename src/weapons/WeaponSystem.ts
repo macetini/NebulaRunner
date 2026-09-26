@@ -28,6 +28,8 @@ export class WeaponSystem implements IContextItem {
             this.activeWeapon = weapon;
             return true;
         }
+
+        console.warn(`Weapon with ID ${weaponId} not found.`);
         return false;
     }
 

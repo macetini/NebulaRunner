@@ -63,7 +63,7 @@ export class BuffStatusView extends PIXI.Container {
             return;
         }
 
-        this.timeLabel.text = `${(remaining / 60).toFixed(1)}s`;
+        this.timeLabel.text = `${(remaining).toFixed(1)}s`;
         this.progress.clear();
         this.progress.roundRect(10, 29, (this.panelWidth - 20) * progress, 5, 2).fill(this.accentColor);
     }

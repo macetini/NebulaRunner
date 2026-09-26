@@ -1,6 +1,7 @@
 // src/core/game/GameContext.ts
 import * as PIXI from 'pixi.js';
 import { BuffSystem } from '../../buffs/BuffSystem';
+import { BlasterMediator } from '../../mediators/combat/BlasterMediator';
 import { CombatMediator } from '../../mediators/combat/CombatMediator';
 import { PlasmaBeamMediator } from '../../mediators/combat/PlasmaBeamMediator';
 import { ProjectileMediator } from '../../mediators/combat/ProjectileMediator';
@@ -9,7 +10,6 @@ import { WeaponSystemMediator } from '../../mediators/combat/WeaponSystemMediato
 import { BackgroundMediator } from '../../mediators/fx/BackgroundMediator';
 import { ParticleMediator } from '../../mediators/fx/ParticleMediator';
 import { BuffDropMediator } from '../../mediators/gameplay/BuffDropMediator';
-import { BlasterMediator } from '../../mediators/combat/BlasterMediator';
 import { EnemyMediator } from '../../mediators/gameplay/EnemyMediator';
 import { PlayerMediator } from '../../mediators/gameplay/PlayerMediator';
 import { ScoreMediator } from '../../mediators/ui/ScoreMediator';
@@ -20,7 +20,7 @@ import { HitboxPool } from '../../pools/HitboxPool';
 import { ParticlePool } from '../../pools/ParticlePool';
 import { WeaponPool } from '../../pools/WeaponPickupPool';
 import { CollisionService } from '../../services/CollisionService';
-import { WeaponContainerView } from '../../views/combat/WeaponContainerView';
+import { BlasterView } from '../../views/combat/weaponViews/BlasterView';
 import { PlasmaBeamView } from '../../views/combat/weaponViews/PlasmaBeamView';
 import { BackgroundView } from '../../views/fx/BackgroundView';
 import { PlayerView } from '../../views/gameplay/PlayerView';
@@ -33,13 +33,13 @@ import { GameSignals } from './GameSignals';
 import type { GameState } from './GameState';
 import { InputController } from './InputController';
 import { SignalBus } from './SignalBus';
-import { BlasterView } from '../../views/combat/weaponViews/BlasterView';
 /**
  * Core game context that bootstraps systems, connects MVC mediators, and manages the main loop.
  */
 export class GameContext {
     private readonly app: PIXI.Application;
     private readonly signalBus: SignalBus;
+
     private readonly gameUi = new GameUi(gameConfig.showPerformanceStats);
     private readonly updatables: IContextItem[] = [];
 
@@ -59,9 +59,9 @@ export class GameContext {
     // Views
     private backgroundView!: BackgroundView;
     private playerView!: PlayerView;
-    private weaponContainerView!: WeaponContainerView;
-    private plasmaBeamView!: PlasmaBeamView;
+
     private blasterView!: BlasterView;
+    private plasmaBeamView!: PlasmaBeamView;
 
     private debugHitboxLayer?: PIXI.Container;
 
@@ -82,7 +82,7 @@ export class GameContext {
 
         this.initPools();
         this.initSystems(bootstrapData);
-        this.initViews();
+        this.initViews(bootstrapData);
         this.initMediators();
         this.initServices();
         this.initUiAndLifecycle();
@@ -110,20 +110,17 @@ export class GameContext {
         this.updatables.push(this.weaponSystem);
     }
 
-    private initViews(): void {
+    private initViews(data: GameBootstrapData): void {
         this.backgroundView = new BackgroundView(this.app, gameConfig);
         this.playerView = new PlayerView(this.app, gameConfig);
 
-        this.weaponContainerView = new WeaponContainerView();
-        this.plasmaBeamView = new PlasmaBeamView(this.app.screen.height);
-        this.weaponContainerView.registerWeaponView('plasma_beam', this.plasmaBeamView);
-
-        this.blasterView = new BlasterView(this.app.screen.height);
-        this.weaponContainerView.registerWeaponView('blaster', this.blasterView);
+        this.blasterView = new BlasterView(data.balance);
+        this.plasmaBeamView = new PlasmaBeamView(data.balance);
 
         this.app.stage.addChild(this.backgroundView);
         this.app.stage.addChild(this.playerView);
-        this.app.stage.addChild(this.weaponContainerView);
+        this.app.stage.addChild(this.blasterView);
+        this.app.stage.addChild(this.plasmaBeamView);
 
         if (gameConfig.showWeaponHitboxes) {
             this.debugHitboxLayer = new PIXI.Container();
@@ -138,16 +135,16 @@ export class GameContext {
         // Player & Background
         this.updatables.push(
             new BackgroundMediator(this.backgroundView, () => this.playerView.movementSpeedMultiplierValue),
-            new PlayerMediator(this.playerView, this.signalBus, this.input, this.buffSystem, this.weaponSystem),
+            new PlayerMediator(this.playerView, this.signalBus, this.input),
             new EnemyMediator(this.app, this.enemyPool, gameConfig, this.playerView, this.signalBus),
         );
 
         // Weapon Mediators
         this.updatables.push(
-            new WeaponSystemMediator(this.weaponSystem, this.signalBus),
-            new PlasmaBeamMediator(this.plasmaBeamView, this.playerView, this.weaponSystem),
-            new BlasterMediator(this.blasterView, this.playerView, this.weaponSystem),
+            new BlasterMediator(this.blasterView, this.signalBus),
+            new PlasmaBeamMediator(this.plasmaBeamView, this.signalBus),
             new WeaponDropMediator(this.weaponPool, gameConfig, this.signalBus, this.app.screen.height, this.playerView),
+            new WeaponSystemMediator(this.weaponSystem, this.signalBus),
         );
 
         // Buffs & Combat Feedback
@@ -176,6 +173,7 @@ export class GameContext {
             this.buffPool,
             this.buffSystem,
         );
+
         this.updatables.push(collisionService);
     }
 
@@ -225,8 +223,6 @@ export class GameContext {
         for (let i = 0; i < count; i++) {
             this.updatables[i].update(delta);
         }
-
-        this.weaponContainerView.update(delta);
 
         this.particleMediator.update(delta);
         this.gameUi.score.updateDistance(this.backgroundView.distanceTraveled);

@@ -1,32 +1,24 @@
-import type { BuffSystem } from "../../buffs/BuffSystem";
+// src/mediators/gameplay/PlayerMediator.ts
 import type { IContextItem } from "../../core/context/meta/IContextItem";
 import { GameSignals } from "../../core/game/GameSignals";
 import type { InputController } from "../../core/game/InputController";
 import type { SignalBus } from "../../core/game/SignalBus";
 import type { PlayerView } from "../../views/gameplay/PlayerView";
-import type { WeaponSystem } from "../../weapons/WeaponSystem";
 
 
 export class PlayerMediator implements IContextItem {
     private readonly view: PlayerView;
     private readonly signalBus: SignalBus;
     private readonly input: InputController;
-    private readonly buffs: BuffSystem;
-    private readonly weapons: WeaponSystem;
-    private fireTimer: number = 0;
 
     constructor(
         view: PlayerView,
         signalBus: SignalBus,
-        input: InputController,
-        buffs: BuffSystem,
-        weapons: WeaponSystem
+        input: InputController
     ) {
         this.view = view;
         this.signalBus = signalBus;
         this.input = input;
-        this.buffs = buffs;
-        this.weapons = weapons;
 
         this.setupSignalListeners();
     }
@@ -42,7 +34,6 @@ export class PlayerMediator implements IContextItem {
     };
 
     private onRunRestarted = (): void => {
-        this.fireTimer = 0;
         this.view.resetPosition();
         this.view.resetShield();
         this.view.visible = true;
@@ -55,11 +46,9 @@ export class PlayerMediator implements IContextItem {
     public update(delta: number): void {
         this.updateShieldAndBoost(delta);
         this.handleMovementInput(delta);
-        this.handleWeaponFiring(delta);
     }
 
     private updateShieldAndBoost(delta: number): void {
-        this.view.setShieldActive(this.buffs.shieldActive);
         this.view.updateShield(delta);
         this.view.updateBoost(delta);
 
@@ -70,6 +59,9 @@ export class PlayerMediator implements IContextItem {
 
     private handleMovementInput(delta: number): void {
         const input = this.input.current;
+
+        const prevX = this.view.x;
+        const prevY = this.view.y;
 
         if (input.left) {
             this.view.moveLeft(delta);
@@ -82,14 +74,9 @@ export class PlayerMediator implements IContextItem {
         if (input.touchActive) {
             this.view.moveToward(input.touchX, delta);
         }
-    }
 
-    private handleWeaponFiring(delta: number): void {
-        this.fireTimer -= delta;
-        if (this.fireTimer <= 0) {
-            const emission = this.weapons.fire(this.view.x, this.view.y);
-            this.signalBus.dispatch(GameSignals.PLAYER_FIRED, { emission });
-            this.fireTimer = this.buffs.fireCooldown;
+        if (this.view.x !== prevX || this.view.y !== prevY) {
+            this.signalBus.dispatch(GameSignals.PLAYER_MOVED, { x: this.view.x, y: this.view.muzzleY });
         }
     }
 

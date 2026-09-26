@@ -1,34 +1,27 @@
 // src/views/combat/WeaponContainerView.ts
 import * as PIXI from 'pixi.js';
-import type { AbstractWeaponView } from './weaponViews/AbstractWeaponView';
+import type { IWeaponView } from './weaponViews/meta/IWeaponView';
 
 export class WeaponContainerView extends PIXI.Container {
-    private readonly views = new Map<string, AbstractWeaponView>();
+    private readonly views = new Map<string, IWeaponView>();
+
+    constructor() {
+        super();
+    }
 
     /**
      * Registers and attaches a shader weapon view to this container layer.
      */
-    public registerWeaponView(id: string, view: AbstractWeaponView): void {
-        this.views.set(id, view);
+    public registerWeaponView(view: IWeaponView): void {
+        this.views.set(view.id, view);
         this.addChild(view);
     }
 
     /**
      * Retrieves a registered weapon view by its identifier.
      */
-    public getWeaponView<T extends AbstractWeaponView>(id: string): T | undefined {
+    public getWeaponView<T extends IWeaponView>(id: string): T | undefined {
         return this.views.get(id) as T | undefined;
-    }
-
-    /**
-     * Advances uTime/animation state for all active weapon views.
-     */
-    public update(delta: number): void {
-        for (const view of this.views.values()) {
-            if (view.visible) {
-                view.update(delta);
-            }
-        }
     }
 
     /**
@@ -36,7 +29,7 @@ export class WeaponContainerView extends PIXI.Container {
      */
     public deactivateAll(): void {
         for (const view of this.views.values()) {
-            view.setWeaponActive(false);
+            view.deactivateWeapon();
         }
     }
 }

@@ -1,35 +1,46 @@
-// src/mediators/combat/PlasmaBeamWeaponMediator.ts
+// src/mediators/combat/BlasterMediator.ts
 import type { IContextItem } from '../../core/context/meta/IContextItem';
+import { GameSignals } from '../../core/game/GameSignals';
+import type { SignalBus } from '../../core/game/SignalBus';
 import type { BlasterView } from '../../views/combat/weaponViews/BlasterView';
-import type { PlayerView } from '../../views/gameplay/PlayerView';
-import type { WeaponSystem } from '../../weapons/WeaponSystem';
 
 export class BlasterMediator implements IContextItem {
     private readonly view: BlasterView;
-    private readonly playerView: PlayerView;
-    private readonly weaponSystem: WeaponSystem;
+    private readonly signalBus: SignalBus;
 
-    constructor(view: BlasterView, playerView: PlayerView, weaponSystem: WeaponSystem) {
+    constructor(view: BlasterView, signalBus: SignalBus) {
         this.view = view;
-        this.playerView = playerView;
-        this.weaponSystem = weaponSystem;
+        this.signalBus = signalBus;
+
+        this.signalBus.addEventListener(GameSignals.PLAYER_MOVED, this.handlePlayerMoved);
+        this.signalBus.addEventListener(GameSignals.WEAPON_EQUIPPED, this.handleWeaponEquipped);
     }
 
-    public update(_delta: number): void {
-        const isActive = this.weaponSystem.activeWeaponId === 'blaster';
-        this.view.setWeaponActive(isActive);
+    private readonly handlePlayerMoved = (event: Event): void => {
+        const customEvent = event as CustomEvent<{ x: number; y: number }>;
+        const { x, y } = customEvent.detail;
+        this.view.setMuzzlePosition(x, y);
+    };
 
-        if (isActive) {
-            this.view.updateWeapon(
-                {
-                    x: this.playerView.x,
-                    y: this.playerView.muzzleY,
-                }
-            );
+    private readonly handleWeaponEquipped = (event: Event): void => {
+        const customEvent = event as CustomEvent<{ weaponId: string }>;
+        const weaponId = customEvent.detail.weaponId;
+
+        if (weaponId === this.view.id) {
+            this.view.activateWeapon();
+        } else {
+            this.view.deactivateWeapon();
         }
+    };
+
+    public update(delta: number): void {
+        this.view.update(delta);
     }
 
     public destroy(): void {
-        this.view.setWeaponActive(false);
+        this.view.deactivateWeapon();
+
+        this.signalBus.removeEventListener(GameSignals.WEAPON_EQUIPPED, this.handleWeaponEquipped);
+        this.signalBus.removeEventListener(GameSignals.PLAYER_MOVED, this.handlePlayerMoved);
     }
 }

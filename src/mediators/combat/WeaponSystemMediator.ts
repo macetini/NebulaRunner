@@ -17,17 +17,22 @@ export class WeaponSystemMediator implements IContextItem {
     }
 
     private readonly handleRestart = (): void => {
-        this.weapons.equip(gameConfig.playerDefaultWeaponId);
+        this.equipWeapon(gameConfig.playerDefaultWeaponId);
     };
 
     /**
      * Handles weapon acquisition. Equips the new weapon if it exists.
      */
     private readonly handleWeaponPickup = (event: Event): void => {
-        const { weaponId } = (event as CustomEvent<{ weaponId?: string }>).detail ?? {};
+        const { weaponId } = (event as CustomEvent<{ weaponId: string }>).detail;
 
-        if (typeof weaponId === 'string' && weaponId.length > 0) {
-            //this.weapons.equip(weaponId);
+        this.equipWeapon(weaponId);
+    };
+
+    private equipWeapon(weaponId: string): void {
+        const equipped = this.weapons.equip(weaponId);
+        if (equipped) {
+            this.signalBus.dispatchEvent(new CustomEvent(GameSignals.WEAPON_EQUIPPED, { detail: { weaponId } }));
         }
     };
 

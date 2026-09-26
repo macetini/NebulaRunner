@@ -53,7 +53,7 @@ export class EnemyMediator implements IContextItem {
     }
 
     public update(delta: number): void {
-        this.elapsedTime += delta / 60;
+        this.elapsedTime += delta;
 
         this.processSpawnQueue(delta);
         this.checkAndSpawnEnemy(delta);

@@ -2,13 +2,12 @@
   {
     "id": "blaster",
     "damage": 1.0,
-    "fireCooldown": 1,
+    "fireCooldown": 0.2,
     "piercing": false,
     "projectile": {
-      "vx": 0,
-      "vy": 0,
-      "width": 5,
-      "height": 10,
+      "vy": -5,
+      "width": 10,
+      "height": 35,
       "owner": "player",
       "behavior": "straight"
     }
